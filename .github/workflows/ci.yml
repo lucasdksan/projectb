@@ -1,0 +1,26 @@
+name: CI -ProjectB
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      - name: Node.js Install
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Dependencies Install
+        run: npm ci
+
+      - name: Tests Run
+        run: npm run test

@@ -9,7 +9,7 @@ export const addProductSchema = z.object({
     category: z.string(),
     storeId: z.number(),
     attributes: z.array(z.object({
-        type: z.string(),
+        kindof: z.string(),
         value: z.string(),
     })).optional(),
 });

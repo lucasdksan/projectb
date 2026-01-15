@@ -21,5 +21,18 @@ export const ProductRepository = {
         });
 
         return store;
+    },
+
+    async listByStoreId(storeId: number){ 
+        const products = await prisma.products.findMany({
+            where: {
+                storeId
+            },
+            include: {
+                attributes: true
+            }
+        });
+
+        return products;
     }
 };

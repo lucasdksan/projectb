@@ -32,10 +32,7 @@ export default function ProfileAreaView() {
     async function onSubmit(data: profileAreaViewSchemaType) {
         const formData = new FormData();
 
-        console.log(data)
-
         Object.entries(data).forEach(([key, value]) => {
-            console.log([key, value]);
             formData.append(key, value);
         });
 

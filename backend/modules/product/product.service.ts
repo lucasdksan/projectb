@@ -16,5 +16,11 @@ export const ProductService = {
         const { updatedAt, createdAt, ...product } = await ProductRepository.create(validatedData.data);
 
         return product;
+    },
+
+    async listByStoreId(storeId: number){
+        const products = await ProductRepository.listByStoreId(storeId);
+
+        return products;
     }
 };

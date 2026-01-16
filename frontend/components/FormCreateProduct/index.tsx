@@ -55,17 +55,28 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
         const result = await addProductAction(formData);
 
         if (!result?.success) {
-            showToast({
-                title: "Erro",
-                message: result?.message ?? "Erro ao cadastrar produto",
-                type: "error",
-            });
+            if(result.errors && Object.keys(result.errors).length > 0) {
+                Object.entries(result.errors).forEach(([key, value]) => {
+                    showToast({
+                        title: "Erro",
+                        message: value[0] ?? "Erro ao cadastrar produto",
+                        type: "error",
+                    });
+                });
+            } else {
+                showToast({
+                    title: "Erro",
+                    message: result.message ?? "Erro ao cadastrar produto",
+                    type: "error",
+                });
+            }
+
             return;
         }
 
         showToast({
             title: "Sucesso",
-            message: "Produto cadastrado com sucesso",
+            message: result.message ?? "Produto cadastrado com sucesso",
             type: "success",
         });
 
@@ -88,7 +99,7 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
                         <h3 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">Informações Básicas</h3>
                         <div className="flex items-center gap-2">
                             <span className="text-text-main text-base font-medium leading-normal">Ativar?</span>
-                            <input type="checkbox" {...register("isActive")} className="cursor-pointer" />
+                            <input type="checkbox" {...register("isActive")} defaultChecked={true} className="cursor-pointer" />
                         </div>
                     </div>
                     <div className="w-full grid grid-cols-2 gap-2">

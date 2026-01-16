@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -12,7 +11,6 @@ import { useToast } from "@/frontend/hooks/useToast";
 import { useProfileData } from "@/frontend/hooks/useProfileData";
 
 export default function FormSignIn() {
-    const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
     const router = useRouter();
     const { showToast } = useToast();
     const { setEmail, setName } = useProfileData();
@@ -34,17 +32,27 @@ export default function FormSignIn() {
         const result = await signInAction(formData);
 
         if (!result?.success) {
-            setServerErrors(result?.errors ?? {});
-            showToast({
-                title: "Erro",
-                message: result?.errors?.email?.[0] ?? "Erro ao fazer login",
-                type: "error",
-            });
+            if(result.errors && Object.keys(result.errors).length > 0) {
+                Object.entries(result.errors).forEach(([key, value]) => {
+                    showToast({
+                        title: "Erro",
+                        message: value[0] ?? "Erro ao fazer login",
+                        type: "error",
+                    });
+                });
+            } else {
+                showToast({
+                    title: "Erro",
+                    message: result.message ?? "Erro ao fazer login",
+                    type: "error",
+                });
+            }
+
             return;
         }
 
-        setName(result.name ?? "");
-        setEmail(result.email ?? "");
+        setName(result.user?.name ?? "");
+        setEmail(result.user?.email ?? "");
         router.push("/dashboard");
     }
 
@@ -58,7 +66,6 @@ export default function FormSignIn() {
                 <Input inputKey="password" type="password" label="Sua senha" {...register("password")} leftLabel={{ classStyle: "text-sm font-semibold text-text-muted hover:text-[color:var(--color-primary)] transition-colors", link: "/auth/forget", label: "Esqueceu?" }} className="placeholder:text-[color:var(--text-muted)] focus:border-[color:var(--color-primary)] focus:outline-none" />
                 {errors.password && <p className="text-red-500">{errors.password.message}</p>}
             </div>
-            {serverErrors.email && <p className="text-red-500">{serverErrors.email[0]}</p>}
             <Button label={isSubmitting ? "Entrando..." : "Entrar"} type="submit" className="bg-[color:var(--color-primary)] hover:bg-[#0fdc0f] text-[#111811] mt-2" />
         </form>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,6 @@ import Button from "@/frontend/ui/button";
 import { storeAreaViewSchema, storeAreaViewSchemaType } from "./schema";
 
 export default function FormAddStore({ userId }: { userId: string }){
-    const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
     const { showToast } = useToast();
     const router = useRouter();
     const {
@@ -41,19 +40,29 @@ export default function FormAddStore({ userId }: { userId: string }){
         const result = await addStoreAction(formData);
 
         if (!result.success) {
-            setServerErrors(result.errors ?? {});
-            showToast({
-                title: "Erro",
-                message: result?.errors?.email?.[0] ?? "Erro ao cadastrar usuário",
-                type: "error",
-            });
+            if(result.errors && Object.keys(result.errors).length > 0) {
+                Object.entries(result.errors).forEach(([key, value]) => {
+                    showToast({
+                        title: "Erro",
+                        message: value[0] ?? "Erro ao cadastrar loja",
+                        type: "error",
+                    });
+                });
+            } else {
+                showToast({
+                    title: "Erro",
+                    message: result.message ?? "Erro ao cadastrar loja",
+                    type: "error",
+                });
+            }
+
             return;
         }
 
         showToast({
             title: "Sucesso",
             type: "success",
-            message: "Loja registrada"
+            message: result.message ?? "Loja registrada"
         });
 
         router.refresh();

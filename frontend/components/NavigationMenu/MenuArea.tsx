@@ -16,7 +16,7 @@ export default function MenuArea({ profile }: MenuAreaProps){
             </div>
             <nav className="flex-1 overflow-y-auto py-6 gap-2 flex flex-col">
                 <Link href="/dashboard" className="flex items-center px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors group">Dashboard</Link>
-                <Link href="/dashboard" className="flex items-center px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors group">Produtos</Link>
+                <Link href="/dashboard/product/list" className="flex items-center px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors group">Produtos</Link>
                 <Link href="/dashboard/store" className="flex items-center px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors group">Loja</Link>
                 <Link href="/dashboard" className="flex items-center px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors group">Conteúdo IA</Link>
                 <Link href="/dashboard/configuration" className="flex items-center px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors group">Configurações</Link>

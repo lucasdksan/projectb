@@ -1,5 +1,5 @@
-import { env } from "@/libs/env";
 import nodemailer from "nodemailer";
+import { env } from "@/libs/env";
 import { sendEmailSchema, sendEmailSchemaType } from "./schema";
 import { Errors } from "../errors/errors";
 

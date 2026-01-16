@@ -55,7 +55,7 @@ export async function addProductAction(formData: FormData) {
     }
 }
 
-export async function searchStore(userId: string){
+export async function searchStoreAction(userId: string){
     try {
         const store = await StoreService.findByUserId(userId);
 

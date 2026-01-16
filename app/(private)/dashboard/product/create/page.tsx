@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 import FormCreateProduct from "@/frontend/components/FormCreateProduct";
 import { getCurrentUser } from "@/libs/auth";
-import { searchStore } from "./action";
+import { searchStoreAction } from "./action";
 
 export default async function DashboardCreateProduct(){
     const user = await getCurrentUser();
 
     if (!user) redirect("/login");
 
-    const { store, success } = await searchStore(String(user.sub));
+    const { store, success } = await searchStoreAction(String(user.sub));
 
     if(!success || !store) redirect("/dashboard/store");
 

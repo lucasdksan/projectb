@@ -3,6 +3,7 @@
 import { ProductService } from "@/backend/modules/product/product.service";
 import { createProductSchema } from "@/backend/modules/product/product.types";
 import { StoreService } from "@/backend/modules/store/store.service";
+import { AppError } from "@/backend/shared/errors/app-error";
 
 export async function addProductAction(formData: FormData) {
     const attrs = formData.get("attributes");
@@ -30,6 +31,8 @@ export async function addProductAction(formData: FormData) {
             return {
                 success: false,
                 errors: parsed.error.flatten().fieldErrors,
+                product: null,
+                message: "Dados inválidos",
             };
         }
 
@@ -38,6 +41,7 @@ export async function addProductAction(formData: FormData) {
         return {
             success: true,
             product,
+            errors: null,
             message: "Produto cadastrado com sucesso",
         };
         
@@ -45,7 +49,8 @@ export async function addProductAction(formData: FormData) {
         return {
             success: false,
             product: null,
-            message: "Erro ao cadastrar produto",
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao cadastrar produto",
         };
     }
 }
@@ -57,20 +62,23 @@ export async function searchStore(userId: string){
         if(!store) return {
             success: false,
             store: null,
-            message: "O usuário não possui loja cadastrada"
+            message: "O usuário não possui loja cadastrada",
+            errors: { store: ["O usuário não possui loja cadastrada"] }
         };
 
         return {
             success: true,
             store,
-            message: "Loja identificada com sucesso."
+            message: "Loja encontrada com sucesso",
+            errors: null
         };
         
     } catch (error) {
         return {
             success: false,
             store: null,
-            message: "O usuário não possui loja cadastrada"
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao buscar loja",
         };
     }
 }

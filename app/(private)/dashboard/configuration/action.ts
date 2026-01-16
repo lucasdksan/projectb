@@ -2,6 +2,7 @@
 
 import { StoreService } from "@/backend/modules/store/store.service";
 import { createStoreSchema } from "@/backend/modules/store/store.types";
+import { AppError } from "@/backend/shared/errors/app-error";
 
 export async function addStoreAction(formData: FormData) {
     const userId = formData.get("userId");
@@ -17,21 +18,22 @@ export async function addStoreAction(formData: FormData) {
     if (!parsed.success) {
         return {
             success: false,
+            store: null,
             errors: parsed.error.flatten().fieldErrors,
+            message: "Dados inválidos",
         };
     }
 
     try {
         const store = await StoreService.create(parsed.data);
 
-        return { success: true, store, erroos: null };
+        return { success: true, store, errors: null, message: "Loja cadastrada com sucesso" };
     } catch (error) {
-        console.log(error);
-
         return {
             success: false,
             store: null,
-            errors: { email: ["Credenciais inválidas"] },
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao cadastrar loja",
         };
     }
 }1

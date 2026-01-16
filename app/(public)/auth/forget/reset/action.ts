@@ -2,6 +2,7 @@
 
 import { AuthService } from "@/backend/modules/auth/auth.service";
 import { resetUserSchema } from "@/backend/modules/auth/auth.types";
+import { AppError } from "@/backend/shared/errors/app-error";
 import tokenIntoCookies from "@/libs/token";
 
 export async function resetAction(formData: FormData) {
@@ -17,6 +18,7 @@ export async function resetAction(formData: FormData) {
         return {
             success: false,
             errors: parsed.error.flatten().fieldErrors,
+            message: "Dados inválidos",
         };
     }
     
@@ -26,7 +28,10 @@ export async function resetAction(formData: FormData) {
         if(!status){
             return {
                 success: false,
-                errors: { email: ["falha no reset"] }
+                errors: {
+                    status: ["Status de reset inválido"]
+                },
+                message: "Status de reset inválido",
             }
         }
 
@@ -35,13 +40,13 @@ export async function resetAction(formData: FormData) {
         return {
             success: status,
             errors: null,
+            message: "Senha resetada com sucesso",
         }
     } catch (error) {
-        console.log(error);
-
         return {
             success: false,
-            errors: { email: [(error as Error).message] },
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao resetar senha",
         };
     }
 }

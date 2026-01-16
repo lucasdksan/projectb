@@ -1,6 +1,7 @@
 "use server";
 
 import { AuthService } from "@/backend/modules/auth/auth.service";
+import { AppError } from "@/backend/shared/errors/app-error";
 import { forgetSchema } from "@/frontend/components/FormForget/schema";
 
 export async function forgetAction(formData: FormData) {
@@ -14,6 +15,7 @@ export async function forgetAction(formData: FormData) {
         return {
             success: false,
             errors: parsed.error.flatten().fieldErrors,
+            message: "Dados inválidos",
         };
     }
     
@@ -23,13 +25,13 @@ export async function forgetAction(formData: FormData) {
         return {
             success: status,
             errors: null,
+            message: "E-mail enviado com sucesso",
         }
     } catch (error) {
-        console.log(error);
-
         return {
             success: false,
-            errors: { email: [(error as Error).message] },
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao enviar e-mail",
         };
     }
 }

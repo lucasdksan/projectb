@@ -16,4 +16,29 @@ export const createProductSchema = z.object({
     ).optional(),
 });
 
+export const paginationProductsSchema = z.object({
+    page: z.number().int().positive(),
+    limit: z.number().int().positive(),
+    storeId: z.number(),
+});
+
+export const productSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    description: z.string().nullable().optional(),
+    price: z.number().int().positive(),
+    stock: z.number().int().nonnegative(),
+    isActive: z.boolean(),
+    category: z.string(),
+    attributes: z.array(
+        z.object({
+            value: z.string(),
+            kindof: z.string(),
+        })
+    ).nullable().optional(),
+    createdAt: z.date(),
+});
+
 export type createProduct = z.infer<typeof createProductSchema>;
+export type paginationProducts = z.infer<typeof paginationProductsSchema>;
+export type product = z.infer<typeof productSchema>;

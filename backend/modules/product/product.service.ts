@@ -22,5 +22,9 @@ export const ProductService = {
         const products = await ProductRepository.listByStoreId(storeId);
 
         return products;
+    },
+
+    async paginationByStoreId(storeId: number, page: number, limit: number){
+        return await ProductRepository.paginationByStoreId(storeId, page, limit);
     }
 };

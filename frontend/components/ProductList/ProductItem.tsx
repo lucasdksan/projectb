@@ -27,7 +27,7 @@ export default function ProductItem({ product }: ProductItemProps) {
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="text-right">
-          <Link href={`/product/${product.id}`} className="px-4 py-1 rounded-lg border border-slate-300 text-sm hover:border-primary hover:text-primary cursor-pointer">
+          <Link href={`/dashboard/product/${product.id}`} className="px-4 py-1 rounded-lg border border-slate-300 text-sm hover:border-primary hover:text-primary cursor-pointer">
             Visualizar
           </Link>
         </div>

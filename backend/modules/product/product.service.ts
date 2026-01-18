@@ -24,7 +24,7 @@ export const ProductService = {
         return products;
     },
 
-    async paginationByStoreId(storeId: number, page: number, limit: number){
-        return await ProductRepository.paginationByStoreId(storeId, page, limit);
+    async paginationByStoreId(storeId: number, page: number, limit: number, search?: string){
+        return await ProductRepository.paginationByStoreId(storeId, page, limit, search);
     }
 };

@@ -20,6 +20,7 @@ export const paginationProductsSchema = z.object({
     page: z.number().int().positive(),
     limit: z.number().int().positive(),
     storeId: z.number(),
+    search: z.string().optional(),
 });
 
 export const productSchema = z.object({

@@ -36,21 +36,24 @@ export const ProductRepository = {
         return products;
     },
 
-    async paginationByStoreId(storeId: number, page: number, limit: number) {
+    async paginationByStoreId(storeId: number, page: number, limit: number, search?: string) {
         const skip = (page - 1) * limit
+        const where = {
+            storeId,
+            name: search ? { contains: search.toLowerCase() } : undefined
+        };
 
         const [data, total] = await Promise.all([
             prisma.products.findMany({
-                where: { storeId },
+                where,
                 include: { attributes: true },
                 skip,
                 take: limit
             }),
-            prisma.products.count({
-                where: { storeId }
-            })
+            prisma.products.count({ where })
         ]);
 
         return { data, total };
     }
+
 };

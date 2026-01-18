@@ -5,9 +5,9 @@ import { paginationProductsSchema } from "@/backend/modules/product/product.type
 import { StoreService } from "@/backend/modules/store/store.service";
 import { AppError } from "@/backend/shared/errors/app-error";
 
-export async function paginationProductsAction(storeId: number, page: number, limit: number){
+export async function paginationProductsAction(storeId: number, page: number, limit: number, search?: string){
     try {
-        const parsed = paginationProductsSchema.safeParse({ page, limit, storeId });
+        const parsed = paginationProductsSchema.safeParse({ page, limit, storeId, search });
 
         if (!parsed.success) {
             return {
@@ -18,7 +18,7 @@ export async function paginationProductsAction(storeId: number, page: number, li
             };
         }
 
-        const products = await ProductService.paginationByStoreId(parsed.data.storeId, parsed.data.page, parsed.data.limit);
+        const products = await ProductService.paginationByStoreId(parsed.data.storeId, parsed.data.page, parsed.data.limit, parsed.data.search);
 
         return {
             success: true,

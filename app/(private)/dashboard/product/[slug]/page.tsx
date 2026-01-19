@@ -29,7 +29,7 @@ export default async function DashboardProductDetail(props: DashboardProductDeta
                 <h2 className="text-3xl font-black text-slate-900 tracking-tight">Detalhes do Produto</h2>
                 <p className="text-slate-500 mt-1">Visualize as informações do produto.</p>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-3">
                 <ProductCard product={product} />
                 <GenerateContentAI />
             </div>

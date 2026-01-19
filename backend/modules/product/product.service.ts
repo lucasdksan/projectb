@@ -26,5 +26,11 @@ export const ProductService = {
 
     async paginationByStoreId(storeId: number, page: number, limit: number, search?: string){
         return await ProductRepository.paginationByStoreId(storeId, page, limit, search);
+    },
+
+    async findById(id: number){
+        const product = await ProductRepository.findById(id);
+
+        return product;
     }
 };

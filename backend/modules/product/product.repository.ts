@@ -23,6 +23,19 @@ export const ProductRepository = {
         return store;
     },
 
+    async findById(id: number) {
+        const product = await prisma.products.findFirst({
+            where: {
+                id
+            },
+            include: {
+                attributes: true
+            }
+        });
+
+        return product;
+    },
+
     async listByStoreId(storeId: number) {
         const products = await prisma.products.findMany({
             where: {

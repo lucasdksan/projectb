@@ -31,6 +31,58 @@ export async function getProductAction(id: number) {
     }
 }
 
+export async function updateProductAction(id: number, formData: FormData) {
+    try {
+        const getPrice = formData.get("price");
+        const getStock = formData.get("stock");
+        const getIsActive = formData.get("isActive");
+        const getAttributes = formData.get("attributes");
+
+        const data: any = {
+            name: formData.get("name")?.toString(),
+            description: formData.get("description")?.toString(),
+            price: getPrice ? parseInt(getPrice.toString()) : undefined,
+            stock: getStock ? parseInt(getStock.toString()) : undefined,
+            category: formData.get("category")?.toString(),
+            isActive: getIsActive !== null ? getIsActive.toString() === "true" : undefined,
+        }
+
+        // Handle NaN from parseInt
+        if (data.price !== undefined && isNaN(data.price)) delete data.price;
+        if (data.stock !== undefined && isNaN(data.stock)) delete data.stock;
+
+        if (getAttributes) {
+            try {
+                data.attributes = JSON.parse(getAttributes.toString());
+            } catch (e) {
+                console.error("Error parsing attributes JSON:", e);
+                data.attributes = [];
+            }
+        }
+
+        // Clean up undefined values to avoid Zod issues if field is optional but not provided
+        Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
+
+        const product = await ProductService.update(id, data);
+
+        return {
+            success: true,
+            product,
+            message: "Produto atualizado com sucesso",
+            errors: null
+        };
+    } catch (error) {
+        console.error("updateProductAction error:", error); 
+
+        return {
+            success: false,
+            product: null,
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao atualizar produto",
+        };
+    }
+}
+
 export async function getStoreByUserIdAction(userId: string){
     try {
         const store = await StoreService.findByUserId(userId);

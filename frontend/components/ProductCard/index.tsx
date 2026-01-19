@@ -1,4 +1,5 @@
 import { product } from "@/backend/modules/product/product.types";
+import EditProductBtn from "./EditProductBtn";
 
 interface ProductCardProps {
     product: product;
@@ -12,6 +13,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className="w-full md:w-1/2 flex flex-col gap-3">
                         <div className="w-full aspect-square bg-neutral-100 rounded-xl overflow-hidden relative group">
                             <div className="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"></div>
+                            <EditProductBtn className="cursor-pointer absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-text-main shadow-sm" productId={product.id} />
                         </div>
                         <div className="grid grid-cols-4 gap-2">
                             {/* Área das imagens DOTS */}

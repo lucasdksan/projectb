@@ -1,5 +1,5 @@
 import { prisma } from "@/backend/shared/database/prisma";
-import { createProduct } from "./product.types";
+import { createProduct, updateProduct } from "./product.types";
 
 export const ProductRepository = {
     async create(data: createProduct) {
@@ -67,6 +67,28 @@ export const ProductRepository = {
         ]);
 
         return { data, total };
-    }
+    },
 
+    async update(id: number, data: updateProduct) {
+        const { attributes, ...rest } = data;
+        const product = await prisma.products.update({
+            where: { id },
+            data: {
+                ...rest,
+                attributes: attributes ? {
+                    deleteMany: {},
+                    create: attributes
+                } : undefined,
+            },
+            include: { attributes: true }
+        });
+
+        return product;
+    },
+
+    async delete(id: number) {
+        return await prisma.products.delete({
+            where: { id }
+        });
+    }
 };

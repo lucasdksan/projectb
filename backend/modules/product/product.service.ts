@@ -1,5 +1,5 @@
 import { Errors } from "@/backend/shared/errors/errors";
-import { createProduct, createProductSchema } from "./product.types";
+import { createProduct, createProductSchema, updateProduct, updateProductSchema } from "./product.types";
 import { ProductRepository } from "./product.repository";
 
 export const ProductService = {
@@ -32,5 +32,19 @@ export const ProductService = {
         const product = await ProductRepository.findById(id);
 
         return product;
+    },
+
+    async update(id: number, data: updateProduct){
+        const validatedData = updateProductSchema.safeParse(data);
+
+        if(!validatedData.success) throw Errors.validation("Invalid data", validatedData.error.message);
+
+        const { updatedAt, createdAt, ...product } = await ProductRepository.update(id, validatedData.data);
+
+        return product;
+    },
+
+    async delete(id: number){
+        return await ProductRepository.delete(id);
     }
 };

@@ -10,6 +10,7 @@ export const envSchema = z.object({
     MAIL_PASS: z.string(),
     MAIL_HOST: z.string(),
     MAIL_PORT: z.string(),
+    GEMINI_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

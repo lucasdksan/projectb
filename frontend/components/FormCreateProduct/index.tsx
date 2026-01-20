@@ -10,6 +10,7 @@ import Button from "@/frontend/ui/button";
 import Input from "@/frontend/ui/input";
 import TextArea from "@/frontend/ui/textarea";
 import { useToast } from "@/frontend/hooks/useToast";
+import CompleteDescriptionWithAI from "./CompleteDescriptionWithAI";
 
 
 export default function FormCreateProduct({ storeId }: { storeId: number; }) {
@@ -20,6 +21,8 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
         control,
         handleSubmit,
         reset,
+        watch,
+        setValue,
         formState: { errors },
     } = useForm<addProductSchemaType>({
         resolver: zodResolver(addProductSchema),
@@ -27,6 +30,10 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
             attributes: [],
         }
     });
+
+    const watchedName = watch("name");
+    const watchedCategory = watch("category");
+    const watchedAttributes = watch("attributes");
 
     useEffect(() => {
         if (storeId) {
@@ -40,6 +47,10 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
         control,
         name: "attributes"
     });
+
+    const resetDescription = (description: string) => {
+        setValue("description", description);
+    }
 
     async function onSubmit(data: addProductSchemaType) {
         const formData = new FormData();
@@ -88,8 +99,16 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
         <form onSubmit={handleSubmit(onSubmit)} className="w-full h-auto">
             <div className="lg:flex lg:justify-between">
                 <p className="hidden lg:flex">Preencha as informações para cadastrar e gerar conteúdo.</p>
-                <div className="flex gap-2.5 lg:w-80">
-                    <Button className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
+                <div className="flex gap-2.5">
+                    <CompleteDescriptionWithAI 
+                        active={!!(watchedName && watchedCategory && (watchedAttributes?.length ?? 0) > 0)} 
+                        dataProduct={{ 
+                            name: watchedName, 
+                            category: watchedCategory, 
+                            attributes: watchedAttributes?.map(attr => ({ kindof: attr.kindof, value: attr.value })) || []
+                        }} 
+                        resetDescription={resetDescription} />
+                    <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
                     <Button type="submit" className="px-6 py-2 rounded-lg bg-primary hover:bg-[#0fd60f] text-[#102210] font-bold text-sm shadow-lg shadow-green-500/20 transition-all flex items-center gap-2" label="Salvar produto" />
                 </div>
             </div>
@@ -104,25 +123,25 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
                     </div>
                     <div className="w-full grid grid-cols-2 gap-2">
                         <div>
-                            <Input inputKey="name" label="Nome" type="text" {...register("name")} className="placeholder:text-[color:var(--text-muted)] focus:border-[color:var(--color-primary)] focus:outline-none" />
+                            <Input inputKey="name" label="Nome" type="text" {...register("name")} className="placeholder:text-text-muted focus:border-primary focus:outline-none" />
                             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
                         </div>
                         <div>
-                            <Input inputKey="category" label="Categoria" type="text" {...register("category")} className="placeholder:text-[color:var(--text-muted)] focus:border-[color:var(--color-primary)] focus:outline-none" />
+                            <Input inputKey="category" label="Categoria" type="text" {...register("category")} className="placeholder:text-text-muted focus:border-primary focus:outline-none" />
                             {errors.category && <p className="text-red-500">{errors.category.message}</p>}
                         </div>
                     </div>
                     <div className="w-full grid grid-cols-2 gap-2 my-2">
                         <div>
-                            <Input inputKey="price" label="Preço" type="number" {...register("price", { valueAsNumber: true })} className="placeholder:text-[color:var(--text-muted)] focus:border-[color:var(--color-primary)] focus:outline-none" />
+                            <Input inputKey="price" label="Preço" type="number" {...register("price", { valueAsNumber: true })} className="placeholder:text-text-muted focus:border-primary focus:outline-none" />
                             {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                         </div>
                         <div>
-                            <Input inputKey="stock" label="Estoque" type="number" {...register("stock", { valueAsNumber: true })} className="placeholder:text-[color:var(--text-muted)] focus:border-[color:var(--color-primary)] focus:outline-none" />
+                            <Input inputKey="stock" label="Estoque" type="number" {...register("stock", { valueAsNumber: true })} className="placeholder:text-text-muted focus:border-primary focus:outline-none" />
                             {errors.stock && <p className="text-red-500">{errors.stock.message}</p>}
                         </div>
                     </div>
-                    <TextArea inputKey="description" {...register("description")} label="Descrição" className="placeholder:text-[color:var(--text-muted)] focus:border-[color:var(--color-primary)] focus:outline-none" rows={5} />
+                    <TextArea inputKey="description" {...register("description")} label="Descrição" className="placeholder:text-text-muted focus:border-primary focus:outline-none" rows={5} />
                 </fieldset>
                 <fieldset className="bg-white rounded-xl p-6 h-fit shadow-sm border border-slate-100 w-full lg:w-1/2">
                     <h3 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">Atributos</h3>

@@ -4,7 +4,7 @@ import { ProductService } from "@/backend/modules/product/product.service";
 import { createProductSchema, generateDescription, generateDescriptionSchema } from "@/backend/modules/product/product.types";
 import { StoreService } from "@/backend/modules/store/store.service";
 import { AppError } from "@/backend/shared/errors/app-error";
-import { generativeAIUtils } from "@/backend/shared/integrations/ia";
+import { generativeAIUtils } from "@/backend/shared/integrations/ai";
 
 export async function addProductAction(formData: FormData) {
     const attrs = formData.get("attributes");

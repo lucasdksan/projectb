@@ -23,6 +23,7 @@ describe("envSchema", () => {
     process.env.MAIL_PASS = "mailpass";
     process.env.MAIL_HOST = "smtp.mail.com";
     process.env.MAIL_PORT = "587";
+    process.env.GEMINI_API_KEY = "gemini-api-key";
 
     const { env } = await import("../env");
 
@@ -36,6 +37,7 @@ describe("envSchema", () => {
       MAIL_PASS: "mailpass",
       MAIL_HOST: "smtp.mail.com",
       MAIL_PORT: "587",
+      GEMINI_API_KEY: "gemini-api-key",
     });
   });
 
@@ -48,7 +50,7 @@ describe("envSchema", () => {
     process.env.MAIL_USER = "mail@test.com";
     process.env.MAIL_PASS = "mailpass";
     process.env.MAIL_HOST = "smtp.mail.com";
-
+    process.env.GEMINI_API_KEY = "gemini-api-key";
     await expect(() => import("../env")).rejects.toThrow(z.ZodError);
   });
 });

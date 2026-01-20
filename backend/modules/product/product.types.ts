@@ -55,7 +55,19 @@ export const productSchema = z.object({
     createdAt: z.date(),
 });
 
+export const generateDescriptionSchema = z.object({
+    name: z.string(),
+    category: z.string(),
+    attributes: z.array(
+        z.object({
+            kindof: z.string(),
+            value: z.string(),
+        })
+    ),
+});
+
 export type createProduct = z.infer<typeof createProductSchema>;
 export type paginationProducts = z.infer<typeof paginationProductsSchema>;
 export type product = z.infer<typeof productSchema>;
 export type updateProduct = z.infer<typeof updateProductSchema>;
+export type generateDescription = z.infer<typeof generateDescriptionSchema>;

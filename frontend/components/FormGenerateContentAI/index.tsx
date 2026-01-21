@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import WhiteCard from "../WhiteCard";
 import Select from "@/frontend/ui/select";
 import FileDropzone from "../FileDropzone";
@@ -9,6 +10,7 @@ import { generateAIContentAction } from "@/app/(private)/dashboard/contentAI/act
 import { useToast } from "@/frontend/hooks/useToast";
 import { parseAIJsonString } from "@/libs/parseAIJsonString";
 import CopyCard from "./CopyCard";
+import CopyBtn from "./CopyBtn";
 
 export type jsonContentAIProps = {
     headline: string;
@@ -22,6 +24,7 @@ export default function FormGenerateContentAI() {
     const [json, setJson] = useState<jsonContentAIProps | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [platform, setPlatform] = useState<string>("instagram");
+    const router = useRouter();
 
     async function handleSubmit(formData: FormData) {
         if (!file) {
@@ -85,7 +88,7 @@ export default function FormGenerateContentAI() {
 
                     <input type="hidden" name="platform" value={platform} />
 
-                    <Button type="submit" label="Gerar conteúdo" />
+                    <Button className="bg-[color:var(--color-primary)] hover:bg-[#0fdc0f] text-[#111811] mt-3"  type="submit" label="Gerar conteúdo" />
                 </WhiteCard>
             </form>
             <div className="lg:col-span-7 flex flex-col gap-4">
@@ -96,6 +99,16 @@ export default function FormGenerateContentAI() {
                         <div className="flex flex-row gap-2">
                             <CopyCard rows={5} activeBold={false} title="Call to Action (CTA)" value={json.cta} />
                             <CopyCard rows={5} activeBold={false} title="Hashtags" value={json.hashtags.join(", ")} />
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                            <CopyBtn 
+                                headline={json.headline}
+                                description={json.description}
+                                cta={json.cta}
+                                hashtags={json.hashtags}
+                                platform={platform}
+                            />
+                            <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
                         </div>
                     </>
                 )}

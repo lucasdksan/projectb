@@ -36,4 +36,4 @@ export async function addStoreAction(formData: FormData) {
             message: error instanceof AppError ? error.message : "Erro ao cadastrar loja",
         };
     }
-}1
+}

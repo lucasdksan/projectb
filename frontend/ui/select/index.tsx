@@ -1,9 +1,9 @@
 import { SelectHTMLAttributes } from "react";
 
-interface Option {
+type Option = {
     valueOption: string;
     titleOption: string;
-}
+};
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     options: Option[];

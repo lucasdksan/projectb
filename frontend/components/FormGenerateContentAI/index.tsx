@@ -34,7 +34,7 @@ export default function FormGenerateContentAI() {
                 type: "error",
             });
             return;
-        }
+        }        
 
         formData.set("file", file);
 
@@ -68,10 +68,11 @@ export default function FormGenerateContentAI() {
             >
                 <WhiteCard>
                     <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                        <h3 className="text-sm font-bold">Coloque a imagem para geração do conteúdo</h3>
+                        <h3 className="text-sm font-bold mb-3 lg:mb-0">Coloque a imagem para geração do conteúdo</h3>
 
                         <Select
                             onChange={(e) => setPlatform(e.target.value)}
+                            className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors"
                             options={[
                                 { valueOption: "instagram", titleOption: "Instagram" },
                                 { valueOption: "whatsapp", titleOption: "WhatsApp" },
@@ -84,6 +85,7 @@ export default function FormGenerateContentAI() {
                         onFilesChange={(files) => {
                             setFile(files[0]);
                         }}
+                        multiple={false}
                     />
 
                     <input type="hidden" name="platform" value={platform} />
@@ -94,11 +96,11 @@ export default function FormGenerateContentAI() {
             <div className="lg:col-span-7 flex flex-col gap-4">
                 {json && (
                     <>
-                        <CopyCard rows={1} activeBold title="Título / Headline" value={json.headline} />
+                        <CopyCard rows={2} activeBold title="Título / Headline" value={json.headline} />
                         <CopyCard rows={7} activeBold={false} title="Legenda / Descrição" value={json.description} />
-                        <div className="flex flex-row gap-2">
+                        <div className="flex flex-col lg:flex-row gap-2">
                             <CopyCard rows={5} activeBold={false} title="Call to Action (CTA)" value={json.cta} />
-                            <CopyCard rows={5} activeBold={false} title="Hashtags" value={json.hashtags.join(", ")} />
+                            <CopyCard rows={5} activeBold={false} title="Hashtags" value={json.hashtags.join(", ").replaceAll(",", " ")} />
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 pt-2">
                             <CopyBtn 
@@ -108,9 +110,18 @@ export default function FormGenerateContentAI() {
                                 hashtags={json.hashtags}
                                 platform={platform}
                             />
-                            <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
+                            <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-50 text-slate-400 font-medium bg-white text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
                         </div>
                     </>
+                )}
+                {!json && (
+                    <WhiteCard>
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-sm font-bold">Nenhum conteúdo gerado</h3>
+                            <p className="text-sm text-text-secondary">Por favor, selecione uma imagem para gerar o conteúdo</p>
+                            <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-400 text-slate-400 font-medium bg-white text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
+                        </div>
+                    </WhiteCard>
                 )}
             </div>
         </div>

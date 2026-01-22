@@ -1,3 +1,4 @@
+import { useToast } from "@/frontend/hooks/useToast";
 import Button from "@/frontend/ui/button";
 
 interface CopyBtnProps {
@@ -9,11 +10,18 @@ interface CopyBtnProps {
 }
 
 export default function CopyBtn({ headline, description, cta, hashtags, platform }: CopyBtnProps) {
+    const { showToast } = useToast();
 
     const handleCopy = () => {
         navigator.clipboard.writeText(`
-            ${platform === "instagram" ? `@${headline}\n\n${description}\n\n${cta}\n\n${hashtags.join(", ")}` : `${headline}\n${description}\n${cta}\n${hashtags.join(", ")}`}
+            ${platform === "instagram" ? `@${headline}\n\n${description}\n\n${cta}\n\n${hashtags.join(", ").replaceAll(",", " ")}` : `${headline}\n${description}\n${cta}\n${hashtags.join(", ").replaceAll(",", " ")}`}
         `);
+
+        showToast({
+            title: "Sucesso",
+            message: "Texto copiado para a área de transferência",
+            type: "success",
+        });
     };
 
     return (

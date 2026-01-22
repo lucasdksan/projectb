@@ -67,8 +67,8 @@ export default function CompleteDescriptionWithAI({ resetDescription, active, da
                 type="button"
                 onClick={handleGenerateDescription} 
                 disabled={isLoading}
-                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors flex items-center gap-2" 
-                label={isLoading ? "Gerando..." : "Descrição com IA"} 
+                className="px-4 py-2 rounded-lg border border-slate-400 text-slate-400 font-medium bg-white text-sm hover:bg-slate-50 transition-colors"
+                label={isLoading ? "Gerando..." : "Descrição"} 
             />
             { openModal && createPortal(
                 <div onClick={() => setOpenModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">

@@ -108,7 +108,7 @@ export default function FormCreateProduct({ storeId }: { storeId: number; }) {
                             attributes: watchedAttributes?.map(attr => ({ kindof: attr.kindof, value: attr.value })) || []
                         }} 
                         resetDescription={resetDescription} />
-                    <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
+                    <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-400 text-slate-400 font-medium bg-white text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
                     <Button type="submit" className="px-6 py-2 rounded-lg bg-primary hover:bg-[#0fd60f] text-[#102210] font-bold text-sm shadow-lg shadow-green-500/20 transition-all flex items-center gap-2" label="Salvar produto" />
                 </div>
             </div>

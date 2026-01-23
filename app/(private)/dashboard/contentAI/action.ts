@@ -1,5 +1,8 @@
 "use server";
 
+import { ContentAIService } from "@/backend/modules/contentAI/contentAI.service";
+import { createContentAISchema } from "@/backend/modules/contentAI/contentAI.types";
+import { AppError } from "@/backend/shared/errors/app-error";
 import { generativeAIUtils } from "@/backend/shared/integrations/ai";
 
 export async function generateAIContentAction(formData: FormData) {
@@ -47,6 +50,53 @@ Para a plataforma ${platform}.
         return {
             success: false,
             message: "Erro ao gerar conteúdo"
+        };
+    }
+}
+
+export async function createContentAIAction(formData: FormData) {
+    const headline = formData.get("headline") as string | null;
+    const description = formData.get("description") as string | null;
+    const cta = formData.get("cta") as string | null;
+    const hashtags = formData.get("hashtags") as string | null;
+    const platform = formData.get("platform") as string | null;
+    const storeId = formData.get("storeId") as string | null;
+
+    const rawData = {
+        headline,
+        description,
+        cta,
+        hashtags,
+        platform,
+        storeId: storeId ? parseInt(storeId) : -1,
+    };
+
+    try {
+        const parsed = createContentAISchema.safeParse(rawData);
+
+        if (!parsed.success) {
+            return {
+                success: false,
+                errors: parsed.error.flatten().fieldErrors,
+                contentAI: null,
+                message: "Dados inválidos"
+            };
+        }
+
+        const contentAI = await ContentAIService.create(parsed.data);
+
+        return {
+            success: true,
+            contentAI,
+            errors: null,
+            message: "Conteúdo AI criado com sucesso"
+        };
+    } catch (error) {
+        return {
+            success: false,
+            contentAI: null,
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao criar conteúdo AI"
         };
     }
 }

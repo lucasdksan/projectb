@@ -9,8 +9,10 @@ import Button from "@/frontend/ui/button";
 import { generateAIContentAction } from "@/app/(private)/dashboard/contentAI/action";
 import { useToast } from "@/frontend/hooks/useToast";
 import { parseAIJsonString } from "@/libs/parseAIJsonString";
+import validateDataAiResponse from "./validateDataAiResponse";
 import CopyCard from "./CopyCard";
 import CopyBtn from "./CopyBtn";
+import SalveContentAI from "./SalveContentAI";
 
 export type jsonContentAIProps = {
     headline: string;
@@ -19,7 +21,7 @@ export type jsonContentAIProps = {
     hashtags: string[];
 }
 
-export default function FormGenerateContentAI() {
+export default function FormGenerateContentAI({ storeId }: { storeId: number }) {
     const { showToast } = useToast();
     const [json, setJson] = useState<jsonContentAIProps | null>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -50,8 +52,9 @@ export default function FormGenerateContentAI() {
         }
 
         const jsonResult = parseAIJsonString(result.data ?? "{}") as jsonContentAIProps;
+        const validatedJson = validateDataAiResponse(jsonResult);
 
-        setJson(jsonResult);
+        setJson(validatedJson);
 
         showToast({
             title: "Sucesso",
@@ -90,7 +93,7 @@ export default function FormGenerateContentAI() {
 
                     <input type="hidden" name="platform" value={platform} />
 
-                    <Button className="bg-[color:var(--color-primary)] hover:bg-[#0fdc0f] text-[#111811] mt-3"  type="submit" label="Gerar conteúdo" />
+                    <Button className="bg-primary hover:bg-[#0fdc0f] text-[#111811] mt-3"  type="submit" label="Gerar conteúdo" />
                 </WhiteCard>
             </form>
             <div className="lg:col-span-7 flex flex-col gap-4">
@@ -100,15 +103,23 @@ export default function FormGenerateContentAI() {
                         <CopyCard rows={7} activeBold={false} title="Legenda / Descrição" value={json.description} />
                         <div className="flex flex-col lg:flex-row gap-2">
                             <CopyCard rows={5} activeBold={false} title="Call to Action (CTA)" value={json.cta} />
-                            <CopyCard rows={5} activeBold={false} title="Hashtags" value={json.hashtags.join(", ").replaceAll(",", " ")} />
+                            <CopyCard rows={5} activeBold={false} title="Hashtags" value={json.hashtags.join(" ")} />
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-2">
                             <CopyBtn 
                                 headline={json.headline}
                                 description={json.description}
                                 cta={json.cta}
                                 hashtags={json.hashtags}
                                 platform={platform}
+                            />
+                            <SalveContentAI
+                                headline={json.headline}
+                                description={json.description}
+                                cta={json.cta}
+                                hashtags={json.hashtags}
+                                platform={platform}
+                                storeId={storeId}
                             />
                             <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-50 text-slate-400 font-medium bg-white text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
                         </div>

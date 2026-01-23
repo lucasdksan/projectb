@@ -28,6 +28,7 @@ model Store {
   userId    Int        @unique
   user      Users      @relation(fields: [userId], references: [id])
   products  Products[]
+  contentAI ContentAI[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now())
 
@@ -35,18 +36,18 @@ model Store {
 }
 
 model Products {
-  id          Int           @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   description String?
   price       Int
-  stock       Int           @default(0)
-  isActive    Boolean       @default(true)
+  stock       Int          @default(0)
+  isActive    Boolean      @default(true)
   category    String
   storeId     Int
-  store       Store         @relation(fields: [storeId], references: [id])
+  store       Store        @relation(fields: [storeId], references: [id])
   attributes  Attributes[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("products")
 }
@@ -61,4 +62,19 @@ model Attributes {
   updatedAt DateTime @updatedAt
 
   @@map("attributes")
+}
+
+model ContentAI {
+  id          Int      @id @default(autoincrement())
+  headline    String
+  description String
+  cta         String
+  hashtags    String
+  platform    String
+  storeId     Int
+  store       Store    @relation(fields: [storeId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contentAI")
 }

@@ -10,7 +10,6 @@ import Button from "@/frontend/ui/button";
 import Input from "@/frontend/ui/input";
 
 export default function FormUpdateStore({ email, name, number, id }: storeUpdateAreaViewSchemaType){
-    const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
     const { showToast } = useToast();
     const router = useRouter();
     const {

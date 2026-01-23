@@ -29,7 +29,7 @@ export default function CopyBtn({ headline, description, cta, hashtags, platform
             onClick={handleCopy}
             label="Copiar Texto Completo" 
             type="button" 
-            className="bg-[color:var(--color-primary)] hover:bg-[#0fdc0f] text-[#111811]" 
+            className="bg-primary hover:bg-[#0fdc0f] text-[#111811]" 
         />
     );
 }

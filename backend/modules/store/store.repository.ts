@@ -1,5 +1,5 @@
 import { prisma } from "@/backend/shared/database/prisma";
-import { createStore } from "./store.types";
+import { createInstagramConfig, createStore } from "./store.types";
 
 export const StoreRepository = {
     async create(data: createStore){
@@ -13,6 +13,18 @@ export const StoreRepository = {
     async findByUserId(userId: number){
         return await prisma.store.findFirst({
             where: { userId }
+        });
+    },
+
+    async createInstagramConfig(data: createInstagramConfig){
+        return await prisma.instagramConfig.create({
+            data
+        });
+    },
+
+    async findInstagramConfigByStoreId(storeId: number){
+        return await prisma.instagramConfig.findFirst({
+            where: { storeId }
         });
     }
 };

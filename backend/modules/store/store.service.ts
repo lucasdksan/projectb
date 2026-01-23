@@ -1,5 +1,5 @@
 import { Errors } from "@/backend/shared/errors/errors";
-import { createStore, createStoreSchema } from "./store.types";
+import { createInstagramConfig, createInstagramConfigSchema, createStore, createStoreSchema } from "./store.types";
 import { StoreRepository } from "./store.repository";
 
 export const StoreService = {
@@ -14,7 +14,7 @@ export const StoreService = {
         const findStore = await StoreRepository.findByUserId(userId);    
     
         if(findStore) {
-            throw Errors.validation("Invalid data", "Store exist");
+            throw Errors.conflict("Loja já existe para este usuário");
         }
 
         await StoreRepository.create({
@@ -46,5 +46,33 @@ export const StoreService = {
             number,
             id: storeId
          };
+    },
+
+    async createInstagramConfig(data: createInstagramConfig){
+        const validatedData = createInstagramConfigSchema.safeParse(data);
+
+        if(!validatedData.success) throw Errors.validation("Invalid data", validatedData.error.message);
+
+        const { token, userInstagramId, storeId } = validatedData.data;
+
+        const findInstagramConfig = await StoreRepository.findInstagramConfigByStoreId(storeId);
+
+        if(findInstagramConfig) throw Errors.conflict("Configuração do Instagram já existe para esta loja");
+
+        await StoreRepository.createInstagramConfig({
+            token,
+            userInstagramId,
+            storeId
+        });
+
+        return {
+            token,
+            userInstagramId,
+            storeId
+        };
+    },
+
+    async findInstagramConfigByStoreId(storeId: number){
+        return await StoreRepository.findInstagramConfigByStoreId(storeId);
     }
 };

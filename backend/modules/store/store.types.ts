@@ -7,4 +7,11 @@ export const createStoreSchema = z.object({
     userId: z.number(),
 });
 
+export const createInstagramConfigSchema = z.object({
+    token: z.string(),
+    userInstagramId: z.string(),
+    storeId: z.number(),
+});
+
 export type createStore = z.infer<typeof createStoreSchema>;
+export type createInstagramConfig = z.infer<typeof createInstagramConfigSchema>;

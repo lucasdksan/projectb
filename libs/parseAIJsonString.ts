@@ -14,7 +14,6 @@ export function parseAIJsonString(input: string) {
     try {
         return JSON.parse(jsonText);
     } catch (err) {
-        console.error("Erro ao fazer JSON.parse:", err);
         return null;
     }
 }

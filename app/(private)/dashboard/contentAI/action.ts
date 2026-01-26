@@ -4,9 +4,9 @@ import { ContentAIService } from "@/backend/modules/contentAI/contentAI.service"
 import { createContentAISchema } from "@/backend/modules/contentAI/contentAI.types";
 import { StoreService } from "@/backend/modules/store/store.service";
 import { AppError } from "@/backend/shared/errors/app-error";
-import { generativeAIUtils } from "@/backend/shared/integrations/ai";
+import { aiIntegration } from "@/backend/shared/integrations/ai";
 import { instagramIntegration } from "@/backend/shared/integrations/instagram";
-import { vercelBlobIntegration } from "@/backend/shared/integrations/vercelBlob";
+import { vercelIntegration } from "@/backend/shared/integrations/vercel";
 
 export async function generateAIContentAction(formData: FormData) {
     const file = formData.get("file") as File | null;
@@ -41,7 +41,7 @@ Para a plataforma ${platform}.
 `;
 
     try {
-        const result = await generativeAIUtils.singlePromptWithImage(prompt, file);
+        const result = await aiIntegration.singlePromptWithImage(prompt, file);
 
         return {
             success: true,
@@ -49,7 +49,6 @@ Para a plataforma ${platform}.
             message: "Conteúdo gerado com sucesso"
         };
     } catch (e) {
-        console.error(e);
         return {
             success: false,
             message: "Erro ao gerar conteúdo"
@@ -134,7 +133,7 @@ export async function postInstagramAction(formData: FormData) {
     }
 
     try {
-        const blob = await vercelBlobIntegration.upload(file);
+        const blob = await vercelIntegration.blob.upload(file);
         const instagramConfig = await StoreService.findInstagramConfigByStoreId(parseInt(storeId));
 
         if (!instagramConfig) {
@@ -148,17 +147,17 @@ export async function postInstagramAction(formData: FormData) {
         const result = await instagramIntegration.publishToInstagram(blob, caption, instagramConfig.userInstagramId);
 
         if(!result.success) {
-            await vercelBlobIntegration.delete(blob);
+            await vercelIntegration.blob.delete(blob);
             
             return {
                 success: false,
-                message: "Erro ao publicar",
+                message: result.message,
                 errors: null,
             }    
         }
 
         await new Promise(resolve => setTimeout(resolve, 5000));
-        await vercelBlobIntegration.delete(blob);
+        await vercelIntegration.blob.delete(blob);
 
         return {
             success: true,

@@ -36,8 +36,6 @@ export async function addInstagramConfigAction(formData: FormData) {
             message: "Instagram config created successfully",
         };
     } catch (error) {
-        console.error(error);
-
         return {
             success: false,
             instagramConfig: null,

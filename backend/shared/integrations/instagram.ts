@@ -1,8 +1,9 @@
 import { env } from "@/libs/env";
 import { Errors } from "../errors/errors";
+import { InstagramIntegration } from "./intefaces";
 
-export const instagramIntegration = {
-  async publishToInstagram(url: string, caption: string, IG_ID: string): Promise<any> {
+export const instagramIntegration: InstagramIntegration = {
+  async publishToInstagram(url: string, caption: string, IG_ID: string): Promise<{ success: boolean, message: string }> {
     const ACCESS_TOKEN = env.INSTAGRAM_TOKEN;
     const containerRes = await fetch(
       `https://graph.instagram.com/v24.0/${IG_ID}/media`,
@@ -19,6 +20,13 @@ export const instagramIntegration = {
       }
     );
     const container = await containerRes.json();
+
+    if(!container.id) {
+      return {
+        success: false,
+        message: "Erro ao gerar o container no Instagram",
+      }
+    }
 
     await new Promise(resolve => setTimeout(resolve, 15000));
 
@@ -39,7 +47,10 @@ export const instagramIntegration = {
     const publish = await publishRes.json();
 
     if(!publish.id) {
-      throw Errors.internal("Erro ao publicar");
+      return {
+        success: false,
+        message: "Erro ao publicar no Instagram",
+      }
     }
 
     return {

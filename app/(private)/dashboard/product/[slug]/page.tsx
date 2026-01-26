@@ -31,7 +31,7 @@ export default async function DashboardProductDetail(props: DashboardProductDeta
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-3">
                 <ProductCard product={product} />
-                <GenerateContentAI />
+                <GenerateContentAI product={product} />
             </div>
         </div>
     );

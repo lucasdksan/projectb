@@ -42,7 +42,6 @@ export default function PostInstagramBtn({ file, caption, storeId }: PostInstagr
                 });
             }
         } catch (error) {
-            console.error(error);
             showToast({
                 title: "Erro",
                 message: "Ocorreu um erro inesperado ao publicar no Instagram",

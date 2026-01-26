@@ -1,27 +1,24 @@
 import { env } from "@/libs/env";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { AIIntegration } from "./intefaces";
 
 const generativeAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+const model = generativeAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-export const generativeAIUtils = {
-    model: generativeAI.getGenerativeModel({ model: "gemini-2.5-flash" }),
-
-    singlePrompt: async function (prompt: string) {
-        const _this = this;
-        const result = await _this.model.generateContent(prompt);
+export const aiIntegration: AIIntegration = {
+    singlePrompt: async (prompt: string) => {
+        const result = await model.generateContent(prompt);
 
         return {
             data: result.response.text(),
         }
     },
 
-    singlePromptWithImage: async function (prompt: string, file: Blob) {
-        const _this = this;
-
+    singlePromptWithImage: async (prompt: string, file: Blob) => {
         const imageBytes = await file.arrayBuffer();
         const imgBase64 = Buffer.from(imageBytes).toString("base64");
 
-        const result = await _this.model.generateContent([
+        const result = await model.generateContent([
             { text: prompt },
             {
                 inlineData: {

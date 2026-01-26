@@ -4,7 +4,7 @@ import { ProductService } from "@/backend/modules/product/product.service";
 import { createProductSchema, generateDescription, generateDescriptionSchema } from "@/backend/modules/product/product.types";
 import { StoreService } from "@/backend/modules/store/store.service";
 import { AppError } from "@/backend/shared/errors/app-error";
-import { generativeAIUtils } from "@/backend/shared/integrations/ai";
+import { aiIntegration } from "@/backend/shared/integrations/ai";
 
 export async function addProductAction(formData: FormData) {
     const attrs = formData.get("attributes");
@@ -76,7 +76,7 @@ export async function generateDescriptionAction(data: generateDescription) {
         
         A descrição deve ser focada em vendas e destacar os benefícios do produto. Use um tom profissional e persuasivo.`;
 
-        const result = await generativeAIUtils.singlePrompt(prompt);
+        const result = await aiIntegration.singlePrompt(prompt);
 
         return {
             success: true,
@@ -85,7 +85,6 @@ export async function generateDescriptionAction(data: generateDescription) {
             message: "Descrição gerada com sucesso",
         };
     } catch (error) {
-        console.error("Error generating description:", error);
         return {
             success: false,
             description: null,

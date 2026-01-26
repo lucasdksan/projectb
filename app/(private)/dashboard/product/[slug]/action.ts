@@ -3,6 +3,8 @@
 import { ProductService } from "@/backend/modules/product/product.service";
 import { StoreService } from "@/backend/modules/store/store.service";
 import { AppError } from "@/backend/shared/errors/app-error";
+import { aiIntegration } from "@/backend/shared/integrations/ai";
+import { generateContentAISchema } from "@/frontend/components/GenerateContentAI/schema";
 
 export async function getProductAction(id: number) {
     try {
@@ -47,7 +49,6 @@ export async function updateProductAction(id: number, formData: FormData) {
             isActive: getIsActive !== null ? getIsActive.toString() === "true" : undefined,
         }
 
-        // Handle NaN from parseInt
         if (data.price !== undefined && isNaN(data.price)) delete data.price;
         if (data.stock !== undefined && isNaN(data.stock)) delete data.stock;
 
@@ -55,12 +56,10 @@ export async function updateProductAction(id: number, formData: FormData) {
             try {
                 data.attributes = JSON.parse(getAttributes.toString());
             } catch (e) {
-                console.error("Error parsing attributes JSON:", e);
                 data.attributes = [];
             }
         }
 
-        // Clean up undefined values to avoid Zod issues if field is optional but not provided
         Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
 
         const product = await ProductService.update(id, data);
@@ -72,8 +71,6 @@ export async function updateProductAction(id: number, formData: FormData) {
             errors: null
         };
     } catch (error) {
-        console.error("updateProductAction error:", error); 
-
         return {
             success: false,
             product: null,
@@ -101,6 +98,58 @@ export async function getStoreByUserIdAction(userId: string){
             errors: null
         };
         
+    } catch (error) {
+        return {
+            success: false,
+            store: null,
+            errors: error instanceof AppError ? error.details : null,
+            message: error instanceof AppError ? error.message : "Erro ao buscar loja",
+        };
+    }
+}
+
+export async function generateContentAIAction(formData: FormData) {
+    const getPrice = formData.get("price")?.toString();
+
+    const rawData = {
+        price: getPrice ? parseInt(getPrice) : undefined,
+        name: formData.get("name")?.toString(),
+        category: formData.get("category")?.toString(),
+        attributes: JSON.parse(formData.get("attributes")?.toString() ?? "[]"),
+        platform: formData.get("platform")?.toString(),
+    }
+
+    const parsed = generateContentAISchema.safeParse(rawData);
+
+    if (!parsed.success) {
+        return {
+            success: false,
+            description: null,
+            errors: parsed.error.flatten().fieldErrors,
+            message: "Dados inválidos",
+        };
+    }
+    
+    try {
+        const prompt = `
+            Gere uma descrição atraente e detalhada para um produto com as seguintes características:
+            Nome: ${parsed.data.name}
+            Categoria: ${parsed.data.category}
+            Atributos: ${parsed.data.attributes.map(attr => `${attr.kindof}: ${attr.value}`).join(", ")}
+            
+            A descrição deve ser focada em vendas e destacar os benefícios do produto. Use um tom profissional e persuasivo, pois será usado em uma postagem na plataforma ${parsed.data.platform}.
+            Quero que sua resposta objetiva e direta, sem nenhum tipo de introdução ou explicação.
+        `;
+
+        
+        const result = await aiIntegration.singlePrompt(prompt);
+
+        return {
+            success: true,
+            description: result.data,
+            errors: null,
+            message: "Descrição gerada com sucesso",
+        };
     } catch (error) {
         return {
             success: false,

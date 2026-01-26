@@ -2,8 +2,11 @@
 
 import { ContentAIService } from "@/backend/modules/contentAI/contentAI.service";
 import { createContentAISchema } from "@/backend/modules/contentAI/contentAI.types";
+import { StoreService } from "@/backend/modules/store/store.service";
 import { AppError } from "@/backend/shared/errors/app-error";
 import { generativeAIUtils } from "@/backend/shared/integrations/ai";
+import { instagramIntegration } from "@/backend/shared/integrations/instagram";
+import { vercelBlobIntegration } from "@/backend/shared/integrations/vercelBlob";
 
 export async function generateAIContentAction(formData: FormData) {
     const file = formData.get("file") as File | null;
@@ -97,6 +100,76 @@ export async function createContentAIAction(formData: FormData) {
             contentAI: null,
             errors: error instanceof AppError ? error.details : null,
             message: error instanceof AppError ? error.message : "Erro ao criar conteúdo AI"
+        };
+    }
+}
+
+export async function postInstagramAction(formData: FormData) {
+    const file = formData.get("file") as File | null;
+    const caption = formData.get("caption") as string | null;
+    const storeId = formData.get("storeId") as string | null;
+
+    if (!storeId) {
+        return {
+            success: false,
+            message: "Selecione uma loja",
+            errors: null,
+        };
+    }
+
+    if (!file || file.size === 0) {
+        return {
+            success: false,
+            message: "Selecione uma imagem",
+            errors: null,
+        };
+    }
+
+    if (!caption) {
+        return {
+            success: false,
+            message: "Digite uma legenda para a imagem",
+            errors: null,
+        };
+    }
+
+    try {
+        const blob = await vercelBlobIntegration.upload(file);
+        const instagramConfig = await StoreService.findInstagramConfigByStoreId(parseInt(storeId));
+
+        if (!instagramConfig) {
+            return {
+                success: false,
+                message: "Configuração do Instagram não encontrada",
+                errors: null,
+            };
+        }
+
+        const result = await instagramIntegration.publishToInstagram(blob, caption, instagramConfig.userInstagramId);
+
+        if(!result.success) {
+            await vercelBlobIntegration.delete(blob);
+            
+            return {
+                success: false,
+                message: "Erro ao publicar",
+                errors: null,
+            }    
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        await vercelBlobIntegration.delete(blob);
+
+        return {
+            success: true,
+            message: "Imagem publicada com sucesso",
+            errors: null,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: "Erro ao postar no Instagram",
+            errors: error instanceof AppError ? error.details : null,
         };
     }
 }

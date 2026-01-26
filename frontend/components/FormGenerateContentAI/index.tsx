@@ -13,6 +13,7 @@ import validateDataAiResponse from "./validateDataAiResponse";
 import CopyCard from "./CopyCard";
 import CopyBtn from "./CopyBtn";
 import SalveContentAI from "./SalveContentAI";
+import PostInstagramBtn from "./PostInstagramBtn";
 
 export type jsonContentAIProps = {
     headline: string;
@@ -38,6 +39,7 @@ export default function FormGenerateContentAI({ storeId }: { storeId: number }) 
             return;
         }        
 
+        setJson(null);
         formData.set("file", file);
 
         const result = await generateAIContentAction(formData);
@@ -121,7 +123,9 @@ export default function FormGenerateContentAI({ storeId }: { storeId: number }) 
                                 platform={platform}
                                 storeId={storeId}
                             />
-                            <Button type="button" onClick={() => router.back()} className="px-4 py-2 rounded-lg border border-slate-50 text-slate-400 font-medium bg-white text-sm hover:bg-slate-50 transition-colors" label="Cancelar" />
+                            {file && <PostInstagramBtn file={file} caption={
+                                platform === "instagram" ? `${json.headline}\n\n${json.description}\n\n${json.cta}\n\n${json.hashtags.join(" ")}` : `${json.headline}\n${json.description}\n${json.cta}\n${json.hashtags.join(" ")}`
+                            } storeId={storeId} />}
                         </div>
                     </>
                 )}

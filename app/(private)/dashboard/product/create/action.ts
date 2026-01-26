@@ -18,7 +18,7 @@ export async function addProductAction(formData: FormData) {
             return getValue && getValue === "true";
         })() : false,
         category: formData.get("category")?.toString(),
-        storeId: formData.get("storeId") ? parseInt(`${formData.get("storeId")}`) : 0,
+        storeId: formData.get("storeId") ? parseInt(`${formData.get("storeId")}`) : -1,
         attributes: (typeof attrs === "string")
         ? JSON.parse(attrs)
         : attrs,

@@ -1,5 +1,5 @@
 import { prisma } from "@/backend/shared/database/prisma";
-import { createProduct, updateProduct } from "./product.types";
+import { createProduct, updateProduct, quantityProduct } from "./product.types";
 
 export const ProductRepository = {
     async create(data: createProduct) {
@@ -90,5 +90,30 @@ export const ProductRepository = {
         return await prisma.products.delete({
             where: { id }
         });
-    }
+    },
+
+    async quantity(data: quantityProduct){
+        const result = await prisma.products.count({
+            where: {
+                storeId: data.storeId
+            }
+        });
+
+        return result;
+    },
+
+    async quantityLast30Days(data: quantityProduct) {
+        const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30
+      
+        const result = await prisma.products.count({
+          where: {
+            storeId: data.storeId,
+            createdAt: {
+              gte: new Date(Date.now() - THIRTY_DAYS)
+            }
+          }
+        })
+      
+        return result
+      }
 };

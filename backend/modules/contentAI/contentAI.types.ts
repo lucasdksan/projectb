@@ -9,4 +9,9 @@ export const createContentAISchema = z.object({
     storeId: z.number(),
 });
 
+export const quantityContentAISchema = z.object({
+    storeId: z.number(),
+});
+
 export type createContentAI = z.infer<typeof createContentAISchema>;
+export type quantityContentAI = z.infer<typeof quantityContentAISchema>;

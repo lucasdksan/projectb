@@ -66,8 +66,13 @@ export const generateDescriptionSchema = z.object({
     ),
 });
 
+export const quantityProductSchema = z.object({
+    storeId: z.number(),
+});
+
 export type createProduct = z.infer<typeof createProductSchema>;
 export type paginationProducts = z.infer<typeof paginationProductsSchema>;
 export type product = z.infer<typeof productSchema>;
 export type updateProduct = z.infer<typeof updateProductSchema>;
 export type generateDescription = z.infer<typeof generateDescriptionSchema>;
+export type quantityProduct = z.infer<typeof quantityProductSchema>;

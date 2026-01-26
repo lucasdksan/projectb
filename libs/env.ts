@@ -11,6 +11,11 @@ export const envSchema = z.object({
     MAIL_HOST: z.string(),
     MAIL_PORT: z.string(),
     GEMINI_API_KEY: z.string(),
+    INSTAGRAM_APP_ID: z.string(),
+    INSTAGRAM_APP_KEY: z.string(),
+    INSTAGRAM_APP_NAME: z.string(),
+    INSTAGRAM_TOKEN: z.string(),
+    BLOB_READ_WRITE_TOKEN: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

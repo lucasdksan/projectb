@@ -1,64 +1,112 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { forget } from "../forget";
 
-describe("forget module", () => {
+describe("forget", () => {
+  let randomUUIDSpy: any;
+
   beforeEach(() => {
-    forget.now = new Date("2024-01-01T12:00:00Z");
-   
-    vi.spyOn(crypto, "randomUUID").mockReturnValue("11111111-1111-1111-1111-111111111111");
+    vi.clearAllMocks();
+    randomUUIDSpy = vi.spyOn(crypto, "randomUUID").mockReturnValue("mocked-uuid-12345");
   });
 
-  it("should generate token and expiration date correctly", () => {
-    const { now, token } = forget.generateDateAndToken();
-
-    expect(token).toBe("11111111-1111-1111-1111-111111111111");
-    expect(now.toISOString()).toBe("2024-01-01T13:00:00.000Z");
+  afterEach(() => {
+    randomUUIDSpy.mockRestore();
   });
 
-  it("should validate token successfully", () => {
-    const expiresAt = new Date("2024-01-01T13:00:00Z");
+  describe("generateDateAndToken", () => {
+    it("deve gerar um token UUID e uma data com 1 hora a mais", () => {
+      const result = forget.generateDateAndToken();
 
-    const result = forget.validateToken({
-      passwordResetExpires: expiresAt,
-      passwordResetToken: "11111111-1111-1111-1111-111111111111",
-      token: "11111111-1111-1111-1111-111111111111"
+      expect(result.token).toBe("mocked-uuid-12345");
+      expect(result.now).toBeInstanceOf(Date);
+      expect(crypto.randomUUID).toHaveBeenCalled();
     });
 
-    expect(result).toEqual({ success: true, message: null });
+    it("deve adicionar 1 hora à data atual", () => {
+      const originalNow = new Date(forget.now);
+      const result = forget.generateDateAndToken();
+      const expectedTime = new Date(originalNow);
+      expectedTime.setHours(expectedTime.getHours() + 1);
+
+      expect(result.now.getTime()).toBe(expectedTime.getTime());
+    });
   });
 
-  it("should fail when token is missing", () => {
-    const result = forget.validateToken({
-      passwordResetExpires: null,
-      passwordResetToken: "11111111-1111-1111-1111-111111111111",
-      token: "11111111-1111-1111-1111-111111111111"
+  describe("validateToken", () => {
+    it("deve retornar erro quando passwordResetExpires for null", () => {
+      const result = forget.validateToken({
+        passwordResetToken: "some-token",
+        passwordResetExpires: null,
+        token: "some-token",
+      });
+
+      expect(result).toEqual({
+        success: false,
+        message: "Tempo não registrado",
+      });
     });
 
-    expect(result).toEqual({ success: false, message: "Tempo não registrado" });
-  });
+    it("deve retornar erro quando o token não corresponder", () => {
+      const futureDate = new Date();
+      futureDate.setHours(futureDate.getHours() + 2);
 
-  it("should fail with invalid token", () => {
-    const expiresAt = new Date("2024-01-01T13:00:00Z");
+      const result = forget.validateToken({
+        passwordResetToken: "token-123",
+        passwordResetExpires: futureDate,
+        token: "different-token",
+      });
 
-    const result = forget.validateToken({
-      passwordResetExpires: expiresAt,
-      passwordResetToken: "11111111-1111-1111-1111-111111111111",
-      token: "wrong-token"
+      expect(result).toEqual({
+        success: false,
+        message: "Token inválido",
+      });
     });
 
-    expect(result).toEqual({ success: false, message: "Token inválido" });
-  });
+    it("deve retornar erro quando o token estiver expirado", () => {
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 2);
 
-  it("should fail when token is expired", () => {
-    const expiresAt = new Date("2024-01-01T11:00:00Z");
+      const result = forget.validateToken({
+        passwordResetToken: "token-123",
+        passwordResetExpires: pastDate,
+        token: "token-123",
+      });
 
-    const result = forget.validateToken({
-      passwordResetExpires: expiresAt,
-      passwordResetToken: "11111111-1111-1111-1111-111111111111",
-      token: "11111111-1111-1111-1111-111111111111"
+      expect(result).toEqual({
+        success: false,
+        message: "Token sem validade",
+      });
     });
 
-    expect(result).toEqual({ success: false, message: "Token sem validade" });
-  });
+    it("deve retornar sucesso quando o token for válido e não expirado", () => {
+      const futureDate = new Date();
+      futureDate.setHours(futureDate.getHours() + 2);
 
+      const result = forget.validateToken({
+        passwordResetToken: "token-123",
+        passwordResetExpires: futureDate,
+        token: "token-123",
+      });
+
+      expect(result).toEqual({
+        success: true,
+        message: null,
+      });
+    });
+
+    it("deve validar token exatamente no limite de expiração", () => {
+      const exactExpirationDate = new Date(forget.now);
+
+      const result = forget.validateToken({
+        passwordResetToken: "token-123",
+        passwordResetExpires: exactExpirationDate,
+        token: "token-123",
+      });
+
+      expect(result).toEqual({
+        success: true,
+        message: null,
+      });
+    });
+  });
 });

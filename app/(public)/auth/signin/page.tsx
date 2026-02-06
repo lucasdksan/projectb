@@ -1,24 +1,26 @@
+import SigninView from "@/frontend/components/FormSignIn/signin.view";
 import Link from "next/link";
-import FormSignIn from "@/frontend/components/FormSignIn";
+import { Zap } from "lucide-react";
 
 export default function SignInPage() {
-  return (
-    <>
-        <div className="pt-10 pb-2 px-8 flex flex-col items-center text-center">
-            <h2 className="text-text-main text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3">
-                Bem vido
-            </h2>
-            <p className="text-text-secondary text-base font-normal leading-normal px-4">Gerencie seus produtos e vendas com IA</p>
-        </div>
-        <FormSignIn />
-        <div className="text-center pt-2 pb-10">
-            <p className="text-text-main text-sm">
-                Não tem uma conta?
-                <Link href="/auth/signup" className="ml-1 font-bold text-text-main underline decoration-[color:var(--color-primary)] decoration-2 underline-offset-4 hover:text-[color:var(--color-primary)] cursor-pointer transition-colors">
-                    Criar conta
+    return (
+        <>
+            <div className="text-center mb-10">
+                <Link href="/" className="inline-block mb-6">
+                    <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-accent/20">
+                        <Zap className="w-8 h-8 text-black" />
+                    </div>
                 </Link>
-            </p>
-        </div>
-    </>
-  );
+                <h1 className="text-3xl font-bold text-white">Bem-vindo</h1>
+                <p className="text-gray-500 mt-2">Gerencie seus produtos e vendas com IA</p>
+            </div>
+            <SigninView />
+            <div className="mt-10 text-center">
+                <p className="text-gray-500">
+                    Não tem uma conta?{' '}
+                    <Link href="/auth/signup" className="text-accent font-bold hover:underline">Criar conta</Link>
+                </p>
+            </div>
+        </>
+    );
 }

@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
-import DashboardHeader from "@/frontend/components/DashboardHeader";
-import NavigationMenu from "@/frontend/components/NavigationMenu";
 import { getCurrentUser } from "@/libs/auth";
-import SetProfileData from "@/frontend/components/SetProfileData";
+import MenuView from "@/frontend/components/Menu/menu.view";
 
 export default async function DashboardTemplate({
     children,
@@ -14,16 +12,12 @@ export default async function DashboardTemplate({
     if (!user) redirect("/login");
 
     return (
-      <main className="w-full h-screen lg:flex lg:flex-row">
-          <NavigationMenu email={user?.email ?? ""} name={user?.name ?? ""}  />
-          <SetProfileData email={user.email} name={user.name} />
-          <div className="flex-1 flex flex-col h-full w-full relative overflow-hidden">
-            <DashboardHeader />
-            <section className="flex-1 overflow-y-auto">
-                { children }
-            </section>
-          </div>
-      </main>
+        <div className="flex min-h-screen max-h-screen overflow-hidden">
+            <MenuView email={user.email} name={user.name} />
+            <main className="flex-1 p-12 overflow-y-auto">
+                {children}
+            </main>
+      </div>
     );
   }
   

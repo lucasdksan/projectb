@@ -1,9 +1,10 @@
-import { NavigationMenuProvider } from "@/frontend/contexts/navigationMenu/provider";
 import { Metadata } from "next";
+import SidebarView from "@/frontend/contexts/sidebar/sidebar.view";
+import ToastView from "@/frontend/contexts/toast/toast.view";
 
 export const metadata: Metadata = {
-    title: "Área principal",
-    description: ""
+    title: "Dashboard",
+    description: "Área de controle do sistema."
 };
 
 export default async function DashboardLayout({
@@ -12,8 +13,10 @@ export default async function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <NavigationMenuProvider>
-            {children}
-        </NavigationMenuProvider>
+        <ToastView>
+            <SidebarView>
+                {children}
+            </SidebarView>
+        </ToastView>
     )
 }

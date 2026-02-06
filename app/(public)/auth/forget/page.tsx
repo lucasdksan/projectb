@@ -1,22 +1,24 @@
+import ForgetView from "@/frontend/components/FormForget/forget.view";
 import Link from "next/link";
-import FormForget from "@/frontend/components/FormForget";
+import { KeyRound } from "lucide-react";
 
 export default function ForgetPage() {
     return (
         <>
-            <div className="pt-10 pb-2 px-8 flex flex-col items-center text-center">
-                <h2 className="text-text-main text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3">
-                    Recuperar conta
-                </h2>
-                <p className="text-text-secondary text-base font-normal leading-normal px-4">Gerencie seus produtos e vendas com IA</p>
+            <div className="text-center mb-10">
+                <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-accent/20">
+                    <KeyRound className="w-8 h-8 text-black" />
+                </div>
+                <h1 className="text-3xl font-bold text-white">Recuperar Senha</h1>
+                <p className="text-gray-500 mt-2">Informe seu e-mail para receber as instruções.</p>
             </div>
-            <FormForget />
-            <div className="text-center pt-2 pb-10">
-                <p className="text-text-main text-sm">
-                    Lembrou sua senha?
-                    <Link href="/auth/signin" className="ml-1 font-bold text-text-main underline decoration-[color:var(--color-primary)] decoration-2 underline-offset-4 hover:text-[color:var(--color-primary)] cursor-pointer transition-colors">
-                        Faça login
-                    </Link>
+
+            <ForgetView />
+
+            <div className="mt-10 text-center">
+                <p className="text-gray-500">
+                    Lembrou a senha?{' '}
+                    <Link href="/auth/signin" className="text-accent font-bold hover:underline">Entrar</Link>
                 </p>
             </div>
         </>

@@ -1,20 +1,24 @@
-import jwt from "jsonwebtoken"
+import jsonwebtoken from "jsonwebtoken"
 import { env } from "./env";
 
-const JWT_SECRET = env.JWT_SECRET as string;
-
-export interface JwtPayload {
+export type JwtPayload =  {
     sub: string | number;
     name: string;
     email: string;
 }
 
-export function signJwt(payload: JwtPayload) {
-    return jwt.sign(payload, JWT_SECRET, {
-        expiresIn: "7d",
-    });
-}
+const JWT_SECRET = env.JWT_SECRET as string;
 
-export function verifyJwt<T = JwtPayload>(token: string): T {
-    return jwt.verify(token, JWT_SECRET) as T;
-}
+const jwt = {
+    signJwt(payload: JwtPayload): string {
+        return jsonwebtoken.sign(payload, JWT_SECRET, {
+            expiresIn: "7d",
+        });
+    },
+
+    verifyJwt<T = JwtPayload>(token: string): T {
+        return jsonwebtoken.verify(token, JWT_SECRET) as T;
+    }
+};
+
+export default jwt;

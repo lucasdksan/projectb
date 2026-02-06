@@ -1,13 +1,11 @@
 export default function AuthTemplate({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <div className="relative z-10 flex flex-col items-center justify-center flex-grow w-full px-4 py-12">
-        <div className="w-full max-w-[480px] bg-surface rounded-xl shadow-xl border border-[#f0f4f0] overflow-hidden">
+    children,
+  }: {
+    children: React.ReactNode
+  }) {
+    return (
+        <div className="w-full max-w-md bg-[#111] border border-white/5 p-10 rounded-[2.5rem] shadow-2xl relative z-10">
             { children }
         </div>
-    </div>
-  );
-}
+    );
+  }

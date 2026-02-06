@@ -1,15 +1,17 @@
-import FormReset from "@/frontend/components/FormReset";
+import ResetView from "@/frontend/components/FormReset/reset.view";
+import { KeyRound } from "lucide-react";
 
-export default function ResetPage(){
+export default function ResetPage() {
     return (
         <>
-            <div className="pt-10 pb-2 px-8 flex flex-col items-center text-center">
-                <h2 className="text-text-main text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3">
-                    Recuperar conta
-                </h2>
-                <p className="text-text-secondary text-base font-normal leading-normal px-4">Gerencie seus produtos e vendas com IA</p>
-                <FormReset />
+            <div className="text-center mb-10">
+                <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-accent/20">
+                    <KeyRound className="w-8 h-8 text-black" />
+                </div>
+                <h1 className="text-3xl font-bold text-white">Resetar Senha</h1>
+                <p className="text-gray-500 mt-2">Informe o token recebido por e-mail para resetar sua senha.</p>
             </div>
+            <ResetView />
         </>
-    );
+    )
 }

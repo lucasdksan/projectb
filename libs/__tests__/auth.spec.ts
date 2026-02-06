@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getCurrentUser } from "../auth";
-import { verifyJwt } from "../jwt";
 import { cookies } from "next/headers";
-
-vi.mock("../jwt", () => ({
-  verifyJwt: vi.fn(),
-}));
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
+}));
+
+vi.mock("../jwt", () => ({
+  default: {
+    verifyJwt: vi.fn(),
+  },
 }));
 
 describe("getCurrentUser", () => {
@@ -16,18 +16,72 @@ describe("getCurrentUser", () => {
     vi.clearAllMocks();
   });
 
-  it("deve retornar null quando verifyJwt lançar erro", async () => {
-    vi.mocked(cookies).mockResolvedValue({
-      get: vi.fn().mockReturnValue({ value: "invalid-token" }),
-    } as any);
+  it("deve retornar null quando não houver token nos cookies", async () => {
+    const mockCookies = {
+      get: vi.fn().mockReturnValue(undefined),
+    };
+    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
 
-    vi.mocked(verifyJwt).mockImplementation(() => {
+    const { getCurrentUser } = await import("../auth");
+    const result = await getCurrentUser();
+
+    expect(result).toBeNull();
+    expect(mockCookies.get).toHaveBeenCalledWith("token");
+  });
+
+  it("deve retornar o usuário quando o token for válido", async () => {
+    const mockUser = {
+      sub: "123",
+      name: "John Doe",
+      email: "john@example.com",
+    };
+
+    const mockCookies = {
+      get: vi.fn().mockReturnValue({ value: "valid-token" }),
+    };
+    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+
+    const jwt = await import("../jwt");
+    vi.mocked(jwt.default.verifyJwt).mockReturnValue(mockUser);
+
+    const { getCurrentUser } = await import("../auth");
+    const result = await getCurrentUser();
+
+    expect(result).toEqual(mockUser);
+    expect(jwt.default.verifyJwt).toHaveBeenCalledWith("valid-token");
+  });
+
+  it("deve retornar null quando o token for inválido", async () => {
+    const mockCookies = {
+      get: vi.fn().mockReturnValue({ value: "invalid-token" }),
+    };
+    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+
+    const jwt = await import("../jwt");
+    vi.mocked(jwt.default.verifyJwt).mockImplementation(() => {
       throw new Error("Invalid token");
     });
 
+    const { getCurrentUser } = await import("../auth");
     const result = await getCurrentUser();
 
-    expect(verifyJwt).toHaveBeenCalledWith("invalid-token");
+    expect(result).toBeNull();
+  });
+
+  it("deve retornar null quando o token estiver expirado", async () => {
+    const mockCookies = {
+      get: vi.fn().mockReturnValue({ value: "expired-token" }),
+    };
+    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+
+    const jwt = await import("../jwt");
+    vi.mocked(jwt.default.verifyJwt).mockImplementation(() => {
+      throw new Error("Token expired");
+    });
+
+    const { getCurrentUser } = await import("../auth");
+    const result = await getCurrentUser();
+
     expect(result).toBeNull();
   });
 });

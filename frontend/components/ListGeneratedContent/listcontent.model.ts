@@ -12,7 +12,6 @@ export const LIST_PLATFORMS: Record<Platform, string> = {
 };
 
 export type FilterPlatform = "Todos" | Platform;
-
 export interface ListContentProps {
     contents: ContentAI[];
 }

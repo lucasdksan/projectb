@@ -10,7 +10,7 @@ export default function useListContentViewModel({ contents }: ListContentProps) 
     const [deletingId, setDeletingId] = useState<number | null>(null);
     
     const platforms: FilterPlatform[] = ["Todos", ...Object.keys(LIST_PLATFORMS) as FilterPlatform[]];
-    
+
     const filteredData = useMemo(() => {
         if (filter === "Todos") return contents;
         return contents.filter(item => item.platform === filter);
@@ -34,7 +34,7 @@ export default function useListContentViewModel({ contents }: ListContentProps) 
         setDeletingId(id);
         try {
             const result = await deleteGeneratedContentAction(id);
-            
+
             if (result.success) {
                 router.refresh();
             } else {
@@ -52,6 +52,7 @@ export default function useListContentViewModel({ contents }: ListContentProps) 
     const getPlatformLabel = (platform: string): string => {
         return LIST_PLATFORMS[platform as keyof typeof LIST_PLATFORMS] || platform;
     };
+    
 
     return {
         filter,

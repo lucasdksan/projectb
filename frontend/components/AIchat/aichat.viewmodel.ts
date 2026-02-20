@@ -6,19 +6,19 @@ import {
     type SendMessageActionResult,
 } from "@/app/(private)/dashboard/contentAI/aichat.action";
 import { saveContentAction } from "@/app/(private)/dashboard/contentAI/aicontent.action";
-import { ChatMessage } from "./aichat.model";
+import { ChatMessage, ContentMode } from "./aichat.model";
 import type { AIContentResponse, Platform } from "@/backend/schemas/aichat.schema";
 
 function createMessage(
-    role: ChatMessage["role"], 
-    content: string, 
+    role: ChatMessage["role"],
+    content: string,
     image?: string,
     structuredContent?: AIContentResponse
 ): ChatMessage {
-    return { 
-        id: crypto.randomUUID(), 
-        role, 
-        content, 
+    return {
+        id: crypto.randomUUID(),
+        role,
+        content,
         ...(image && { image }),
         ...(structuredContent && { structuredContent }),
     };
@@ -42,6 +42,7 @@ export function useAichatViewModel() {
     const [isSaving, startSaveTransition] = useTransition();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [mode, setMode] = useState<ContentMode>("standard");
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -54,13 +55,16 @@ export function useAichatViewModel() {
 
     const isFirstMessage = messages.length === 0;
 
+    const imageRequired = isFirstMessage && mode === "standard";
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (isFirstMessage && !selectedImage) return;
+        if (imageRequired && !selectedImage) return;
 
         const fd = new FormData();
         fd.set("prompt", input);
         fd.set("platform", selectedPlatform);
+        fd.set("mode", mode);
 
         const history = convertToHistoryFormat(messages);
         fd.set("history", JSON.stringify(history));
@@ -113,6 +117,10 @@ export function useAichatViewModel() {
         });
     };
 
+    const handleModeChange = (mode: ContentMode) => {
+        setMode(mode);
+    };
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -129,11 +137,14 @@ export function useAichatViewModel() {
         saveSuccess,
         messagesEndRef,
         fileInputRef,
+        mode,
+        handleModeChange,
         handleImageChange,
         handleSubmit,
         handleSaveContent,
         setInput,
         setSelectedImage,
         setSelectedPlatform,
+        imageRequired,
     };
 }

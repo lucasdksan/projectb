@@ -8,6 +8,7 @@ import {
     type ChatHistoryItem,
     type AIContentResponse,
     SUPPORTED_PLATFORMS,
+    CONTENT_MODES,
 } from "@/backend/schemas/aichat.schema";
 
 export type SendMessageActionResult =
@@ -111,11 +112,17 @@ export async function sendMessageWithContextAction(
             ? platformRaw
             : undefined;
 
+        const modeRaw = formData.get("mode");
+        const mode = typeof modeRaw === "string" && CONTENT_MODES.includes(modeRaw as any)
+            ? modeRaw
+            : "standard";
+
         const raw = {
             prompt: formData.get("prompt"),
             history,
             image: formData.get("image") || undefined,
             platform,
+            mode,
         };
 
         const parsed = sendMessageWithContextSchema.safeParse(raw);

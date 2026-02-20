@@ -19,7 +19,8 @@ export const AIChatController = {
             dto.prompt,
             dto.history,
             dto.image,
-            dto.platform
+            dto.platform,
+            dto.mode
         );
     },
 };

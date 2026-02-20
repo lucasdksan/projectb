@@ -12,6 +12,8 @@ export interface AichatViewProps {
     userName?: string | null;
 };
 
+export type ContentMode = "standard" | "viral" | "competitor";
+
 export const PLATFORM_LABELS: Record<Platform, string> = {
     instagram: "Instagram",
     facebook: "Facebook",

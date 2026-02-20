@@ -3,12 +3,11 @@ import {
     aiContentResponseSchema,
     type ChatHistoryItem,
     type AIContentResponse,
+    type ContentMode,
     SUPPORTED_PLATFORMS,
 } from "../schemas/aichat.schema";
 
-const MARKETING_AGENT_SYSTEM = `Você é um especialista em marketing digital focado em e-commerce e redes sociais.
-Sua função é criar conteúdo persuasivo para produtos.
-
+const JSON_RESPONSE_RULES = `
 IMPORTANTE: Você DEVE responder SEMPRE em formato JSON válido com a seguinte estrutura:
 {
   "headline": "Título chamativo e atrativo para o conteúdo (máx 100 caracteres)",
@@ -17,17 +16,25 @@ IMPORTANTE: Você DEVE responder SEMPRE em formato JSON válido com a seguinte e
   "hashtags": "Hashtags relevantes separadas por espaço (ex: #moda #estilo #tendencia)",
   "platform": "Plataforma alvo (deve ser uma dessas: ${SUPPORTED_PLATFORMS.join(", ")})"
 }
+REGRAS: 1. SEMPRE retorne JSON válido, sem texto adicional antes ou depois. 2. Se o usuário não especificar a plataforma, use "instagram" como padrão.`;
 
-REGRAS:
-1. SEMPRE retorne JSON válido, sem texto adicional antes ou depois
-2. Adapte o tom e estilo para a plataforma especificada
-3. Para Instagram: foque em hashtags virais e emojis
-4. Para Facebook: texto mais longo e persuasivo
-5. Para TikTok: linguagem jovem e tendências
-6. Para LinkedIn: tom profissional e corporativo
-7. Para Marketplace/E-commerce: foco em características e benefícios do produto
-8. Se o usuário não especificar a plataforma, use "instagram" como padrão
-9. As hashtags devem ser relevantes para o produto e plataforma`;
+const MARKETING_AGENT_SYSTEM = `Você é um especialista em marketing digital focado em e-commerce e redes sociais.
+Sua função é criar conteúdo persuasivo para produtos.
+${JSON_RESPONSE_RULES}
+Adapte o tom e estilo para a plataforma: Instagram (hashtags virais e emojis), Facebook (texto mais longo), TikTok (linguagem jovem e tendências), LinkedIn (tom profissional), Marketplace/E-commerce (benefícios do produto).`;
+
+const VIRAL_TRENDS_SYSTEM = `Você é um analista de tendências (Google Trends, TikTok Creative Center, Pinterest). Responda em texto livre, direto ao ponto — estilo ChatGPT: sem JSON, sem formulários.
+
+Regras:
+- Mostre as tendências de fato: lista numerada com nome da tendência, por que está em alta e como o usuário pode usar.
+- Seja específico e acionável (formatos em alta, temas, hashtags, melhores horários).
+- Respostas curtas e objetivas. Use quebras de linha e listas quando fizer sentido.
+- Não use frases como "confira nosso post" ou "analisamos para você".`;
+
+const COMPETITOR_ANALYSIS_SYSTEM = `Você é um estrategista de conteúdo e análise competitiva. Responda em texto livre, direto ao ponto — estilo ChatGPT: sem JSON, sem formulários.
+
+O usuário pode informar @ de perfil, link ou nome do concorrente. Faça uma análise objetiva: o que o concorrente faz bem (tom, formatos, temas) e sugira conteúdos e ângulos para o usuário se diferenciar e superá-los.
+Respostas curtas e objetivas. Use listas e tópicos quando ajudar.`;
 
 function parseAIResponse(response: string): AIContentResponse | null {
     try {
@@ -87,28 +94,39 @@ export const AIChatService = {
         prompt: string,
         history: ChatHistoryItem[],
         image?: Blob,
-        platform?: string
+        platform?: string,
+        mode: ContentMode = "standard"
     ): Promise<ChatResponse> {
+        const systemPrompt =
+            mode === "viral"
+                ? VIRAL_TRENDS_SYSTEM
+                : mode === "competitor"
+                  ? COMPETITOR_ANALYSIS_SYSTEM
+                  : MARKETING_AGENT_SYSTEM;
+
         const enhancedPrompt = platform
             ? `[Plataforma: ${platform}] ${prompt}`
             : prompt;
 
         const { data } = await aiIntegration.chatWithContext(
-            MARKETING_AGENT_SYSTEM,
+            systemPrompt,
             history,
             enhancedPrompt,
-            image
+            image,
         );
 
-        const structuredContent = parseAIResponse(data);
-
-        if (structuredContent) {
-            return {
-                data: formatStructuredResponse(structuredContent),
-                structuredContent,
-            };
+        // Só no modo standard: resposta em JSON formatado + opção de salvar conteúdo
+        if (mode === "standard") {
+            const structuredContent = parseAIResponse(data);
+            if (structuredContent) {
+                return {
+                    data: formatStructuredResponse(structuredContent),
+                    structuredContent,
+                };
+            }
         }
 
+        // Viral e competitor: resposta direta em texto (estilo ChatGPT), sem botão salvar
         return { data };
     },
 };

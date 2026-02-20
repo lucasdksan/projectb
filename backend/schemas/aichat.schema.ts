@@ -66,12 +66,27 @@ export const chatHistoryItemSchema = z.object({
     content: z.string(),
 });
 
-export const sendMessageWithContextSchema = z.object({
-    prompt: promptSchema,
-    history: z.array(chatHistoryItemSchema),
-    image: imageBlobSchema.optional(),
-    platform: z.enum(SUPPORTED_PLATFORMS).optional(),
-});
+export const CONTENT_MODES = ["standard", "viral", "competitor"] as const;
+export type ContentMode = (typeof CONTENT_MODES)[number];
+
+export const sendMessageWithContextSchema = z
+    .object({
+        prompt: promptSchema,
+        history: z.array(chatHistoryItemSchema),
+        image: imageBlobSchema.optional(),
+        platform: z.enum(SUPPORTED_PLATFORMS).optional(),
+        mode: z.enum(CONTENT_MODES).optional(),
+    })
+    .refine(
+        (data) => {
+            const isFirstMessage = data.history.length === 0;
+            if (data.mode === "standard" && isFirstMessage) {
+                return data.image != null;
+            }
+            return true;
+        },
+        { message: "No modo padrão, a imagem é obrigatória na primeira mensagem.", path: ["image"] }
+    );
 
 export type ChatHistoryItem = z.infer<typeof chatHistoryItemSchema>;
 export type SendMessageWithContextInput = z.infer<typeof sendMessageWithContextSchema>;

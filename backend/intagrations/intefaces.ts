@@ -12,6 +12,7 @@ export interface AIIntegration {
         currentMessage: string,
         image?: Blob
     ) => Promise<{ data: string }>;
+    generateReadyPost: (headline: string, style: string, image: Blob, customContext?: string) => Promise<{ data: string }>;
 };
 
 export interface VercelIntegration {

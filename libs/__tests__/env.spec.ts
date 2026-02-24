@@ -6,7 +6,7 @@ const ORIGINAL_ENV = process.env;
 describe("envSchema", () => {
   beforeEach(() => {
     vi.resetModules();
-    process.env = { ...ORIGINAL_ENV };
+    process.env = {} as NodeJS.ProcessEnv;
   });
 
   afterAll(() => {
@@ -53,7 +53,8 @@ describe("envSchema", () => {
     process.env.MAIL_HOST = "smtp.mail.com";
     process.env.GEMINI_API_KEY = "gemini-api-key";
     (process.env as any).NODE_ENV = "test";
-    
-    await expect(() => import("../env")).rejects.toThrow(z.ZodError);
+  
+  
+    await expect(import("../env")).rejects.toThrow(z.ZodError);
   });
 });

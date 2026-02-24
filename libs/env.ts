@@ -13,7 +13,6 @@ export const envSchema = z.object({
     GEMINI_API_KEY: z.string(),
     NODE_ENV: z.string(),
     BLOB_READ_WRITE_TOKEN: z.string(),
-    REPLICATE_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

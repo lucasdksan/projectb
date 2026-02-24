@@ -14,6 +14,7 @@ model Users {
   passwordResetToken   String?
   passwordResetExpires DateTime?
   contentAI            ContentAI[]
+  store                Store[]
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @default(now())
 
@@ -33,4 +34,19 @@ model ContentAI {
   updatedAt   DateTime @updatedAt
 
   @@map("contentAI")
+}
+
+model Store {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  number      String
+  description String
+  typeMarket  String
+  userId      Int
+  user        Users    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  @@map("store")
 }

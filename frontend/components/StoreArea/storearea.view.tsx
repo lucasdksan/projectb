@@ -7,16 +7,16 @@ import { useStoreAreaViewModel } from "./storearea.viewmodel";
 export default function StoreAreaView({ store }: StoreAreaProps) {
     const {
         form,
-        updateField,
         isLoading,
-        handleSubmitStore,
         isModalOpen,
-        openModal,
-        closeModal,
         hasStore,
         inputClassName,
         labelClassName,
         inputTextareaClassName,
+        openModal,
+        closeModal,
+        handleSubmitStore,
+        updateField,
     } = useStoreAreaViewModel(store);
 
     return (
@@ -29,45 +29,61 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                     <h3 className="text-xl font-bold text-white">Dados da Loja</h3>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="space-y-2">
-                        <label className={labelClassName}>Nome da Loja</label>
-                        <input
-                            type="text"
-                            className={inputClassName}
-                            value={store?.name ?? ""}
-                            readOnly
-                            disabled
-                        />
+                {store ? (
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                            <label className={labelClassName}>Nome da Loja</label>
+                            <input
+                                type="text"
+                                className={inputClassName}
+                                value={store?.name ?? ""}
+                                readOnly
+                                disabled
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className={labelClassName}>E-mail</label>
+                            <input
+                                type="email"
+                                className={inputClassName}
+                                value={store?.email ?? ""}
+                                readOnly
+                                disabled
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
+                            onClick={openModal}
+                        >
+                            {hasStore ? (
+                                <>
+                                    <Pencil className="text-lg" />
+                                    Atualizar Loja
+                                </>
+                            ) : (
+                                <>
+                                    <Plus className="text-lg" />
+                                    Cadastrar Loja
+                                </>
+                            )}
+                        </button>
                     </div>
-                    <div className="space-y-2">
-                        <label className={labelClassName}>E-mail</label>
-                        <input
-                            type="email"
-                            className={inputClassName}
-                            value={store?.email ?? ""}
-                            readOnly
-                            disabled
-                        />
+                ) : (
+                    <div className="space-y-6">
+                        <p className="text-white/50 text-sm">
+                            Nenhuma loja cadastrada
+                        </p>
+                        <button
+                            type="button"
+                            className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
+                            onClick={openModal}
+                        >
+                            <Plus className="text-lg" />
+                            Cadastrar Loja
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
-                        onClick={openModal}
-                    >
-                        {hasStore ? (
-                            <>
-                                <Pencil className="text-lg" />
-                                Atualizar Loja
-                            </>
-                        ) : (
-                            <>
-                                <Plus className="text-lg" />
-                                Cadastrar Loja
-                            </>
-                        )}
-                    </button>
-                </div>
+                )}
             </section>
 
             {isModalOpen && (

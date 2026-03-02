@@ -9,4 +9,12 @@ export const createProductSchema = z.object({
     imageUrls: z.array(z.string().url()).optional().default([]),
 });
 
+export const listProductsSchema = z.object({
+    page: z.number().int().min(1).default(1),
+    limit: z.number().int().min(1).max(100).default(5),
+    search: z.string().optional(),
+    storeId: z.number().min(1, "Loja é obrigatória"),
+});
+
+export type ListProductsDTO = z.infer<typeof listProductsSchema>;
 export type CreateProductDTO = z.infer<typeof createProductSchema>;

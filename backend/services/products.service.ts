@@ -1,5 +1,5 @@
 import { ProductsRepository } from "../repositories/products.repository";
-import { CreateProductDTO } from "../schemas/products.schema";
+import { CreateProductDTO, ListProductsDTO } from "../schemas/products.schema";
 
 export const ProductsService = {
     async createProduct(dto: CreateProductDTO, storeId: number){
@@ -8,5 +8,9 @@ export const ProductsService = {
 
     async quantityProducts(storeId: number) {
         return await ProductsRepository.quantityProducts(storeId);
+    },
+
+    async listProducts(dto: ListProductsDTO) {
+        return await ProductsRepository.listProducts(dto);
     },
 }

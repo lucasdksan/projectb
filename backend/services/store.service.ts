@@ -13,4 +13,14 @@ export const StoreService = {
     async updateStore(userId: number, data: UpdateStoreDTO) {
         return await StoreRepository.updateStore(userId, data);
     },
+
+    async getStoreId(userId: number) {
+        const store = await this.getStore(userId);
+
+        if (!store) {
+            return null;
+        }
+
+        return store.id;
+    },
 }

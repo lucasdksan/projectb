@@ -13,4 +13,8 @@ export const StoreController = {
     async updateStore(userId: number, data: UpdateStoreDTO) {
         return await StoreService.updateStore(userId, data);
     },
+
+    async getStoreId(userId: number) {
+        return await StoreService.getStoreId(userId);
+    },
 }

@@ -13,6 +13,7 @@ export interface MenuAreaProps {
 
 export const menuItems = [
     { path: "/dashboard", label: "Dashboard" },
+    { path: "/dashboard/products", label: "Produtos" },
     { path: "/dashboard/generatedContent", label: "Conteúdos Salvos" },
     { path: "/dashboard/contentAI", label: "Conteúdo IA" },
     { path: "/dashboard/postStudio", label: "Post Studio" },

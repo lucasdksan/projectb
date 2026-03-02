@@ -1,5 +1,5 @@
 import { prisma } from "../database/prisma";
-import { CreateProductDTO } from "../schemas/products.schema";
+import { CreateProductDTO, ListProductsDTO } from "../schemas/products.schema";
 
 export const ProductsRepository = {
     async createProduct(dto: CreateProductDTO, storeId: number) {
@@ -27,5 +27,47 @@ export const ProductsRepository = {
                 storeId,
             },
         });
+    },
+
+    async listProducts(dto: ListProductsDTO) {
+        const { page, limit, search, storeId } = dto;
+
+        const skip = (page - 1) * limit;
+
+        const whereCondition = {
+            storeId,
+            ...(search && {
+                name: {
+                    contains: search,
+                },
+            }),
+        };
+
+        const [products, total] = await Promise.all([
+            prisma.products.findMany({
+                where: whereCondition,
+                skip,
+                take: limit,
+                orderBy: {
+                    createdAt: "desc",
+                },
+                include: {
+                    images: true,
+                },
+            }),
+            prisma.products.count({
+                where: whereCondition,
+            }),
+        ]);
+
+        return {
+            data: products,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
     },
 };

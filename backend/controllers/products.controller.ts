@@ -13,4 +13,8 @@ export const ProductsController = {
     async listProducts(dto: ListProductsDTO) {
         return await ProductsService.listProducts(dto);
     },
+
+    async getProduct(slug: number) {
+        return await ProductsService.getProduct(slug);
+    },
 }

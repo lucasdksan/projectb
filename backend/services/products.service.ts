@@ -13,4 +13,8 @@ export const ProductsService = {
     async listProducts(dto: ListProductsDTO) {
         return await ProductsRepository.listProducts(dto);
     },
+
+    async getProduct(slug: number) {
+        return await ProductsRepository.getProduct(slug);
+    },
 }

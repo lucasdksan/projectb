@@ -1,6 +1,6 @@
 "use client";
 
-import { EyeIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductsViewProps } from "./productsview.model";
 import { useProductsViewModel } from "./productsview.viewmodel";
 import Link from "next/link";

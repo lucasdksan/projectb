@@ -115,7 +115,6 @@ export const AIChatService = {
             image,
         );
 
-        // Só no modo standard: resposta em JSON formatado + opção de salvar conteúdo
         if (mode === "standard") {
             const structuredContent = parseAIResponse(data);
             if (structuredContent) {
@@ -126,7 +125,6 @@ export const AIChatService = {
             }
         }
 
-        // Viral e competitor: resposta direta em texto (estilo ChatGPT), sem botão salvar
         return { data };
     },
 };

@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 import { getProductAction } from "./getproduct.action";
-import Link from "next/link";
 import GenerateAddsView from "@/frontend/components/GenerateAdds/generateadds.view";
 import EditProductView from "@/frontend/components/EditProduct/editproduct.view";
+import ProductForSuggestionsView from "@/frontend/components/ProductForSuggestions/productforsuggestions.view";
 
 export default async function ProductPage({
     params,
@@ -124,19 +125,12 @@ export default async function ProductPage({
                         </div>
                     </div>
 
-                    <div className="bg-[#161616] border border-[#00ff41]/10 p-8 rounded-[2.5rem] space-y-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#00ff41]/5 blur-3xl rounded-full"></div>
-                        <div className="flex items-center gap-3">
-                            <i className="fa-solid fa-wand-magic-sparkles text-[#00ff41]"></i>
-                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Sugestão da IA</h3>
-                        </div>
-                        <p className="text-gray-400 text-sm leading-relaxed italic">
-                            "Este produto tem alta demanda no momento. Recomendamos criar um carrossel focado na exclusividade e no conforto para aumentar as vendas em 15% nesta semana."
-                        </p>
-                        <button className="text-[10px] font-black text-[#00ff41] uppercase tracking-widest hover:underline">
-                            Ver análise completa de tendências →
-                        </button>
-                    </div>
+                    <ProductForSuggestionsView
+                        name={data.name ?? ""}
+                        description={data.description ?? ""}
+                        price={data.price}
+                        stock={data.stock}
+                    />
                 </section>
             </main>
         </div>

@@ -1,8 +1,10 @@
 "use server";
 
+import { unstable_cache } from "next/cache";
 import { ProductForSuggestionsController } from "@/backend/controllers/productforsuggestions.controller";
 import {
     productForSuggestionsSchema,
+    type ProductForSuggestionsDTO,
     type ProductForSuggestionsResponse,
 } from "@/backend/schemas/productforsuggestions.schema";
 
@@ -10,12 +12,30 @@ export type ProductForSuggestionsActionResult =
     | { success: true; data: ProductForSuggestionsResponse }
     | { success: false; errors: Record<string, string[] | undefined> };
 
-export async function productForSuggestionsAction(
-    data: { name: string; description?: string; price: number; stock: number }
-): Promise<ProductForSuggestionsActionResult> {
+const CACHE_TTL_SECONDS = 3600; // 1 hora
+
+const getCachedSuggestion = unstable_cache(
+    async (_productId: number, dto: ProductForSuggestionsDTO) => {
+        return ProductForSuggestionsController.generateSuggestion(dto);
+    },
+    ["product-suggestion"],
+    {
+        revalidate: CACHE_TTL_SECONDS,
+        tags: ["product-suggestions"],
+    }
+);
+
+export async function productForSuggestionsAction(data: {
+    productId: number;
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+}): Promise<ProductForSuggestionsActionResult> {
     try {
         const parsed = productForSuggestionsSchema.safeParse({
-            ...data,
+            name: data.name,
+            description: data.description,
             price: Number(data.price),
             stock: Number(data.stock),
         });
@@ -27,7 +47,7 @@ export async function productForSuggestionsAction(
             };
         }
 
-        const result = await ProductForSuggestionsController.generateSuggestion(parsed.data);
+        const result = await getCachedSuggestion(data.productId, parsed.data);
 
         return {
             success: true,

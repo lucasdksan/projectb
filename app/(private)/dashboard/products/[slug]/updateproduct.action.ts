@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { getCurrentUser } from "@/libs/auth";
 import { StoreController } from "@/backend/controllers/store.controller";
@@ -135,6 +136,8 @@ export async function updateProductAction(
                 isActive: parsed.data.isActive,
             }
         );
+
+        revalidateTag("product-suggestions", "max");
 
         return {
             success: true,

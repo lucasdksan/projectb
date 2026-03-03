@@ -15,6 +15,7 @@ export function useProductForSuggestionsViewModel(model: ProductForSuggestionsMo
         async function fetchSuggestion() {
             setError(null);
             const res = await productForSuggestionsAction({
+                productId: model.productId,
                 name: model.name,
                 description: model.description,
                 price: model.price,
@@ -38,7 +39,7 @@ export function useProductForSuggestionsViewModel(model: ProductForSuggestionsMo
         return () => {
             cancelled = true;
         };
-    }, [model.name, model.description, model.price, model.stock]);
+    }, [model.productId, model.name, model.description, model.price, model.stock]);
 
     return { suggestion, error, isLoading };
 }

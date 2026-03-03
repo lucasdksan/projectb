@@ -1,5 +1,5 @@
 import { prisma } from "../database/prisma";
-import { CreateProductDTO, ListProductsDTO } from "../schemas/products.schema";
+import { CreateProductDTO, ListProductsDTO, UpdateProductDTO } from "../schemas/products.schema";
 
 export const ProductsRepository = {
     async createProduct(dto: CreateProductDTO, storeId: number) {
@@ -79,6 +79,40 @@ export const ProductsRepository = {
             include: {
                 images: true,
             },
+        });
+    },
+
+    async updateProduct(productId: number, storeId: number, dto: UpdateProductDTO) {
+        const { imageUrls = [], ...productData } = dto;
+
+        const product = await prisma.products.findFirst({
+            where: { id: productId, storeId },
+        });
+
+        if (!product) return null;
+
+        return await prisma.$transaction(async (tx) => {
+            if (imageUrls.length > 0) {
+                await tx.productImages.deleteMany({
+                    where: { productId },
+                });
+            }
+
+            return await tx.products.update({
+                where: { id: productId },
+                data: {
+                    ...productData,
+                    images:
+                        imageUrls.length > 0
+                            ? {
+                                  create: imageUrls.map((url) => ({ url })),
+                              }
+                            : undefined,
+                },
+                include: {
+                    images: true,
+                },
+            });
         });
     },
 };

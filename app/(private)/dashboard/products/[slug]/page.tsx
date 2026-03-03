@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { getProductAction } from "./getproduct.action";
 import Link from "next/link";
 import GenerateAddsView from "@/frontend/components/GenerateAdds/generateadds.view";
+import EditProductView from "@/frontend/components/EditProduct/editproduct.view";
 
 export default async function ProductPage({
     params,
@@ -32,16 +33,22 @@ export default async function ProductPage({
                 </Link>
 
                 <div className="flex gap-4">
-                    <button className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-sm hover:bg-white/10 transition-all">
-                        Editar Produto
-                    </button>
+                    <EditProductView
+                        id={data.id}
+                        name={data.name ?? ""}
+                        description={data.description ?? ""}
+                        price={data.price}
+                        stock={data.stock}
+                        images={data.images}
+                        isActive={data.isActive ?? true}
+                    />
                     <GenerateAddsView
-                            name={data.name ?? ""}
-                            description={data.description ?? ""}
-                            price={data.price}
-                            stock={data.stock}
-                            productImages={data.images}
-                        />
+                        name={data.name ?? ""}
+                        description={data.description ?? ""}
+                        price={data.price}
+                        stock={data.stock}
+                        productImages={data.images}
+                    />
                 </div>
             </header>
             <main className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -109,10 +116,10 @@ export default async function ProductPage({
                             </div>
                         </div>
                         <div>
-                            <h4 className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-2">Status da Loja</h4>
+                            <h4 className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-2">Status do Produto</h4>
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-[#00ff41] rounded-full animate-pulse"></div>
-                                <span className="text-white font-bold">Publicado</span>
+                                <div className={`w-2 h-2 rounded-full ${data.isActive ? "bg-[#00ff41] animate-pulse" : "bg-gray-500"}`}></div>
+                                <span className="text-white font-bold">{data.isActive ? "Ativo" : "Inativo"}</span>
                             </div>
                         </div>
                     </div>

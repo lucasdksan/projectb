@@ -16,5 +16,15 @@ export const listProductsSchema = z.object({
     storeId: z.number().min(1, "Loja é obrigatória"),
 });
 
+export const updateProductSchema = z.object({
+    name: z.string().min(1, "Nome é obrigatório"),
+    description: z.string().optional(),
+    price: z.number().min(0.01, "Preço é obrigatório"),
+    stock: z.number().int().min(0, "Estoque é obrigatório"),
+    imageUrls: z.array(z.string().url()).optional().default([]),
+    isActive: z.boolean().optional().default(true),
+});
+
 export type ListProductsDTO = z.infer<typeof listProductsSchema>;
 export type CreateProductDTO = z.infer<typeof createProductSchema>;
+export type UpdateProductDTO = z.infer<typeof updateProductSchema>;

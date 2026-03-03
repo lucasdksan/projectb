@@ -70,4 +70,15 @@ export const ProductsRepository = {
             },
         };
     },
+
+    async getProduct(slug: number) {
+        return await prisma.products.findUnique({
+            where: {
+                id: slug,
+            },
+            include: {
+                images: true,
+            },
+        });
+    },
 };

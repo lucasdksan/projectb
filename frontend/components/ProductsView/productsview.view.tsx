@@ -93,8 +93,8 @@ export default function ProductsView({
                                     {product.createdAtFormatted}
                                 </td>
                                 <td className="p-4">
-                                    <Link href={`/dashboard/products/${product.id}`}>
-                                        <EyeIcon className="w-4 h-4 text-zinc-400" />
+                                    <Link href={`/dashboard/products/${product.id}`} className="text-sm text-zinc-400 hover:text-white transition-colors">
+                                        Visualizar
                                     </Link>
                                 </td>
                             </tr>

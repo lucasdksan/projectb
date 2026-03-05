@@ -3,7 +3,6 @@ export interface ChartDataPoint {
     v: number;
 }
 
-/** Modos de agregação do gráfico de conteúdos gerados */
 export type ChartGranularity = "week" | "month" | "day";
 
 export interface ContentData {
@@ -20,6 +19,11 @@ export interface ContentData {
 
 export interface GraphicModelProps {
     contents: ContentData[];
-    /** Granularidade do gráfico: semana (dias da semana), mês ou dia do mês */
     granularity?: ChartGranularity;
 }
+
+export const GRANULARITY_OPTIONS: { value: ChartGranularity; label: string }[] = [
+    { value: "week", label: "Dias da semana" },
+    { value: "month", label: "Por mês" },
+    { value: "day", label: "Por dia (30d)" },
+];

@@ -6,6 +6,7 @@ export const envSchema = z.object({
     DATABASE_URL: z.string(),
     NEXT_PUBLIC_NODE_ENV: z.string(),
     JWT_SECRET: z.string(),
+    PASSWORD_PEPPER: z.string(),
     MAIL_USER: z.string(),
     MAIL_PASS: z.string(),
     MAIL_HOST: z.string(),

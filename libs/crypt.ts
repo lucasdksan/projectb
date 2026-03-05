@@ -1,14 +1,26 @@
-import bcrypt from "bcryptjs";
+import * as argon2 from "argon2";
 
-const SALT_ROUNDS = 10;
+function getPepper(): Buffer {
+    const pepper = process.env.PASSWORD_PEPPER;
+    if (!pepper) {
+        throw new Error("PASSWORD_PEPPER must be set in environment variables");
+    }
+    return Buffer.from(pepper, "utf-8");
+}
+
+const argon2Options = (secret: Buffer): argon2.Options => ({
+    secret,
+});
 
 const crypt = {
     async hashPassword(password: string) {
-        return bcrypt.hash(password, SALT_ROUNDS);
+        const secret = getPepper();
+        return argon2.hash(password, argon2Options(secret));
     },
 
     async comparePassword(password: string, passwordHash: string) {
-        return bcrypt.compare(password, passwordHash);
+        const secret = getPepper();
+        return argon2.verify(passwordHash, password, argon2Options(secret));
     }
 }
 

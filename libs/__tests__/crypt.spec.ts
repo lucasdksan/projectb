@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import argon2 from "argon2";
+import * as argon2 from "argon2";
 
 vi.mock("argon2", () => ({
-  default: {
-    hash: vi.fn(),
-    verify: vi.fn(),
-  },
+  hash: vi.fn(),
+  verify: vi.fn(),
 }));
 
 const MOCK_PEPPER = "test-pepper";

@@ -4,29 +4,22 @@ import { generateContentAction } from "@/app/(private)/dashboard/postStudio/gene
 import { useActionState, useState, useCallback, useEffect } from "react";
 import { initialState, type StudioAreaState } from "./studioarea.model";
 
-async function blobUrlToBase64(blobUrl: string): Promise<string> {
-
-    const response = await fetch(blobUrl);
-    const blob = await response.blob();
-
-    const arrayBuffer = await blob.arrayBuffer();
-
-    const bytes = new Uint8Array(arrayBuffer);
-
-    let binary = "";
-    bytes.forEach((b) => (binary += String.fromCharCode(b)));
-
-    return `data:${blob.type};base64,${btoa(binary)}`;
-}
-
 export function useStudioAreaViewModel() {
     const [state, formAction, isPending] = useActionState(generateContentAction, initialState);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [normalizedState, setNormalizedState] = useState<StudioAreaState>({
         success: state.success,
         errors: state.success ? {} : state.errors,
-        data: state.success ? state.data : "",
+        data: state.success ? state.data ?? "" : "",
     });
+
+    useEffect(() => {
+        setNormalizedState({
+            success: state.success,
+            errors: state.success ? {} : (state.errors ?? {}),
+            data: state.success && "data" in state ? state.data : "",
+        });
+    }, [state]);
 
     const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -64,28 +57,11 @@ export function useStudioAreaViewModel() {
         input?.click();
     }, []);
 
-    async function generateImage(prompt: string, image: string) {
-        const imageBase64 = await blobUrlToBase64(image);
-        
-        setNormalizedState({
-            success: true,
-            errors: {},
-            data: "",
-        });
-    }
-
     useEffect(() => {
         return () => {
             if (selectedImage) URL.revokeObjectURL(selectedImage);
         };
     }, [selectedImage]);
-
-
-    useEffect(() => {
-        if (state.success && state.data && selectedImage) {
-            generateImage(state.data, selectedImage);
-        }
-    }, [state]);
     return {
         state: normalizedState,
         formAction,

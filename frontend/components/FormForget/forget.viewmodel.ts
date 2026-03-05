@@ -14,14 +14,16 @@ import { useRouter } from "next/navigation";
         const result = await forgetAction(data);
 
         if (!result.success && result.errors) {
-            Object.entries(result.errors as Record<string, string[]>).forEach(([field, messages]) => {
-                if (messages && messages.length > 0) {
+            const errors = result.errors as Record<string, string[] | undefined>;
+            if (errors.global?.[0]) {
+                form.setError("root", { message: errors.global[0] });
+            }
+            Object.entries(errors).forEach(([field, messages]) => {
+                if (field !== "global" && messages && messages.length > 0) {
                     const errorField = field as keyof ForgetModelType;
-                    form.setError(errorField, {
-                        message: messages[0],
-                    })
+                    form.setError(errorField, { message: messages[0] });
                 }
-            })
+            });
         }
 
         if (result.success) {

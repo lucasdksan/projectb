@@ -1,4 +1,5 @@
 import ResetView from "@/frontend/components/FormReset/reset.view";
+import Link from "next/link";
 import { KeyRound } from "lucide-react";
 
 export default function ResetPage() {
@@ -12,6 +13,12 @@ export default function ResetPage() {
                 <p className="text-gray-500 mt-2">Informe o token recebido por e-mail para resetar sua senha.</p>
             </div>
             <ResetView />
+            <div className="mt-10 text-center">
+                <p className="text-gray-500">
+                    Lembrou a senha?{" "}
+                    <Link href="/auth/signin" className="text-accent font-bold hover:underline">Entrar</Link>
+                </p>
+            </div>
         </>
     )
 }

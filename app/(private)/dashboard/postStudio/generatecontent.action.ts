@@ -1,7 +1,7 @@
 "use server";
 
 import { PostStudioController } from "@/backend/controllers/poststudio.controller";
-import { generateContentSchema } from "@/backend/schemas/generatecontent.schema";
+import { postStudioSchema } from "@/backend/schemas/poststudio.schema";
 
 export type GenerateContentActionResult =
     | { success: true; data: string }
@@ -17,7 +17,7 @@ export async function generateContentAction(
         customContext: formData.get("customContext") || undefined,
         style: formData.get("style"),
     };
-    const parsed = generateContentSchema.safeParse(raw);
+    const parsed = postStudioSchema.safeParse(raw);
     
     if (!parsed.success) {
         return {

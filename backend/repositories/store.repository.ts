@@ -9,7 +9,7 @@ export const StoreRepository = {
         });
     },
 
-    async createStore(userId: number, data: { name: string; email: string; number: string; description: string; typeMarket: string }) {
+    async createStore(userId: number, data: { slug: string; name: string; email: string; number: string; description: string; typeMarket: string }) {
         return await prisma.store.create({
             data: {
                 userId,
@@ -18,6 +18,7 @@ export const StoreRepository = {
                 number: data.number,
                 description: data.description,
                 typeMarket: data.typeMarket,
+                slug: data.slug,
             },
         });
     },

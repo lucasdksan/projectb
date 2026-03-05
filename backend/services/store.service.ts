@@ -7,7 +7,10 @@ export const StoreService = {
     },
 
     async createStore(userId: number, data: UpdateStoreDTO) {
-        return await StoreRepository.createStore(userId, data);
+        return await StoreRepository.createStore(userId, {
+            slug: data.name.toLowerCase().replace(/ /g, '-'),
+            ...data,
+        });
     },
 
     async updateStore(userId: number, data: UpdateStoreDTO) {

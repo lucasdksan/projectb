@@ -36,6 +36,8 @@ export async function forgetAction(data: unknown): Promise<ForgetActionResult> {
             message: "Email enviado com sucesso",
         }
     } catch (error) {
+        console.log(error);
+
         return {
             success: false,
             errors: {

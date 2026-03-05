@@ -1,10 +1,8 @@
 "use server";
 
-import { unstable_cache } from "next/cache";
 import { ProductForSuggestionsController } from "@/backend/controllers/productforsuggestions.controller";
 import {
     productForSuggestionsSchema,
-    type ProductForSuggestionsDTO,
     type ProductForSuggestionsResponse,
 } from "@/backend/schemas/productforsuggestions.schema";
 
@@ -12,21 +10,7 @@ export type ProductForSuggestionsActionResult =
     | { success: true; data: ProductForSuggestionsResponse }
     | { success: false; errors: Record<string, string[] | undefined> };
 
-const CACHE_TTL_SECONDS = 3600; // 1 hora
-
-const getCachedSuggestion = unstable_cache(
-    async (_productId: number, dto: ProductForSuggestionsDTO) => {
-        return ProductForSuggestionsController.generateSuggestion(dto);
-    },
-    ["product-suggestion"],
-    {
-        revalidate: CACHE_TTL_SECONDS,
-        tags: ["product-suggestions"],
-    }
-);
-
 export async function productForSuggestionsAction(data: {
-    productId: number;
     name: string;
     description?: string;
     price: number;
@@ -47,7 +31,7 @@ export async function productForSuggestionsAction(data: {
             };
         }
 
-        const result = await getCachedSuggestion(data.productId, parsed.data);
+        const result = await ProductForSuggestionsController.generateSuggestion(parsed.data);
 
         return {
             success: true,
@@ -55,13 +39,15 @@ export async function productForSuggestionsAction(data: {
         };
     } catch (error) {
         console.error("Erro ao gerar sugestão:", error);
+        const msg = error instanceof Error ? error.message : String(error);
+        const isQuotaError = msg.includes("429") || msg.includes("quota") || msg.includes("Too Many Requests");
         return {
             success: false,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Falha ao gerar sugestão. Tente novamente.",
+                    isQuotaError
+                        ? "Limite de uso da IA atingido. Tente novamente em alguns minutos ou amanhã."
+                        : msg || "Falha ao gerar sugestão. Tente novamente.",
                 ],
             },
         };

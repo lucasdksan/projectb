@@ -8,32 +8,75 @@ const imageModel = generativeAI.getGenerativeModel({
     model: "gemini-2.0-flash-preview-image-generation",
 });
 
+const MAX_RETRIES = 3;
+const DEFAULT_RETRY_DELAY_MS = 4000;
+
+function isRateLimitError(error: unknown): boolean {
+    const msg = error instanceof Error ? error.message : String(error);
+    return msg.includes("429") || msg.includes("Too Many Requests") || msg.includes("quota");
+}
+
+function getRetryDelayMs(error: unknown): number {
+    const msg = error instanceof Error ? error.message : String(error);
+    const match = msg.match(/retry in (\d+\.?\d*)s/i);
+    if (match) {
+        return Math.ceil(parseFloat(match[1]) * 1000);
+    }
+    const err = error as { errorDetails?: Array<{ retryDelay?: string }> };
+    const retryInfo = err?.errorDetails?.find?.((d) => "retryDelay" in d);
+    if (retryInfo?.retryDelay) {
+        const str = retryInfo.retryDelay;
+        const seconds = parseInt(str.replace(/[^\d]/g, ""), 10) || 3;
+        return seconds * 1000;
+    }
+    return DEFAULT_RETRY_DELAY_MS;
+}
+
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            lastError = error;
+            if (attempt < MAX_RETRIES - 1 && isRateLimitError(error)) {
+                const delay = getRetryDelayMs(error);
+                await new Promise((r) => setTimeout(r, delay));
+            } else {
+                throw error;
+            }
+        }
+    }
+    throw lastError;
+}
+
 export const aiIntegration: AIIntegration = {
     singlePrompt: async (prompt: string) => {
-        const result = await model.generateContent(prompt);
-
-        return {
-            data: result.response.text(),
-        };
+        return withRetry(async () => {
+            const result = await model.generateContent(prompt);
+            return { data: result.response.text() };
+        });
     },
 
     singlePromptWithImage: async (prompt: string, file: Blob) => {
-        const imageBytes = await file.arrayBuffer();
-        const imgBase64 = Buffer.from(imageBytes).toString("base64");
+        return withRetry(async () => {
+            const imageBytes = await file.arrayBuffer();
+            const imgBase64 = Buffer.from(imageBytes).toString("base64");
 
-        const result = await model.generateContent([
-            { text: prompt },
-            {
-                inlineData: {
-                    mimeType: file.type,
-                    data: imgBase64
+            const result = await model.generateContent([
+                { text: prompt },
+                {
+                    inlineData: {
+                        mimeType: file.type,
+                        data: imgBase64
+                    }
                 }
-            }
-        ]);
+            ]);
 
-        return {
-            data: result.response.text(),
-        };
+            return {
+                data: result.response.text(),
+            };
+        });
     },
 
     chatWithContext: async (

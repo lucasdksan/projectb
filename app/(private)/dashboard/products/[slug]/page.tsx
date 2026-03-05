@@ -126,7 +126,6 @@ export default async function ProductPage({
                     </div>
 
                     <ProductForSuggestionsView
-                        productId={data.id}
                         name={data.name ?? ""}
                         description={data.description ?? ""}
                         price={data.price}

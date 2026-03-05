@@ -3,6 +3,9 @@ export interface ChartDataPoint {
     v: number;
 }
 
+/** Modos de agregação do gráfico de conteúdos gerados */
+export type ChartGranularity = "week" | "month" | "day";
+
 export interface ContentData {
     id: number;
     headline: string;
@@ -17,4 +20,6 @@ export interface ContentData {
 
 export interface GraphicModelProps {
     contents: ContentData[];
+    /** Granularidade do gráfico: semana (dias da semana), mês ou dia do mês */
+    granularity?: ChartGranularity;
 }

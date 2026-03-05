@@ -1,6 +1,6 @@
 "use client";
 
-import { User2Icon } from "lucide-react";
+import { Pencil, User2Icon } from "lucide-react";
 import { ProfileAreaProps } from "./profilearea.model";
 import { useProfileAreaViewModel } from "./profilearea.viewmodel";
 

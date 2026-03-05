@@ -1,10 +1,46 @@
 "use client";
 
 import { FaBoltLightning } from "react-icons/fa6";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import type { Components } from "react-markdown";
 import { AichatViewProps, ContentMode, PLATFORM_LABELS } from "./aichat.model";
 import { useAichatViewModel } from "./aichat.viewmodel";
 import { SUPPORTED_PLATFORMS, type Platform } from "@/backend/schemas/aichat.schema";
 import { Sparkles, Loader2, Save, CheckCircle, X, Paperclip, Send, ShieldUser } from "lucide-react";
+
+const markdownComponents: Components = {
+    h1: ({ children }) => <h1 className="text-lg font-bold text-white mt-4 mb-2 first:mt-0">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-base font-bold text-white/95 mt-4 mb-2 first:mt-0">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-sm font-semibold text-white/90 mt-3 mb-1.5">{children}</h3>,
+    p: ({ children }) => <p className="text-sm text-gray-300 mb-2 last:mb-0 leading-relaxed">{children}</p>,
+    strong: ({ children }) => <strong className="font-semibold text-white/95">{children}</strong>,
+    em: ({ children }) => <em className="text-gray-400 italic">{children}</em>,
+    ul: ({ children }) => <ul className="list-disc list-outside text-sm text-gray-300 space-y-1 my-2 ml-4 [&_ul]:list-[circle] [&_ul]:ml-4">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-outside text-sm text-gray-300 space-y-1 my-2 ml-4 [&_ol]:ml-6">{children}</ol>,
+    li: ({ children }) => <li className="text-gray-300 leading-relaxed pl-1 marker:text-[#00ff41]/70">{children}</li>,
+    blockquote: ({ children }) => <blockquote className="border-l-2 border-[#00ff41]/50 pl-4 my-2 text-gray-400 italic">{children}</blockquote>,
+    hr: () => <hr className="border-white/10 my-3" />,
+    pre: ({ children }) => <pre className="bg-white/5 rounded-lg p-3 overflow-x-auto my-2 text-xs text-gray-300">{children}</pre>,
+    code: ({ className, children }) => (
+        <code className={className ? "text-xs text-gray-300 font-mono" : "text-xs bg-white/10 rounded px-1.5 py-0.5 text-[#00ff41]/90 font-mono"}>
+            {children}
+        </code>
+    ),
+};
+
+function ChatMessageContent({ content, role }: { content: string; role: "user" | "assistant" }) {
+    if (role === "assistant") {
+        return (
+            <div className="aichat-markdown [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                    {content}
+                </ReactMarkdown>
+            </div>
+        );
+    }
+    return <p className="text-sm whitespace-pre-wrap">{content}</p>;
+}
 
 const ViewContentMode = ({ mode }: { mode: ContentMode; }) => {
     const contentMode = {
@@ -125,7 +161,7 @@ export default function AichatView({ userName }: AichatViewProps) {
                                             className="w-16 h-16 object-cover rounded-lg mb-2"
                                         />
                                     )}
-                                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                    <ChatMessageContent content={msg.content} role={msg.role} />
                                     {msg.role === "assistant" && msg.structuredContent && (
                                         <button
                                             type="button"

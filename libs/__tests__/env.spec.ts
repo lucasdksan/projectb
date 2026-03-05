@@ -18,6 +18,7 @@ describe("envSchema", () => {
     process.env.DATABASE_URL = "postgres://user:pass@localhost:5432/db";
     process.env.NEXT_PUBLIC_NODE_ENV = "development";
     process.env.JWT_SECRET = "secret";
+    process.env.PASSWORD_PEPPER = "password-pepper-secret";
     process.env.MAIL_USER = "mail@test.com";
     process.env.MAIL_PASS = "mailpass";
     process.env.MAIL_HOST = "smtp.mail.com";
@@ -33,6 +34,7 @@ describe("envSchema", () => {
       DATABASE_URL: "postgres://user:pass@localhost:5432/db",
       NEXT_PUBLIC_NODE_ENV: "development",
       JWT_SECRET: "secret",
+      PASSWORD_PEPPER: "password-pepper-secret",
       MAIL_USER: "mail@test.com",
       MAIL_PASS: "mailpass",
       MAIL_HOST: "smtp.mail.com",

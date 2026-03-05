@@ -23,12 +23,14 @@ describe("forget", () => {
     });
 
     it("deve adicionar 1 hora à data atual", () => {
-      const originalNow = new Date(forget.now);
+      const mockNow = new Date("2024-01-01T12:00:00");
+      vi.spyOn(forget, "getCurrentTime").mockReturnValue(mockNow);
+
       const result = forget.generateDateAndToken();
-      const expectedTime = new Date(originalNow);
-      expectedTime.setHours(expectedTime.getHours() + 1);
+      const expectedTime = new Date("2024-01-01T13:00:00");
 
       expect(result.now.getTime()).toBe(expectedTime.getTime());
+      vi.restoreAllMocks();
     });
   });
 
@@ -95,7 +97,9 @@ describe("forget", () => {
     });
 
     it("deve validar token exatamente no limite de expiração", () => {
-      const exactExpirationDate = new Date(forget.now);
+      const mockNow = new Date("2024-01-01T12:00:00");
+      vi.spyOn(forget, "getCurrentTime").mockReturnValue(mockNow);
+      const exactExpirationDate = new Date("2024-01-01T12:00:00");
 
       const result = forget.validateToken({
         passwordResetToken: "token-123",
@@ -107,6 +111,7 @@ describe("forget", () => {
         success: true,
         message: null,
       });
+      vi.restoreAllMocks();
     });
   });
 });

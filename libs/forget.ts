@@ -1,29 +1,37 @@
-export const forget =  {
+export const forget = {
     now: new Date(),
 
-    generateDateAndToken(){
-        const _now = this.now;
-        const token = crypto.randomUUID();
-
-        _now.setHours(_now.getHours() + 1);
-    
-        return {
-            now: _now,
-            token
-        }
+    getCurrentTime() {
+        return new Date();
     },
 
-    validateToken({ passwordResetExpires, passwordResetToken, token }:{ 
-        passwordResetToken: string | null; 
-        passwordResetExpires: Date | null; 
-        token: string;
-    }){
-        const _now = this.now;
+    generateDateAndToken() {
+        const now = this.getCurrentTime();
+        const expiresAt = new Date(now.getTime());
+        expiresAt.setHours(expiresAt.getHours() + 1);
+        const token = crypto.randomUUID();
 
-        if(!passwordResetExpires) return { success: false, message: "Tempo não registrado" };
-        if(passwordResetToken !== token) return { success: false, message: "Token inválido" };
-        if(_now > passwordResetExpires) return { success: false, message: "Token sem validade" };
+        return {
+            now: expiresAt,
+            token,
+        };
+    },
+
+    validateToken({
+        passwordResetExpires,
+        passwordResetToken,
+        token,
+    }: {
+        passwordResetToken: string | null;
+        passwordResetExpires: Date | null;
+        token: string;
+    }) {
+        const now = this.getCurrentTime();
+
+        if (!passwordResetExpires) return { success: false, message: "Tempo não registrado" };
+        if (passwordResetToken !== token) return { success: false, message: "Token inválido" };
+        if (now > passwordResetExpires) return { success: false, message: "Token sem validade" };
 
         return { success: true, message: null };
-    }
-}
+    },
+};

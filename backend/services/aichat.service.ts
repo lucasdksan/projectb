@@ -6,6 +6,10 @@ import {
     type ContentMode,
     SUPPORTED_PLATFORMS,
 } from "../schemas/aichat.schema";
+import {
+    captureFirstValidScreenshot,
+    getValidSocialUrls,
+} from "./screenshot.service";
 
 const JSON_RESPONSE_RULES = `
 IMPORTANTE: Você DEVE responder SEMPRE em formato JSON válido com a seguinte estrutura:
@@ -33,7 +37,8 @@ Regras:
 
 const COMPETITOR_ANALYSIS_SYSTEM = `Você é um estrategista de conteúdo e análise competitiva. Responda em texto livre, direto ao ponto — estilo ChatGPT: sem JSON, sem formulários.
 
-O usuário pode informar @ de perfil, link ou nome do concorrente. Faça uma análise objetiva: o que o concorrente faz bem (tom, formatos, temas) e sugira conteúdos e ângulos para o usuário se diferenciar e superá-los.
+O usuário pode informar @ de perfil, link ou nome do concorrente. Quando uma imagem for enviada, ela é um screenshot da página do concorrente — use-a para analisar visualmente: layout, estética, tipos de post, paleta de cores e elementos visuais.
+Faça uma análise objetiva: o que o concorrente faz bem (tom, formatos, temas) e sugira conteúdos e ângulos para o usuário se diferenciar e superá-los.
 Respostas curtas e objetivas. Use listas e tópicos quando ajudar.`;
 
 function parseAIResponse(response: string): AIContentResponse | null {
@@ -108,11 +113,23 @@ export const AIChatService = {
             ? `[Plataforma: ${platform}] ${prompt}`
             : prompt;
 
+        let imageToSend = image;
+
+        if (mode === "competitor") {
+            const validUrls = getValidSocialUrls(prompt);
+            if (validUrls.length > 0) {
+                const screenshot = await captureFirstValidScreenshot(prompt);
+                if (screenshot) {
+                    imageToSend = screenshot;
+                }
+            }
+        }
+
         const { data } = await aiIntegration.chatWithContext(
             systemPrompt,
             history,
             enhancedPrompt,
-            image,
+            imageToSend,
         );
 
         if (mode === "standard") {

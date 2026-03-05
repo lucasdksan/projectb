@@ -16,8 +16,9 @@ export function GraphicView({ contents }: GraphicModelProps) {
     }
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
+        <div className="w-full min-h-[200px] h-full">
+            <ResponsiveContainer width="100%" height="100%" minHeight={200}>
+                <AreaChart data={chartData}>
                 <defs>
                     <linearGradient id="colorV" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#00ff41" stopOpacity={0.3}/>
@@ -51,6 +52,7 @@ export function GraphicView({ contents }: GraphicModelProps) {
                     strokeWidth={2}
                 />
             </AreaChart>
-        </ResponsiveContainer>
+            </ResponsiveContainer>
+        </div>
     );
 }

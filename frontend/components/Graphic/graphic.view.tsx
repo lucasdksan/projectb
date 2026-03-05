@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useGraphicViewModel } from './graphic.viewmodel';
-import { GraphicModelProps } from './graphic.model';
+import { ChartGranularity, GRANULARITY_OPTIONS, GraphicModelProps } from './graphic.model';
 
 export function GraphicView({ contents }: GraphicModelProps) {
-    const { chartData, hasData } = useGraphicViewModel({ contents });
+    const [granularity, setGranularity] = useState<ChartGranularity>("week");
+    const { chartData, hasData } = useGraphicViewModel({ contents, granularity });
 
     if (!hasData) {
         return (
@@ -16,7 +18,22 @@ export function GraphicView({ contents }: GraphicModelProps) {
     }
 
     return (
-        <div className="w-full min-h-[200px] h-full">
+        <div className="w-full min-h-[200px] h-full flex flex-col gap-4">
+            <div className="flex gap-2 flex-wrap">
+                {GRANULARITY_OPTIONS.map(({ value, label }) => (
+                    <button
+                        key={value}
+                        onClick={() => setGranularity(value)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                            granularity === value
+                                ? "bg-[#00ff41] text-black border-[#00ff41]"
+                                : "bg-white/5 text-gray-400 border-white/10 hover:border-[#00ff41]/50"
+                        }`}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
             <ResponsiveContainer width="100%" height="100%" minHeight={200}>
                 <AreaChart data={chartData}>
                 <defs>
@@ -31,7 +48,7 @@ export function GraphicView({ contents }: GraphicModelProps) {
                     fontSize={12} 
                     tickLine={false} 
                     axisLine={false}
-                    interval={0}
+                    interval={granularity === "day" ? "preserveStartEnd" : 0}
                     padding={{ left: 10, right: 10 }}
                 />
                 <Tooltip 

@@ -135,4 +135,43 @@ describe("crypt", () => {
       ).rejects.toThrow("PASSWORD_PEPPER must be set in environment variables");
     });
   });
+
+  describe("hashToken", () => {
+    it("deve fazer hash de um token usando argon2 (sem pepper)", async () => {
+      const token = "random-reset-token-123";
+      const hashedToken = "$argon2id$v=19$m=65536,t=3,p=4$example";
+
+      vi.mocked(argon2.hash).mockResolvedValue(hashedToken);
+
+      const crypt = (await import("../crypt")).default;
+      const result = await crypt.hashToken(token);
+
+      expect(result).toBe(hashedToken);
+      expect(argon2.hash).toHaveBeenCalledWith(token);
+    });
+  });
+
+  describe("verifyToken", () => {
+    it("deve retornar true quando o token corresponder ao hash", async () => {
+      const token = "random-token";
+      const hash = "$argon2id$v=19$m=65536,t=3,p=4$example";
+
+      vi.mocked(argon2.verify).mockResolvedValue(true);
+
+      const crypt = (await import("../crypt")).default;
+      const result = await crypt.verifyToken(hash, token);
+
+      expect(result).toBe(true);
+      expect(argon2.verify).toHaveBeenCalledWith(hash, token);
+    });
+
+    it("deve retornar false quando o token não corresponder", async () => {
+      vi.mocked(argon2.verify).mockResolvedValue(false);
+
+      const crypt = (await import("../crypt")).default;
+      const result = await crypt.verifyToken("stored-hash", "wrong-token");
+
+      expect(result).toBe(false);
+    });
+  });
 });

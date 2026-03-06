@@ -37,11 +37,11 @@ describe("jwt", () => {
       expect(jsonwebtoken.sign).toHaveBeenCalledWith(
         payload,
         "test-secret-key",
-        { expiresIn: "7d" }
+        { expiresIn: "15m" }
       );
     });
 
-    it("deve configurar expiração de 7 dias", async () => {
+    it("deve configurar expiração de 15 minutos", async () => {
       const payload = {
         sub: 456,
         name: "Jane Doe",
@@ -56,7 +56,7 @@ describe("jwt", () => {
       expect(jsonwebtoken.sign).toHaveBeenCalledWith(
         payload,
         "test-secret-key",
-        { expiresIn: "7d" }
+        { expiresIn: "15m" }
       );
     });
 
@@ -80,14 +80,14 @@ describe("jwt", () => {
       expect(jsonwebtoken.sign).toHaveBeenCalledWith(
         payloadWithStringId,
         "test-secret-key",
-        { expiresIn: "7d" }
+        { expiresIn: "15m" }
       );
 
       jwt.signJwt(payloadWithNumberId);
       expect(jsonwebtoken.sign).toHaveBeenCalledWith(
         payloadWithNumberId,
         "test-secret-key",
-        { expiresIn: "7d" }
+        { expiresIn: "15m" }
       );
     });
   });

@@ -29,7 +29,7 @@ describe("tokenIntoCookies", () => {
   });
 
   describe("set", () => {
-    it("deve configurar o token nos cookies com secure true", async () => {
+    it("deve configurar access e refresh token nos cookies com secure true", async () => {
       const mockCookieStore = {
         set: vi.fn(),
       };
@@ -37,41 +37,30 @@ describe("tokenIntoCookies", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
 
       const tokenIntoCookies = (await import("../token")).default;
-      await tokenIntoCookies.set("my-jwt-token", true);
+      await tokenIntoCookies.set("my-jwt-token", "my-refresh-token", true);
 
-      expect(mockCookieStore.set).toHaveBeenCalledWith({
+      expect(mockCookieStore.set).toHaveBeenCalledTimes(2);
+      expect(mockCookieStore.set).toHaveBeenNthCalledWith(1, {
         name: "token",
         value: "my-jwt-token",
         httpOnly: true,
         secure: true,
         sameSite: "strict",
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 7 dias
+        maxAge: 60 * 15,
       });
-    });
-
-    it("deve configurar o token nos cookies com secure false", async () => {
-      const mockCookieStore = {
-        set: vi.fn(),
-      };
-
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
-
-      const tokenIntoCookies = (await import("../token")).default;
-      await tokenIntoCookies.set("my-jwt-token", false);
-
-      expect(mockCookieStore.set).toHaveBeenCalledWith({
-        name: "token",
-        value: "my-jwt-token",
+      expect(mockCookieStore.set).toHaveBeenNthCalledWith(2, {
+        name: "refreshToken",
+        value: "my-refresh-token",
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "strict",
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
       });
     });
 
-    it("deve configurar cookie com httpOnly e sameSite strict", async () => {
+    it("deve configurar os tokens nos cookies com secure false", async () => {
       const mockCookieStore = {
         set: vi.fn(),
       };
@@ -79,15 +68,32 @@ describe("tokenIntoCookies", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
 
       const tokenIntoCookies = (await import("../token")).default;
-      await tokenIntoCookies.set("test-token", true);
+      await tokenIntoCookies.set("my-jwt-token", "my-refresh-token", false);
+
+      expect(mockCookieStore.set).toHaveBeenNthCalledWith(1, expect.objectContaining({
+        secure: false,
+      }));
+    });
+
+    it("deve configurar cookies com httpOnly e sameSite strict", async () => {
+      const mockCookieStore = {
+        set: vi.fn(),
+      };
+
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+
+      const tokenIntoCookies = (await import("../token")).default;
+      await tokenIntoCookies.set("test-token", "test-refresh", true);
 
       const callArgs = mockCookieStore.set.mock.calls[0][0];
       expect(callArgs.httpOnly).toBe(true);
       expect(callArgs.sameSite).toBe("strict");
       expect(callArgs.path).toBe("/");
     });
+  });
 
-    it("deve configurar maxAge para 7 dias (604800 segundos)", async () => {
+  describe("setAccessOnly", () => {
+    it("deve configurar apenas o access token (para update de perfil)", async () => {
       const mockCookieStore = {
         set: vi.fn(),
       };
@@ -95,10 +101,35 @@ describe("tokenIntoCookies", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
 
       const tokenIntoCookies = (await import("../token")).default;
-      await tokenIntoCookies.set("test-token", true);
+      await tokenIntoCookies.setAccessOnly("new-access-token", true);
 
-      const callArgs = mockCookieStore.set.mock.calls[0][0];
-      expect(callArgs.maxAge).toBe(604800); // 60 * 60 * 24 * 7
+      expect(mockCookieStore.set).toHaveBeenCalledTimes(1);
+      expect(mockCookieStore.set).toHaveBeenCalledWith({
+        name: "token",
+        value: "new-access-token",
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 15,
+      });
+    });
+  });
+
+  describe("deleteAll", () => {
+    it("deve deletar token e refreshToken", async () => {
+      const mockCookieStore = {
+        delete: vi.fn(),
+      };
+
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+
+      const tokenIntoCookies = (await import("../token")).default;
+      await tokenIntoCookies.deleteAll();
+
+      expect(mockCookieStore.delete).toHaveBeenCalledTimes(2);
+      expect(mockCookieStore.delete).toHaveBeenNthCalledWith(1, { name: "token" });
+      expect(mockCookieStore.delete).toHaveBeenNthCalledWith(2, { name: "refreshToken" });
     });
   });
 

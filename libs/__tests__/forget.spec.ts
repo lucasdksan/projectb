@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { forget } from "../forget";
+import crypt from "../crypt";
 
 describe("forget", () => {
   let randomUUIDSpy: any;
@@ -35,9 +36,9 @@ describe("forget", () => {
   });
 
   describe("validateToken", () => {
-    it("deve retornar erro quando passwordResetExpires for null", () => {
-      const result = forget.validateToken({
-        passwordResetToken: "some-token",
+    it("deve retornar erro quando passwordResetExpires for null", async () => {
+      const result = await forget.validateToken({
+        passwordResetToken: "some-hash",
         passwordResetExpires: null,
         token: "some-token",
       });
@@ -48,12 +49,13 @@ describe("forget", () => {
       });
     });
 
-    it("deve retornar erro quando o token não corresponder", () => {
+    it("deve retornar erro quando o token não corresponder", async () => {
       const futureDate = new Date();
       futureDate.setHours(futureDate.getHours() + 2);
+      const validHash = await crypt.hashToken("token-123");
 
-      const result = forget.validateToken({
-        passwordResetToken: "token-123",
+      const result = await forget.validateToken({
+        passwordResetToken: validHash,
         passwordResetExpires: futureDate,
         token: "different-token",
       });
@@ -64,12 +66,13 @@ describe("forget", () => {
       });
     });
 
-    it("deve retornar erro quando o token estiver expirado", () => {
+    it("deve retornar erro quando o token estiver expirado", async () => {
       const pastDate = new Date();
       pastDate.setHours(pastDate.getHours() - 2);
+      const validHash = await crypt.hashToken("token-123");
 
-      const result = forget.validateToken({
-        passwordResetToken: "token-123",
+      const result = await forget.validateToken({
+        passwordResetToken: validHash,
         passwordResetExpires: pastDate,
         token: "token-123",
       });
@@ -80,12 +83,13 @@ describe("forget", () => {
       });
     });
 
-    it("deve retornar sucesso quando o token for válido e não expirado", () => {
+    it("deve retornar sucesso quando o token for válido e não expirado", async () => {
       const futureDate = new Date();
       futureDate.setHours(futureDate.getHours() + 2);
+      const validHash = await crypt.hashToken("token-123");
 
-      const result = forget.validateToken({
-        passwordResetToken: "token-123",
+      const result = await forget.validateToken({
+        passwordResetToken: validHash,
         passwordResetExpires: futureDate,
         token: "token-123",
       });
@@ -96,13 +100,30 @@ describe("forget", () => {
       });
     });
 
-    it("deve validar token exatamente no limite de expiração", () => {
+    it("deve retornar erro quando passwordResetToken for null", async () => {
+      const futureDate = new Date();
+      futureDate.setHours(futureDate.getHours() + 2);
+
+      const result = await forget.validateToken({
+        passwordResetToken: null,
+        passwordResetExpires: futureDate,
+        token: "token-123",
+      });
+
+      expect(result).toEqual({
+        success: false,
+        message: "Token inválido",
+      });
+    });
+
+    it("deve validar token exatamente no limite de expiração", async () => {
       const mockNow = new Date("2024-01-01T12:00:00");
       vi.spyOn(forget, "getCurrentTime").mockReturnValue(mockNow);
       const exactExpirationDate = new Date("2024-01-01T12:00:00");
+      const validHash = await crypt.hashToken("token-123");
 
-      const result = forget.validateToken({
-        passwordResetToken: "token-123",
+      const result = await forget.validateToken({
+        passwordResetToken: validHash,
         passwordResetExpires: exactExpirationDate,
         token: "token-123",
       });

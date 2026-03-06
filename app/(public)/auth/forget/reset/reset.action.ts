@@ -21,9 +21,9 @@ export async function resetAction(data: unknown): Promise<ResetActionResult> {
     try {
         const { email, token, password } = parsed.data;
 
-        const user = await AuthController.reset({ email: email!, token: token!, password: password! });
+        const result = await AuthController.reset({ email: email!, token: token!, password: password! });
 
-        if (!user.status) {
+        if (!result.status) {
             return {
                 success: false,
                 errors: {
@@ -32,7 +32,7 @@ export async function resetAction(data: unknown): Promise<ResetActionResult> {
             }
         }
 
-        await tokenIntoCookies.set(user.token, process.env.NODE_ENV === "production");
+        await tokenIntoCookies.set(result.token, result.refreshToken, process.env.NODE_ENV === "production");
 
         return {
             success: true,

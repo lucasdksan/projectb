@@ -2,8 +2,6 @@
 
 import tokenIntoCookies from "@/libs/token";
 
-export async function logoutAction(formData: FormData) {
-    await tokenIntoCookies.delete("token");
-
-    return;
+export async function logoutAction(_formData: FormData) {
+    await tokenIntoCookies.deleteAll();
 }

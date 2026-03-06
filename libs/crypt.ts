@@ -21,7 +21,15 @@ const crypt = {
     async comparePassword(password: string, passwordHash: string) {
         const secret = getPepper();
         return argon2.verify(passwordHash, password, argon2Options(secret));
-    }
-}
+    },
+
+    async hashToken(token: string): Promise<string> {
+        return argon2.hash(token);
+    },
+
+    async verifyToken(hash: string, token: string): Promise<boolean> {
+        return argon2.verify(hash, token);
+    },
+};
 
 export default crypt;

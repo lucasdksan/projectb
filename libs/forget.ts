@@ -1,3 +1,5 @@
+import crypt from "./crypt";
+
 export const forget = {
     now: new Date(),
 
@@ -17,7 +19,7 @@ export const forget = {
         };
     },
 
-    validateToken({
+    async validateToken({
         passwordResetExpires,
         passwordResetToken,
         token,
@@ -25,12 +27,15 @@ export const forget = {
         passwordResetToken: string | null;
         passwordResetExpires: Date | null;
         token: string;
-    }) {
+    }): Promise<{ success: boolean; message: string | null }> {
         const now = this.getCurrentTime();
 
         if (!passwordResetExpires) return { success: false, message: "Tempo não registrado" };
-        if (passwordResetToken !== token) return { success: false, message: "Token inválido" };
+        if (!passwordResetToken) return { success: false, message: "Token inválido" };
         if (now > passwordResetExpires) return { success: false, message: "Token sem validade" };
+
+        const isTokenValid = await crypt.verifyToken(passwordResetToken, token);
+        if (!isTokenValid) return { success: false, message: "Token inválido" };
 
         return { success: true, message: null };
     },

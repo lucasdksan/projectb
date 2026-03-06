@@ -24,6 +24,12 @@ export const AuthRepository = {
         return user;
     },
 
+    async findUserById(id: number) {
+        return await prisma.users.findUnique({
+            where: { id },
+        });
+    },
+
     async exist(email: string): Promise<boolean> {
         const user = await prisma.users.findFirst({
             where: {

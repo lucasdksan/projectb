@@ -12,6 +12,8 @@ export const updateUserSchema = z.object({
     password: z.string().min(8).optional(),
     passwordResetExpires: z.date().optional(),
     passwordResetToken: z.string().optional(),
+    refreshTokenHash: z.string().nullable().optional(),
+    refreshTokenExpiresAt: z.date().nullable().optional(),
 });
 
 export const signInSchema = z.object({

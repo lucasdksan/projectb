@@ -1,15 +1,40 @@
 import { cookies } from "next/headers";
 
-const tokenIntoCookies = {
-    async cookiesStoreFn(){
-        const cookieStore = await cookies();
+const ACCESS_MAX_AGE = 60 * 15;
+const REFRESH_MAX_AGE = 60 * 60 * 24 * 7;
 
-        return  { cookieStore };
+const tokenIntoCookies = {
+    async cookiesStoreFn() {
+        const cookieStore = await cookies();
+        return { cookieStore };
     },
 
-    async set(token: string, secure: boolean) {
+    async set(accessToken: string, refreshToken: string, secure: boolean) {
         const { cookieStore } = await this.cookiesStoreFn();
 
+        cookieStore.set({
+            name: "token",
+            value: accessToken,
+            httpOnly: true,
+            secure,
+            sameSite: "strict",
+            path: "/",
+            maxAge: ACCESS_MAX_AGE,
+        });
+
+        cookieStore.set({
+            name: "refreshToken",
+            value: refreshToken,
+            httpOnly: true,
+            secure,
+            sameSite: "strict",
+            path: "/",
+            maxAge: REFRESH_MAX_AGE,
+        });
+    },
+
+    async setAccessOnly(token: string, secure: boolean) {
+        const { cookieStore } = await this.cookiesStoreFn();
         cookieStore.set({
             name: "token",
             value: token,
@@ -17,17 +42,20 @@ const tokenIntoCookies = {
             secure,
             sameSite: "strict",
             path: "/",
-            maxAge: 60 * 60 * 24 * 7,
+            maxAge: ACCESS_MAX_AGE,
         });
     },
 
-    async delete(name: string){
+    async delete(name: string) {
         const { cookieStore } = await this.cookiesStoreFn();
+        cookieStore.delete({ name });
+    },
 
-        cookieStore.delete({
-            name
-        });    
-    }
-}
+    async deleteAll() {
+        const { cookieStore } = await this.cookiesStoreFn();
+        cookieStore.delete({ name: "token" });
+        cookieStore.delete({ name: "refreshToken" });
+    },
+};
 
 export default tokenIntoCookies;

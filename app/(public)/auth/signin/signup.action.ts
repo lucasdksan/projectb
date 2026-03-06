@@ -20,8 +20,8 @@ export async function signinAction(data: unknown) {
     }
 
     try {
-        const { token, name, email } = await AuthController.signIn(parsed.data);
-        await tokenIntoCookies.set(token, env.NODE_ENV === "production");
+        const { token, refreshToken, name, email } = await AuthController.signIn(parsed.data);
+        await tokenIntoCookies.set(token, refreshToken, env.NODE_ENV === "production");
         return {
             success: true,
             data: { email, name },

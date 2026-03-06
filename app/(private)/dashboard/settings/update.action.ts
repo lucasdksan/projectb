@@ -35,7 +35,7 @@ export async function updateUserAction(data: unknown): Promise<UpdateUserActionR
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
         const { token, name } = await UserController.updateUser(parsed.data, userId);
 
-        await tokenIntoCookies.set(token, env.NODE_ENV === "production");
+        await tokenIntoCookies.setAccessOnly(token, env.NODE_ENV === "production");
 
         return {
             success: true,

@@ -8,12 +8,17 @@ export type JwtPayload =  {
 }
 
 const JWT_SECRET = env.JWT_SECRET as string;
+const ACCESS_TOKEN_EXPIRY = "15m";
 
 const jwt = {
-    signJwt(payload: JwtPayload): string {
+    signAccessToken(payload: JwtPayload): string {
         return jsonwebtoken.sign(payload, JWT_SECRET, {
-            expiresIn: "7d",
+            expiresIn: ACCESS_TOKEN_EXPIRY,
         });
+    },
+
+    signJwt(payload: JwtPayload): string {
+        return this.signAccessToken(payload);
     },
 
     verifyJwt<T = JwtPayload>(token: string): T {

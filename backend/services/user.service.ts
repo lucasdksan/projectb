@@ -6,7 +6,7 @@ export const UserService = {
     async updateUser(data: UpdateUserDTO, userId: number){
         const user = await UserRepository.updateUser(data, userId);
 
-        const tokenAccess = jwt.signJwt({
+        const tokenAccess = jwt.signAccessToken({
             sub: user.id,
             name: user.name,
             email: user.email,

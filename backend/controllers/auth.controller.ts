@@ -10,11 +10,15 @@ export const AuthController = {
         return await AuthService.signIn(dto);
     },
 
+    async refreshSession(refreshTokenPayload: string) {
+        return await AuthService.refreshSession(refreshTokenPayload);
+    },
+
     async forget(dto: ForgetDTO) {
         return await AuthService.forgot(dto.email!);
     },
 
     async reset(dto: ResetUserDTO) {
         return await AuthService.reset(dto);
-    }
-}
+    },
+};

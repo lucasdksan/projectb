@@ -20,9 +20,8 @@ export async function signupAction(data: unknown): Promise<SignupActionResult> {
     }
 
     try {
-        const { email, name, token } = await AuthController.createUser(parsed.data);
-        await tokenIntoCookies.set(token, env.NODE_ENV === "production");
-
+        const { email, name, token, refreshToken } = await AuthController.createUser(parsed.data);
+        await tokenIntoCookies.set(token, refreshToken, env.NODE_ENV === "production");
 
         return {
             success: true,

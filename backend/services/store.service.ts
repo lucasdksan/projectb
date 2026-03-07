@@ -2,13 +2,21 @@ import { StoreRepository } from "../repositories/store.repository";
 import { UpdateStoreDTO } from "../schemas/store.schema";
 
 export const StoreService = {
-    async getStore(userId: number){
+    async getStore(userId: number) {
         return await StoreRepository.getStore(userId);
     },
 
     async createStore(userId: number, data: UpdateStoreDTO) {
+        const slug = data.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+
         return await StoreRepository.createStore(userId, {
-            slug: data.name.toLowerCase().replace(/ /g, '-'),
+            slug,
             ...data,
         });
     },

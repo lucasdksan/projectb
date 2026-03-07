@@ -3,6 +3,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { getProductAction } from "./getproduct.action";
 import GenerateAddsView from "@/frontend/components/GenerateAdds/generateadds.view";
 import EditProductView from "@/frontend/components/EditProduct/editproduct.view";
+import DeleteProductView from "@/frontend/components/DeleteProduct/deleteproduct.view";
 import ProductForSuggestionsView from "@/frontend/components/ProductForSuggestions/productforsuggestions.view";
 
 export default async function ProductPage({
@@ -43,6 +44,7 @@ export default async function ProductPage({
                         images={data.images}
                         isActive={data.isActive ?? true}
                     />
+                    <DeleteProductView id={data.id} />
                     <GenerateAddsView
                         name={data.name ?? ""}
                         description={data.description ?? ""}

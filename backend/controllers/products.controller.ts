@@ -21,4 +21,8 @@ export const ProductsController = {
     async updateProduct(productId: number, storeId: number, dto: UpdateProductDTO) {
         return await ProductsService.updateProduct(productId, storeId, dto);
     },
+
+    async deleteProduct(productId: number, storeId: number) {
+        return await ProductsService.deleteProduct(productId, storeId);
+    },
 }

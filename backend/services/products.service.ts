@@ -3,7 +3,18 @@ import { CreateProductDTO, ListProductsDTO, UpdateProductDTO } from "../schemas/
 
 export const ProductsService = {
     async createProduct(dto: CreateProductDTO, storeId: number){
-        return await ProductsRepository.createProduct(dto, storeId);
+        const slug = dto.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+
+        return await ProductsRepository.createProduct({
+            slug,
+            ...dto
+        }, storeId);
     },
 
     async quantityProducts(storeId: number) {
@@ -20,5 +31,9 @@ export const ProductsService = {
 
     async updateProduct(productId: number, storeId: number, dto: UpdateProductDTO) {
         return await ProductsRepository.updateProduct(productId, storeId, dto);
+    },
+
+    async deleteProduct(productId: number, storeId: number) {
+        return await ProductsRepository.deleteProduct(productId, storeId);
     },
 }

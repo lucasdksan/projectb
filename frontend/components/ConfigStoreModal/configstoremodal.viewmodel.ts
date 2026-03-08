@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { updateConfigStoreAction } from "@/app/(private)/dashboard/settings/updateconfigstore.action";
 import { useToast } from "@/frontend/hooks/useToast";
@@ -10,6 +10,10 @@ import { defaultConfigStoreForm, ACCEPTED_IMAGE_TYPES, ACCEPTED_IMAGE_EXT } from
 const inputClassName =
     "w-full bg-[#0d0d0d] border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#00ff41]/50 transition-all";
 const labelClassName = "text-sm font-semibold text-gray-400";
+
+function isObjectUrl(url: string): boolean {
+    return url.startsWith("blob:");
+}
 
 function formStateFromModel(model: ConfigStoreModel | null): ConfigStoreFormState {
     if (!model) return defaultConfigStoreForm;
@@ -38,20 +42,22 @@ export function useConfigStoreViewModel(model: ConfigStoreModel | null) {
         }
     }, [isOpen, model]);
 
-    const openModal = () => {
+    const closeModal = useCallback(() => {
+        setIsOpen(false);
+        setForm(formStateFromModel(model));
+        setLogoPreview((prev) => {
+            if (prev && isObjectUrl(prev)) {
+                URL.revokeObjectURL(prev);
+            }
+            return model?.logoUrl ?? null;
+        });
+    }, [model]);
+
+    const openModal = useCallback(() => {
         setIsOpen(true);
         setForm(formStateFromModel(model));
         setLogoPreview(model?.logoUrl ?? null);
-    };
-
-    const closeModal = () => {
-        setIsOpen(false);
-        setForm(formStateFromModel(model));
-        if (logoPreview && logoPreview !== model?.logoUrl) {
-            URL.revokeObjectURL(logoPreview);
-        }
-        setLogoPreview(model?.logoUrl ?? null);
-    };
+    }, [model]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -60,13 +66,16 @@ export function useConfigStoreViewModel(model: ConfigStoreModel | null) {
         };
         window.addEventListener("keydown", onKeyDown);
         return () => window.removeEventListener("keydown", onKeyDown);
-    }, [isOpen]);
+    }, [isOpen, closeModal]);
 
     useEffect(() => {
         return () => {
-            if (logoPreview && logoPreview !== model?.logoUrl) {
-                URL.revokeObjectURL(logoPreview);
-            }
+            setLogoPreview((prev) => {
+                if (prev && isObjectUrl(prev)) {
+                    URL.revokeObjectURL(prev);
+                }
+                return null;
+            });
         };
     }, []);
 
@@ -78,11 +87,14 @@ export function useConfigStoreViewModel(model: ConfigStoreModel | null) {
     };
 
     const handleLogoChange = (file: File | null) => {
-        if (logoPreview && logoPreview !== model?.logoUrl) {
-            URL.revokeObjectURL(logoPreview);
-        }
+        setLogoPreview((prev) => {
+            if (prev && isObjectUrl(prev)) {
+                URL.revokeObjectURL(prev);
+            }
+            return prev;
+        });
         updateField("logo", file);
-        
+
         if (file) {
             if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
                 toast?.showToast({
@@ -124,7 +136,6 @@ export function useConfigStoreViewModel(model: ConfigStoreModel | null) {
             return;
         }
 
-        // Only require logo if it's the first time (no existing logo)
         if (!form.logo && !model?.logoUrl) {
             toast?.showToast({
                 type: "error",

@@ -57,4 +57,16 @@ export const StoreRepository = {
             },
         });
     },
+
+
+    async getStoreBySlug(slug: string) {
+        return await prisma.store.findFirst({
+            where: {
+                slug
+            },
+            include: {
+                config: true,
+            }
+        });
+    },
 }   

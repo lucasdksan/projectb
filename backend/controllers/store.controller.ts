@@ -21,4 +21,8 @@ export const StoreController = {
     async updateConfigStore(userId: number, data: UpdateConfigStoreDTO) {
         return await StoreService.updateConfigStore(userId, data);
     },
+
+    async getStoreBySlug(slug: string) {
+        return await StoreService.getStoreBySlug(slug);
+    },
 }

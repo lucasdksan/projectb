@@ -4,15 +4,16 @@ import { createStoreAction } from "@/app/(private)/dashboard/settings/createstor
 import { updateStoreAction } from "@/app/(private)/dashboard/settings/updatestore.action";
 import { useToast } from "@/frontend/hooks/useToast";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { StoreFormState, defaultStoreForm } from "./storearea.model";
+import { useCallback, useEffect, useState } from "react";
+import type { StoreData, StoreFormState } from "./storearea.model";
+import { defaultStoreForm } from "./storearea.model";
 
 const inputClassName =
     "w-full bg-[#0d0d0d] border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#00ff41]/50 transition-all";
 const labelClassName = "text-sm font-semibold text-gray-400";
 const inputTextareaClassName = inputClassName + " min-h-[80px] resize-y";
 
-export function useStoreAreaViewModel(initialStore: StoreFormState | undefined | null) {
+export function useStoreAreaViewModel(initialStore: StoreData | undefined | null) {
     const router = useRouter();
     const hasStore = initialStore != null;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,8 +27,8 @@ export function useStoreAreaViewModel(initialStore: StoreFormState | undefined |
     const [isLoading, setIsLoading] = useState(false);
     const toast = useToast();
 
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    const openModal = useCallback(() => setIsModalOpen(true), []);
+    const closeModal = useCallback(() => setIsModalOpen(false), []);
 
     useEffect(() => {
         if (!isModalOpen) return;
@@ -44,38 +45,23 @@ export function useStoreAreaViewModel(initialStore: StoreFormState | undefined |
 
     const handleSubmitStore = async () => {
         if (!form.name.trim()) {
-            toast?.showToast({
-                type: "error",
-                message: "O nome da loja não pode estar vazio",
-            });
+            toast?.showToast({ type: "error", message: "O nome da loja não pode estar vazio" });
             return;
         }
         if (!form.email.trim()) {
-            toast?.showToast({
-                type: "error",
-                message: "O e-mail não pode estar vazio",
-            });
+            toast?.showToast({ type: "error", message: "O e-mail não pode estar vazio" });
             return;
         }
         if (!form.number.trim()) {
-            toast?.showToast({
-                type: "error",
-                message: "O telefone não pode estar vazio",
-            });
+            toast?.showToast({ type: "error", message: "O telefone não pode estar vazio" });
             return;
         }
         if (!form.description.trim()) {
-            toast?.showToast({
-                type: "error",
-                message: "A descrição não pode estar vazia",
-            });
+            toast?.showToast({ type: "error", message: "A descrição não pode estar vazia" });
             return;
         }
         if (!form.typeMarket.trim()) {
-            toast?.showToast({
-                type: "error",
-                message: "O tipo de mercado não pode estar vazio",
-            });
+            toast?.showToast({ type: "error", message: "O tipo de mercado não pode estar vazio" });
             return;
         }
 
@@ -104,10 +90,7 @@ export function useStoreAreaViewModel(initialStore: StoreFormState | undefined |
                     result.errors.description?.[0] ??
                     result.errors.typeMarket?.[0] ??
                     (hasStore ? "Erro ao atualizar loja" : "Erro ao cadastrar loja");
-                toast?.showToast({
-                    type: "error",
-                    message: errorMessage,
-                });
+                toast?.showToast({ type: "error", message: errorMessage });
             }
         } catch {
             toast?.showToast({
@@ -135,4 +118,3 @@ export function useStoreAreaViewModel(initialStore: StoreFormState | undefined |
         inputTextareaClassName,
     };
 }
-

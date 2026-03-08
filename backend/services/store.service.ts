@@ -43,17 +43,19 @@ export const StoreService = {
             throw new Error("Loja não encontrada");
         }
 
-        // Get existing config to delete old logo if needed
         const existingConfig = await StoreRepository.getStore(userId);
         if (existingConfig?.config?.logoUrl && existingConfig.config.logoUrl !== data.logoUrl) {
             try {
                 await vercelIntegration.blob.delete(existingConfig.config.logoUrl);
             } catch {
-                // Continue even if delete fails - don't block the update
                 console.error("Failed to delete old logo from Vercel Blob");
             }
         }
 
         return await StoreRepository.updateConfigStore(store.id, data);
+    },
+
+    async getStoreBySlug(slug: string) {
+        return await StoreRepository.getStoreBySlug(slug);
     },
 }

@@ -1,5 +1,6 @@
 import { StoreRepository } from "../repositories/store.repository";
-import { UpdateStoreDTO } from "../schemas/store.schema";
+import { UpdateStoreDTO, UpdateConfigStoreDTO } from "../schemas/store.schema";
+import { vercelIntegration } from "../intagrations/vercel";
 
 export const StoreService = {
     async getStore(userId: number) {
@@ -33,5 +34,26 @@ export const StoreService = {
         }
 
         return store.id;
+    },
+
+    async updateConfigStore(userId: number, data: UpdateConfigStoreDTO) {
+        const store = await this.getStore(userId);
+
+        if (!store) {
+            throw new Error("Loja não encontrada");
+        }
+
+        // Get existing config to delete old logo if needed
+        const existingConfig = await StoreRepository.getStore(userId);
+        if (existingConfig?.config?.logoUrl && existingConfig.config.logoUrl !== data.logoUrl) {
+            try {
+                await vercelIntegration.blob.delete(existingConfig.config.logoUrl);
+            } catch {
+                // Continue even if delete fails - don't block the update
+                console.error("Failed to delete old logo from Vercel Blob");
+            }
+        }
+
+        return await StoreRepository.updateConfigStore(store.id, data);
     },
 }

@@ -1,10 +1,13 @@
 "use client";
 
-import { Pencil, Plus, Store } from "lucide-react";
+import { Pencil, Plus, Store, Settings } from "lucide-react";
+import { useRef } from "react";
 import { StoreAreaProps } from "./storearea.model";
 import { useStoreAreaViewModel } from "./storearea.viewmodel";
+import { ConfigStoreModal } from "../ConfigStoreModal/configstoremodal.view";
 
 export default function StoreAreaView({ store }: StoreAreaProps) {
+    const configModalRef = useRef<{ openModal: () => void }>(null);
     const {
         form,
         isLoading,
@@ -51,23 +54,24 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                                 disabled
                             />
                         </div>
-                        <button
-                            type="button"
-                            className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
-                            onClick={openModal}
-                        >
-                            {hasStore ? (
-                                <>
-                                    <Pencil className="text-lg" />
-                                    Atualizar Loja
-                                </>
-                            ) : (
-                                <>
-                                    <Plus className="text-lg" />
-                                    Cadastrar Loja
-                                </>
-                            )}
-                        </button>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                className="bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
+                                onClick={openModal}
+                            >
+                                <Pencil className="text-lg" />
+                                Atualizar
+                            </button>
+                            <button
+                                type="button"
+                                className="bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
+                                onClick={() => configModalRef.current?.openModal()}
+                            >
+                                <Settings className="text-lg" />
+                                Configurar
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-6">
@@ -85,6 +89,15 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                     </div>
                 )}
             </section>
+
+            <ConfigStoreModal 
+                ref={configModalRef} 
+                config={store ? {
+                    primaryColor: (store as any).primaryColor ?? "#000000",
+                    secondaryColor: (store as any).secondaryColor ?? "#ffffff",
+                    logoUrl: (store as any).logoUrl ?? "",
+                } : null} 
+            />
 
             {isModalOpen && (
                 <div

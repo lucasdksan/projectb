@@ -5,6 +5,9 @@ export interface StoreAreaProps {
         number: string;
         description: string;
         typeMarket: string;
+        primaryColor?: string;
+        secondaryColor?: string;
+        logoUrl?: string;
     } | undefined | null;
 }   
 

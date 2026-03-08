@@ -19,3 +19,11 @@ export const updateStoreSchema = z.object({
 });
 
 export type UpdateStoreDTO = z.infer<typeof updateStoreSchema>;
+
+export const updateConfigStoreSchema = z.object({
+    primaryColor: z.string().min(1, "Cor primária é obrigatória").regex(/^#[0-9A-F]{6}$/i, "Formato de cor inválido. Use #RRGGBB"),
+    secondaryColor: z.string().min(1, "Cor secundária é obrigatória").regex(/^#[0-9A-F]{6}$/i, "Formato de cor inválido. Use #RRGGBB"),
+    logoUrl: z.string().min(1, "Logo é obrigatória"),
+});
+
+export type UpdateConfigStoreDTO = z.infer<typeof updateConfigStoreSchema>;

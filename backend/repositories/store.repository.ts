@@ -5,6 +5,9 @@ export const StoreRepository = {
         return await prisma.store.findFirst({
             where: {
                 userId
+            },
+            include: {
+                config: true,
             }
         });
     },
@@ -33,6 +36,24 @@ export const StoreRepository = {
                 description: data.description,
                 typeMarket: data.typeMarket,
                 updatedAt: new Date(),
+            },
+        });
+    },
+
+    async updateConfigStore(storeId: number, data: { primaryColor: string; secondaryColor: string; logoUrl: string }) {
+        return await prisma.configStore.upsert({
+            where: { storeId },
+            update: {
+                primaryColor: data.primaryColor,
+                secondaryColor: data.secondaryColor,
+                logoUrl: data.logoUrl,
+                updatedAt: new Date(),
+            },
+            create: {
+                storeId,
+                primaryColor: data.primaryColor,
+                secondaryColor: data.secondaryColor,
+                logoUrl: data.logoUrl,
             },
         });
     },

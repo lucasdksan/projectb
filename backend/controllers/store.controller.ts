@@ -1,5 +1,5 @@
 import { StoreService } from "../services/store.service";
-import { UpdateStoreDTO } from "../schemas/store.schema";
+import { UpdateStoreDTO, UpdateConfigStoreDTO } from "../schemas/store.schema";
 
 export const StoreController = {
     async getStore(userId: number){
@@ -16,5 +16,9 @@ export const StoreController = {
 
     async getStoreId(userId: number) {
         return await StoreService.getStoreId(userId);
+    },
+
+    async updateConfigStore(userId: number, data: UpdateConfigStoreDTO) {
+        return await StoreService.updateConfigStore(userId, data);
     },
 }

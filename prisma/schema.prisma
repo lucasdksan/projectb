@@ -39,20 +39,34 @@ model ContentAI {
 }
 
 model Store {
-  id          Int        @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   email       String
   number      String
   description String
-  slug        String?    @unique
+  slug        String?      @unique
   typeMarket  String
   userId      Int
-  user        Users      @relation(fields: [userId], references: [id])
+  user        Users        @relation(fields: [userId], references: [id])
+  config      ConfigStore?
   products    Products[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
 
   @@map("store")
+}
+
+model ConfigStore {
+  id             Int      @id @default(autoincrement())
+  primaryColor   String
+  secondaryColor String
+  logoUrl        String
+  storeId        Int      @unique
+  store          Store    @relation(fields: [storeId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("configStore")
 }
 
 model Products {

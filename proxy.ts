@@ -19,6 +19,7 @@ const publicRoutes = [
     { path: "/auth/signup", whenAuthenticated: "redirect" },
     { path: "/auth/forget", whenAuthenticated: "redirect" },
     { path: "/auth/forget/reset", whenAuthenticated: "redirect" },
+    { path: "/store/:slug", whenAuthenticated: "next" },
     { path: "/", whenAuthenticated: "next" },
 ] as const;
 

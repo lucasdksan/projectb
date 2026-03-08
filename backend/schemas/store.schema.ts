@@ -1,11 +1,20 @@
 import z from "zod";
 
+export const configStoreSchema = z.object({
+    primaryColor: z.string(),
+    secondaryColor: z.string(),
+    logoUrl: z.string(),
+});
+
+export type ConfigStoreDTO = z.infer<typeof configStoreSchema>;
+
 export const getStoreSchema = z.object({
     name: z.string().min(1),
     email: z.string().email(),
     number: z.string().min(1),
     description: z.string().min(1),
     typeMarket: z.string().min(1),
+    config: configStoreSchema.nullable().optional(),
 });
 
 export type GetStoreDTO = z.infer<typeof getStoreSchema>;

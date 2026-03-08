@@ -1,13 +1,12 @@
 "use client";
 
-import { Pencil, Plus, Store, Settings } from "lucide-react";
-import { useRef } from "react";
-import { StoreAreaProps } from "./storearea.model";
+import { createPortal } from "react-dom";
+import { Pencil, Plus, Store } from "lucide-react";
+import type { StoreAreaProps } from "./storearea.model";
 import { useStoreAreaViewModel } from "./storearea.viewmodel";
 import { ConfigStoreModal } from "../ConfigStoreModal/configstoremodal.view";
 
 export default function StoreAreaView({ store }: StoreAreaProps) {
-    const configModalRef = useRef<{ openModal: () => void }>(null);
     const {
         form,
         isLoading,
@@ -21,6 +20,8 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
         handleSubmitStore,
         updateField,
     } = useStoreAreaViewModel(store);
+
+    const configStoreModel = store?.config ?? null;
 
     return (
         <>
@@ -39,7 +40,7 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                             <input
                                 type="text"
                                 className={inputClassName}
-                                value={store?.name ?? ""}
+                                value={store.name}
                                 readOnly
                                 disabled
                             />
@@ -49,7 +50,7 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                             <input
                                 type="email"
                                 className={inputClassName}
-                                value={store?.email ?? ""}
+                                value={store.email}
                                 readOnly
                                 disabled
                             />
@@ -63,21 +64,12 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                                 <Pencil className="text-lg" />
                                 Atualizar
                             </button>
-                            <button
-                                type="button"
-                                className="bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
-                                onClick={() => configModalRef.current?.openModal()}
-                            >
-                                <Settings className="text-lg" />
-                                Configurar
-                            </button>
+                            <ConfigStoreModal config={configStoreModel} hasStore={hasStore} />
                         </div>
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        <p className="text-white/50 text-sm">
-                            Nenhuma loja cadastrada
-                        </p>
+                        <p className="text-white/50 text-sm">Nenhuma loja cadastrada</p>
                         <button
                             type="button"
                             className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
@@ -90,113 +82,113 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                 )}
             </section>
 
-            <ConfigStoreModal 
-                ref={configModalRef} 
-                config={store ? {
-                    primaryColor: (store as any).primaryColor ?? "#000000",
-                    secondaryColor: (store as any).secondaryColor ?? "#ffffff",
-                    logoUrl: (store as any).logoUrl ?? "",
-                } : null} 
-            />
-
-            {isModalOpen && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-200"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="store-modal-title"
-                >
+            {isModalOpen &&
+                createPortal(
                     <div
-                        className="absolute inset-0"
-                        onClick={closeModal}
-                        aria-hidden="true"
-                    />
-                    <div className="relative bg-[#161616] border border-white/10 rounded-3xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl animate-in zoom-in-95 duration-200">
-                        <h2 id="store-modal-title" className="text-xl font-bold text-white mb-6">
-                            {hasStore ? "Atualizar dados da loja" : "Cadastrar loja"}
-                        </h2>
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-200"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="store-modal-title"
+                    >
+                        <div
+                            className="absolute inset-0"
+                            onClick={closeModal}
+                            aria-hidden="true"
+                        />
+                        <div className="relative bg-[#161616] border border-white/10 rounded-3xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl animate-in zoom-in-95 duration-200">
+                            <h2
+                                id="store-modal-title"
+                                className="text-xl font-bold text-white mb-6"
+                            >
+                                {hasStore ? "Atualizar dados da loja" : "Cadastrar loja"}
+                            </h2>
 
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className={labelClassName}>Nome da Loja</label>
-                                <input
-                                    type="text"
-                                    className={inputClassName}
-                                    value={form.name}
-                                    onChange={(e) => updateField("name", e.target.value)}
-                                    disabled={isLoading}
-                                />
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className={labelClassName}>Nome da Loja</label>
+                                    <input
+                                        type="text"
+                                        className={inputClassName}
+                                        value={form.name}
+                                        onChange={(e) => updateField("name", e.target.value)}
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelClassName}>E-mail</label>
+                                    <input
+                                        type="email"
+                                        className={inputClassName}
+                                        value={form.email}
+                                        onChange={(e) => updateField("email", e.target.value)}
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelClassName}>Telefone</label>
+                                    <input
+                                        type="text"
+                                        className={inputClassName}
+                                        value={form.number}
+                                        onChange={(e) => updateField("number", e.target.value)}
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelClassName}>Descrição</label>
+                                    <textarea
+                                        className={inputTextareaClassName}
+                                        value={form.description}
+                                        onChange={(e) =>
+                                            updateField("description", e.target.value)
+                                        }
+                                        disabled={isLoading}
+                                        rows={3}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelClassName}>Tipo de Mercado</label>
+                                    <input
+                                        type="text"
+                                        className={inputClassName}
+                                        value={form.typeMarket}
+                                        onChange={(e) =>
+                                            updateField("typeMarket", e.target.value)
+                                        }
+                                        disabled={isLoading}
+                                        placeholder="Ex: Varejo, Atacado, Serviços..."
+                                    />
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className={labelClassName}>E-mail</label>
-                                <input
-                                    type="email"
-                                    className={inputClassName}
-                                    value={form.email}
-                                    onChange={(e) => updateField("email", e.target.value)}
+
+                            <div className="flex gap-3 mt-6">
+                                <button
+                                    type="button"
+                                    className="flex-1 bg-white/5 text-white py-3 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5"
+                                    onClick={closeModal}
                                     disabled={isLoading}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className={labelClassName}>Telefone</label>
-                                <input
-                                    type="text"
-                                    className={inputClassName}
-                                    value={form.number}
-                                    onChange={(e) => updateField("number", e.target.value)}
+                                >
+                                    Fechar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="flex-1 bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/15 transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={handleSubmitStore}
                                     disabled={isLoading}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className={labelClassName}>Descrição</label>
-                                <textarea
-                                    className={inputTextareaClassName}
-                                    value={form.description}
-                                    onChange={(e) => updateField("description", e.target.value)}
-                                    disabled={isLoading}
-                                    rows={3}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className={labelClassName}>Tipo de Mercado</label>
-                                <input
-                                    type="text"
-                                    className={inputClassName}
-                                    value={form.typeMarket}
-                                    onChange={(e) => updateField("typeMarket", e.target.value)}
-                                    disabled={isLoading}
-                                    placeholder="Ex: Varejo, Atacado, Serviços..."
-                                />
+                                >
+                                    {isLoading
+                                        ? hasStore
+                                            ? "Atualizando..."
+                                            : "Cadastrando..."
+                                        : hasStore
+                                          ? "Salvar"
+                                          : "Cadastrar"}
+                                </button>
                             </div>
                         </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                type="button"
-                                className="flex-1 bg-white/5 text-white py-3 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5"
-                                onClick={closeModal}
-                                disabled={isLoading}
-                            >
-                                Fechar
-                            </button>
-                            <button
-                                type="button"
-                                className="flex-1 bg-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/15 transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                                onClick={handleSubmitStore}
-                                disabled={isLoading}
-                            >
-                                {isLoading
-                                    ? hasStore
-                                        ? "Atualizando..."
-                                        : "Cadastrando..."
-                                    : hasStore
-                                        ? "Salvar"
-                                        : "Cadastrar"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
         </>
     );
 }

@@ -11,7 +11,7 @@ export default async function SettingsPage() {
     const { success, data } = result;
 
     if (!user) redirect("/login");
-    if (!success || !data) redirect("/dashboard");   
+    if (!success) redirect("/dashboard");
 
     return (
         <div className="flex flex-col h-[calc(100vh-80px)] animate-in fade-in duration-700">

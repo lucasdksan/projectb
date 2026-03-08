@@ -37,11 +37,14 @@ export default function ProfileAreaView({ profile }: ProfileAreaProps) {
                     />
                 </div>
                 <button 
-                    className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-white/5 text-white py-4 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-white/10 transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleUpdateProfile}
                     disabled={isLoading}
                 >
-                    {isLoading ? "Atualizando..." : "Atualizar Perfil"}
+                    <div className="flex items-center justify-center gap-2">
+                        <Pencil className="text-lg" />
+                        {isLoading ? "Atualizando..."   : "Atualizar Perfil"}
+                    </div>
                 </button>
             </div>
         </section>

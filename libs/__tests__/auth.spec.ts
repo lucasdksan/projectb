@@ -5,6 +5,12 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
 
+vi.mock("@/backend/controllers/auth.controller", () => ({
+  AuthController: {
+    refreshSession: vi.fn().mockResolvedValue(null),
+  },
+}));
+
 vi.mock("../jwt", () => ({
   default: {
     verifyJwt: vi.fn(),

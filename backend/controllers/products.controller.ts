@@ -1,4 +1,4 @@
-import { CreateProductDTO, ListProductsDTO, UpdateProductDTO } from "../schemas/products.schema";
+import { CreateProductDTO, ListProductsDTO, ListProductsByStoreSlugDTO, UpdateProductDTO } from "../schemas/products.schema";
 import { ProductsService } from "../services/products.service";
 
 export const ProductsController = {
@@ -12,6 +12,10 @@ export const ProductsController = {
 
     async listProducts(dto: ListProductsDTO) {
         return await ProductsService.listProducts(dto);
+    },
+
+    async listProductsByStoreSlug(dto: ListProductsByStoreSlugDTO) {
+        return await ProductsService.listProductsByStoreSlug(dto);
     },
 
     async getProduct(slug: number) {

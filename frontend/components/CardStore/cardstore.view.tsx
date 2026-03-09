@@ -71,7 +71,7 @@ export default function CardStoreView(props: CardStoreViewProps) {
     );
 
     return (
-        <div className="relative min-h-[400px] pt-4 w-full flex flex-col items-center">
+        <div className="relative pt-4 w-full flex flex-col items-center">
             {slug ? (
                 <Link href={`/store/${slug}`} className="w-full flex flex-col items-center max-w-sm px-4">
                     {content}

@@ -25,9 +25,18 @@ const publicRoutes = [
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED = "/auth/signin";
 
+function matchesRoute(routePath: string, actualPath: string): boolean {
+    if (routePath === actualPath) return true;
+    if (routePath.includes(":")) {
+        const pattern = "^" + routePath.replace(/:[^/]+/g, "[^/]+") + "$";
+        return new RegExp(pattern).test(actualPath);
+    }
+    return false;
+}
+
 export default function proxy(req: NextRequest) {
     const path = req.nextUrl.pathname;
-    const publicRoute = publicRoutes.find(route => route.path === path);
+    const publicRoute = publicRoutes.find(route => matchesRoute(route.path, path));
     const authToken = req.cookies.get("token")?.value;
 
     if (!authToken && publicRoute) {

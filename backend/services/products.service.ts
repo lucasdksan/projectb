@@ -1,5 +1,6 @@
 import { ProductsRepository } from "../repositories/products.repository";
-import { CreateProductDTO, ListProductsDTO, UpdateProductDTO } from "../schemas/products.schema";
+import { StoreService } from "./store.service";
+import { CreateProductDTO, ListProductsDTO, ListProductsByStoreSlugDTO, UpdateProductDTO } from "../schemas/products.schema";
 
 export const ProductsService = {
     async createProduct(dto: CreateProductDTO, storeId: number){
@@ -23,6 +24,17 @@ export const ProductsService = {
 
     async listProducts(dto: ListProductsDTO) {
         return await ProductsRepository.listProducts(dto);
+    },
+
+    async listProductsByStoreSlug(dto: ListProductsByStoreSlugDTO) {
+        const store = await StoreService.getStoreBySlug(dto.storeSlug);
+        if (!store) return null;
+
+        return await ProductsRepository.listProducts({
+            storeId: store.id,
+            page: dto.page,
+            limit: dto.limit,
+        });
     },
 
     async getProduct(slug: number) {

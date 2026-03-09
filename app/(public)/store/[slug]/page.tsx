@@ -1,3 +1,4 @@
+import CardStoreView from "@/frontend/components/CardStore/cardstore.view";
 import { getStoreBySlugAction } from "./getstorebyslug.action";
 
 export default async function StorePage({
@@ -17,15 +18,19 @@ export default async function StorePage({
         )
     }
 
-    console.log(data);
-    
     return (
-        <div className="w-full h-full flex flex-col">
-            <div className="w-full h-16" style={{ backgroundColor: data.store.config?.primaryColor }}>
-
-            </div>
-            <div className="w-full h-screen mx-auto min-h-screen flex flex-col bg-white flex-1">
-
+        <div className="w-full min-h-screen flex flex-col items-center bg-white">
+            <div className="w-full h-24" style={{ backgroundColor: data.store.config?.primaryColor }} />
+            <div className="w-full max-w-md flex-1 pt-4 flex justify-center px-4">
+                <CardStoreView
+                    name={data.store.name}
+                    email={data.store.email}
+                    number={data.store.number}
+                    description={data.store.description}
+                    image={data.store.config?.logoUrl ?? ""}
+                    primaryColor={data.store.config?.primaryColor}
+                    secondaryColor={data.store.config?.secondaryColor}
+                />
             </div>
         </div>
     )

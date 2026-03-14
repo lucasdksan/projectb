@@ -40,13 +40,28 @@ export const StoreRepository = {
         });
     },
 
-    async updateConfigStore(storeId: number, data: { primaryColor: string; secondaryColor: string; logoUrl: string }) {
+    async updateConfigStore(
+        storeId: number,
+        data: {
+            primaryColor: string;
+            secondaryColor: string;
+            logoUrl: string;
+            bannerHeroURL?: string | null;
+            bannerHeroMobileURL?: string | null;
+            bannerSecondaryURL?: string | null;
+            bannerTertiaryURL?: string | null;
+        }
+    ) {
         return await prisma.configStore.upsert({
             where: { storeId },
             update: {
                 primaryColor: data.primaryColor,
                 secondaryColor: data.secondaryColor,
                 logoUrl: data.logoUrl,
+                bannerHeroURL: (data.bannerHeroURL && data.bannerHeroURL.trim()) || null,
+                bannerHeroMobileURL: (data.bannerHeroMobileURL && data.bannerHeroMobileURL.trim()) || null,
+                bannerSecondaryURL: (data.bannerSecondaryURL && data.bannerSecondaryURL.trim()) || null,
+                bannerTertiaryURL: (data.bannerTertiaryURL && data.bannerTertiaryURL.trim()) || null,
                 updatedAt: new Date(),
             },
             create: {
@@ -54,6 +69,10 @@ export const StoreRepository = {
                 primaryColor: data.primaryColor,
                 secondaryColor: data.secondaryColor,
                 logoUrl: data.logoUrl,
+                bannerHeroURL: (data.bannerHeroURL && data.bannerHeroURL.trim()) || null,
+                bannerHeroMobileURL: (data.bannerHeroMobileURL && data.bannerHeroMobileURL.trim()) || null,
+                bannerSecondaryURL: (data.bannerSecondaryURL && data.bannerSecondaryURL.trim()) || null,
+                bannerTertiaryURL: (data.bannerTertiaryURL && data.bannerTertiaryURL.trim()) || null,
             },
         });
     },

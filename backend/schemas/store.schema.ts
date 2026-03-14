@@ -4,6 +4,10 @@ export const configStoreSchema = z.object({
     primaryColor: z.string(),
     secondaryColor: z.string(),
     logoUrl: z.string(),
+    bannerHeroURL: z.string().nullable().optional(),
+    bannerHeroMobileURL: z.string().nullable().optional(),
+    bannerSecondaryURL: z.string().nullable().optional(),
+    bannerTertiaryURL: z.string().nullable().optional(),
 });
 
 export type ConfigStoreDTO = z.infer<typeof configStoreSchema>;
@@ -33,6 +37,10 @@ export const updateConfigStoreSchema = z.object({
     primaryColor: z.string().min(1, "Cor primária é obrigatória").regex(/^#[0-9A-F]{6}$/i, "Formato de cor inválido. Use #RRGGBB"),
     secondaryColor: z.string().min(1, "Cor secundária é obrigatória").regex(/^#[0-9A-F]{6}$/i, "Formato de cor inválido. Use #RRGGBB"),
     logoUrl: z.string().min(1, "Logo é obrigatória"),
+    bannerHeroURL: z.string().url().nullable().optional(),
+    bannerHeroMobileURL: z.string().url().nullable().optional(),
+    bannerSecondaryURL: z.string().url().nullable().optional(),
+    bannerTertiaryURL: z.string().url().nullable().optional(),
 });
 
 export type UpdateConfigStoreDTO = z.infer<typeof updateConfigStoreSchema>;

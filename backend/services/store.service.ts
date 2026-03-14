@@ -44,11 +44,41 @@ export const StoreService = {
         }
 
         const existingConfig = await StoreRepository.getStore(userId);
-        if (existingConfig?.config?.logoUrl && existingConfig.config.logoUrl !== data.logoUrl) {
+        const config = existingConfig?.config;
+
+        if (config?.logoUrl && config.logoUrl !== data.logoUrl) {
             try {
-                await vercelIntegration.blob.delete(existingConfig.config.logoUrl);
+                await vercelIntegration.blob.delete(config.logoUrl);
             } catch {
                 console.error("Failed to delete old logo from Vercel Blob");
+            }
+        }
+        if (config?.bannerHeroURL && config.bannerHeroURL !== data.bannerHeroURL) {
+            try {
+                await vercelIntegration.blob.delete(config.bannerHeroURL);
+            } catch {
+                console.error("Failed to delete old banner hero from Vercel Blob");
+            }
+        }
+        if (config?.bannerHeroMobileURL && config.bannerHeroMobileURL !== data.bannerHeroMobileURL) {
+            try {
+                await vercelIntegration.blob.delete(config.bannerHeroMobileURL);
+            } catch {
+                console.error("Failed to delete old banner hero mobile from Vercel Blob");
+            }
+        }
+        if (config?.bannerSecondaryURL && config.bannerSecondaryURL !== data.bannerSecondaryURL) {
+            try {
+                await vercelIntegration.blob.delete(config.bannerSecondaryURL);
+            } catch {
+                console.error("Failed to delete old banner secondary from Vercel Blob");
+            }
+        }
+        if (config?.bannerTertiaryURL && config.bannerTertiaryURL !== data.bannerTertiaryURL) {
+            try {
+                await vercelIntegration.blob.delete(config.bannerTertiaryURL);
+            } catch {
+                console.error("Failed to delete old banner tertiary from Vercel Blob");
             }
         }
 

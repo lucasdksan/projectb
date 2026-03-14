@@ -19,7 +19,6 @@ export const initialState = {
     errors: {} as Record<string, string[] | undefined>,
 };
 
-/** Estado e comandos expostos pelo ViewModel para a View (MVVM). */
 export type StudioAreaViewModelShape = {
     state: StudioAreaState;
     formAction: (formData: FormData) => void;

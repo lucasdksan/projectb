@@ -1,12 +1,9 @@
-import type { ConfigStoreModel } from "../ConfigStoreModal/configstoremodal.model";
-
 export interface StoreData {
     name: string;
     email: string;
     number: string;
     description: string;
     typeMarket: string;
-    config?: ConfigStoreModel | null;
 }
 
 export interface StoreAreaProps {

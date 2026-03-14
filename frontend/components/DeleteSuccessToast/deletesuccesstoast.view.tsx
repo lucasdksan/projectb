@@ -7,17 +7,17 @@ import { useToast } from "@/frontend/hooks/useToast";
 export default function DeleteSuccessToastView() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const toast = useToast();
+    const { showToast } = useToast() ?? {};
 
     useEffect(() => {
-        if (searchParams.get("deleted") === "1") {
-            toast?.showToast({
+        if (searchParams.get("deleted") === "1" && showToast) {
+            showToast({
                 type: "success",
                 message: "Produto deletado com sucesso!",
             });
             router.replace("/dashboard/products");
         }
-    }, [searchParams, router, toast]);
+    }, [searchParams, router, showToast]);
 
     return null;
 }

@@ -4,7 +4,6 @@ import { createPortal } from "react-dom";
 import { Pencil, Plus, Store } from "lucide-react";
 import type { StoreAreaProps } from "./storearea.model";
 import { useStoreAreaViewModel } from "./storearea.viewmodel";
-import { ConfigStoreModal } from "../ConfigStoreModal/configstoremodal.view";
 
 export default function StoreAreaView({ store }: StoreAreaProps) {
     const {
@@ -20,8 +19,6 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
         handleSubmitStore,
         updateField,
     } = useStoreAreaViewModel(store);
-
-    const configStoreModel = store?.config ?? null;
 
     return (
         <>
@@ -55,17 +52,14 @@ export default function StoreAreaView({ store }: StoreAreaProps) {
                                 disabled
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                type="button"
-                                className="bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
-                                onClick={openModal}
-                            >
-                                <Pencil className="text-lg" />
-                                Atualizar
-                            </button>
-                            <ConfigStoreModal config={configStoreModel} hasStore={hasStore} />
-                        </div>
+                        <button
+                            type="button"
+                            className="w-full bg-white/5 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2"
+                            onClick={openModal}
+                        >
+                            <Pencil className="text-lg" />
+                            Atualizar
+                        </button>
                     </div>
                 ) : (
                     <div className="space-y-6">

@@ -26,9 +26,7 @@ export interface PaginationInfo {
 
 export interface ProductsViewProps {
     storeId: number;
-    /** Produtos carregados no servidor para exibir ao abrir a página */
     initialProducts?: ProductModel[];
-    /** Paginação inicial do servidor */
     initialPagination?: PaginationInfo;
 }
 

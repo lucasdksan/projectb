@@ -35,7 +35,7 @@ export default function ProductsView({
                     type="submit"
                     name="page"
                     value="1"
-                    className="px-6 py-2 rounded-lg bg-green-600"
+                    className="bg-[#00ff41] text-black px-6 py-3 cursor-pointer rounded-xl font-bold hover:bg-[#00e03a] transition-all flex items-center gap-2 shadow-lg shadow-[#00ff41]/10"
                 >
                     Buscar
                 </button>

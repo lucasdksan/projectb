@@ -11,8 +11,8 @@ export default function StoreLayout({
     children: React.ReactNode
 }) {
     return (
-        <main className="w-full h-full bg-white/5">
+        <>
             {children}
-        </main>
+        </>
     )
 }

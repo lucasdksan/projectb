@@ -57,14 +57,18 @@ model Store {
 }
 
 model ConfigStore {
-  id             Int      @id @default(autoincrement())
-  primaryColor   String
-  secondaryColor String
-  logoUrl        String
-  storeId        Int      @unique
-  store          Store    @relation(fields: [storeId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                  Int      @id @default(autoincrement())
+  primaryColor        String
+  secondaryColor      String
+  logoUrl             String
+  bannerHeroURL       String?
+  bannerHeroMobileURL String?
+  bannerSecondaryURL  String?
+  bannerTertiaryURL   String?
+  storeId             Int      @unique
+  store               Store    @relation(fields: [storeId], references: [id])
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@map("configStore")
 }

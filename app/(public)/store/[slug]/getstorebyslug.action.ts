@@ -50,6 +50,8 @@ export async function getStoreBySlugAction(
                               secondaryColor: store.config.secondaryColor,
                               logoUrl: store.config.logoUrl,
                               bannerHeroURL: store.config.bannerHeroURL ?? null,
+                              bannerHeroMobileURL:
+                                  store.config.bannerHeroMobileURL ?? null,
                               bannerSecondaryURL: store.config.bannerSecondaryURL ?? null,
                               bannerTertiaryURL: store.config.bannerTertiaryURL ?? null,
                           }

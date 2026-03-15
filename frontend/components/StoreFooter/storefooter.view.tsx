@@ -36,17 +36,7 @@ export default function StoreFooterView({
                     <ul className="space-y-2 text-xs text-gray-500">
                         <li>
                             <span className="hover:text-black cursor-pointer">
-                                Sobre Nós
-                            </span>
-                        </li>
-                        <li>
-                            <span className="hover:text-black cursor-pointer">
-                                Política de Privacidade
-                            </span>
-                        </li>
-                        <li>
-                            <span className="hover:text-black cursor-pointer">
-                                Termos de Uso
+                                Project B
                             </span>
                         </li>
                     </ul>

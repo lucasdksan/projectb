@@ -4,4 +4,6 @@ export interface StoreProductsGridModel {
     storeSlug: string;
     initialProducts: ProductListItem[];
     initialPagination: PaginationInfo;
+    initialSearch?: string;
+    primaryColor?: string;
 }

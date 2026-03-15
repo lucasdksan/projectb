@@ -5,6 +5,7 @@ export interface CardProductModel {
     images: { url: string }[];
     slug: string;
     storeSlug?: string;
+    primaryColor?: string;
 }
 
 export interface CardProductDisplay {

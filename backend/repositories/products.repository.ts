@@ -30,16 +30,18 @@ export const ProductsRepository = {
     },
 
     async listProducts(dto: ListProductsDTO) {
-        const { page, limit, search, storeId } = dto;
+        const { page, limit, search, storeId, activeOnly } = dto;
 
         const skip = (page - 1) * limit;
 
         const whereCondition = {
             storeId,
-            ...(search && {
-                name: {
-                    contains: search,
-                },
+            ...(activeOnly && { isActive: true }),
+            ...(search && search.trim() && {
+                OR: [
+                    { name: { contains: search.trim() } },
+                    { description: { contains: search.trim() } },
+                ],
             }),
         };
 
@@ -71,10 +73,39 @@ export const ProductsRepository = {
         };
     },
 
+    async findManyByIds(ids: number[]) {
+        if (ids.length === 0) return [];
+        return await prisma.products.findMany({
+            where: { id: { in: ids } },
+            include: { images: true },
+        });
+    },
+
     async getProduct(slug: number) {
         return await prisma.products.findUnique({
             where: {
                 id: slug,
+            },
+            include: {
+                images: true,
+            },
+        });
+    },
+
+    async getProductByStoreSlugAndProductSlug(
+        storeSlug: string,
+        productSlug: string
+    ) {
+        const store = await prisma.store.findUnique({
+            where: { slug: storeSlug },
+        });
+        if (!store) return null;
+
+        return await prisma.products.findFirst({
+            where: {
+                storeId: store.id,
+                slug: productSlug,
+                isActive: true,
             },
             include: {
                 images: true,

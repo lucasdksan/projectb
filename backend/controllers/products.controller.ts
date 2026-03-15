@@ -22,6 +22,16 @@ export const ProductsController = {
         return await ProductsService.getProduct(slug);
     },
 
+    async getProductByStoreSlugAndProductSlug(
+        storeSlug: string,
+        productSlug: string
+    ) {
+        return await ProductsService.getProductByStoreSlugAndProductSlug(
+            storeSlug,
+            productSlug
+        );
+    },
+
     async updateProduct(productId: number, storeId: number, dto: UpdateProductDTO) {
         return await ProductsService.updateProduct(productId, storeId, dto);
     },

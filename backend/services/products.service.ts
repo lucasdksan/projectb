@@ -34,11 +34,23 @@ export const ProductsService = {
             storeId: store.id,
             page: dto.page,
             limit: dto.limit,
+            search: dto.search?.trim() || undefined,
+            activeOnly: true,
         });
     },
 
     async getProduct(slug: number) {
         return await ProductsRepository.getProduct(slug);
+    },
+
+    async getProductByStoreSlugAndProductSlug(
+        storeSlug: string,
+        productSlug: string
+    ) {
+        return await ProductsRepository.getProductByStoreSlugAndProductSlug(
+            storeSlug,
+            productSlug
+        );
     },
 
     async updateProduct(productId: number, storeId: number, dto: UpdateProductDTO) {

@@ -14,12 +14,14 @@ export const listProductsSchema = z.object({
     limit: z.number().int().min(1).max(100).default(5),
     search: z.string().optional(),
     storeId: z.number().min(1, "Loja é obrigatória"),
+    activeOnly: z.boolean().optional().default(false),
 });
 
 export const listProductsByStoreSlugSchema = z.object({
     storeSlug: z.string().min(1, "Slug da loja é obrigatório"),
     page: z.number().int().min(1).default(1),
     limit: z.number().int().min(1).max(20).default(10),
+    search: z.string().optional(),
 });
 
 export const updateProductSchema = z.object({

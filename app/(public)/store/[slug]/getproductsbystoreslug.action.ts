@@ -25,13 +25,15 @@ export type GetProductsByStoreSlugActionResult =
 export async function getProductsByStoreSlugAction(
     storeSlug: string,
     page = 1,
-    limit = 10
+    limit = 10,
+    search?: string
 ): Promise<GetProductsByStoreSlugActionResult> {
     try {
         const parsed = listProductsByStoreSlugSchema.safeParse({
             storeSlug: storeSlug?.trim(),
             page,
             limit,
+            search: search?.trim() || undefined,
         });
 
         if (!parsed.success) {

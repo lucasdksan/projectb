@@ -50,6 +50,8 @@ model Store {
   user        Users        @relation(fields: [userId], references: [id])
   config      ConfigStore?
   products    Products[]
+  customers   Customer[]
+  orders      Order[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now())
 
@@ -83,6 +85,7 @@ model Products {
   slug        String
   store       Store           @relation(fields: [storeId], references: [id])
   images      ProductImages[]
+  orderItems  OrderItem[]
   isActive    Boolean         @default(true)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
@@ -99,4 +102,49 @@ model ProductImages {
   updatedAt DateTime @updatedAt
 
   @@map("productImages")
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  storeId   Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  fullName  String
+  email     String
+  cep       String?
+  city      String?
+  address   String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customer")
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  storeId    Int
+  store      Store       @relation(fields: [storeId], references: [id])
+  customerId Int
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  status     String      @default("pending")
+  subtotal   Float
+  shipping   Float       @default(0)
+  total      Float
+  items      OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("order")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Products @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Float
+
+  @@map("orderItem")
 }

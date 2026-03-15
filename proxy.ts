@@ -22,6 +22,7 @@ const publicRoutes = [
     { path: "/store/:slug", whenAuthenticated: "next" },
     { path: "/store/:slug/product/:productSlug", whenAuthenticated: "next" },
     { path: "/store/:slug/checkout", whenAuthenticated: "next" },
+    { path: "/store/:slug/cart", whenAuthenticated: "next" },
     { path: "/store/:slug/orderPlaced", whenAuthenticated: "next" },
     { path: "/", whenAuthenticated: "next" },
 ] as const;

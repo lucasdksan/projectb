@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { getProductsByStoreSlugAction } from "@/app/(public)/store/[slug]/getproductsbystoreslug.action";
 import type {
     ProductListItem,
@@ -17,6 +17,16 @@ export function useStoreProductsGridViewModel(model: StoreProductsGridModel) {
     );
     const [isPending, startTransition] = useTransition();
 
+    useEffect(() => {
+        setProducts(model.initialProducts);
+        setPagination(model.initialPagination);
+    }, [
+        model.initialProducts,
+        model.initialPagination,
+        model.initialSearch,
+        model.storeSlug,
+    ]);
+
     const hasPrevious = pagination.page > 1;
     const hasNext = pagination.page < pagination.totalPages;
 
@@ -27,13 +37,13 @@ export function useStoreProductsGridViewModel(model: StoreProductsGridModel) {
             const result = await getProductsByStoreSlugAction(
                 model.storeSlug,
                 page,
-                pagination.limit
+                pagination.limit,
+                model.initialSearch || undefined
             );
 
             if (result.success && result.data) {
                 setProducts(result.data!.products);
                 setPagination(result.data!.pagination);
-                window.scrollTo({ top: 0, behavior: "smooth" });
             }
         });
     };

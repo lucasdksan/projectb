@@ -29,6 +29,7 @@ export default function StoreProductsGridView(props: StoreProductsGridViewProps)
                         slug={product.slug}
                         images={product.images}
                         storeSlug={props.storeSlug}
+                        primaryColor={props.primaryColor}
                     />
                 ))}
             </div>
@@ -39,7 +40,7 @@ export default function StoreProductsGridView(props: StoreProductsGridViewProps)
                 </p>
             )}
 
-            {pagination.totalPages > 1 && (
+            {products.length > 0 && (
                 <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 py-8 border-t border-gray-200 mt-6">
                     <span className="text-sm text-gray-500 order-2 sm:order-1">
                         Mostrando{" "}

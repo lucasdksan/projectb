@@ -33,4 +33,24 @@ export const OrderRepository = {
             return order;
         });
     },
+
+    async countByStoreId(storeId: number) {
+        return await prisma.order.count({
+            where: {
+                storeId,
+                status: "confirmed",
+            },
+        });
+    },
+
+    async totalRevenueByStoreId(storeId: number) {
+        const result = await prisma.order.aggregate({
+            where: {
+                storeId,
+                status: "confirmed",
+            },
+            _sum: { total: true },
+        });
+        return result._sum.total ?? 0;
+    },
 };

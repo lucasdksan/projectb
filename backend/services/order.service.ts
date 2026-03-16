@@ -57,4 +57,12 @@ export const OrderService = {
 
         return { success: true, orderId: order.id };
     },
+
+    async quantityOrders(storeId: number) {
+        return await OrderRepository.countByStoreId(storeId);
+    },
+
+    async totalRevenue(storeId: number) {
+        return await OrderRepository.totalRevenueByStoreId(storeId);
+    },
 };

@@ -7,6 +7,8 @@ import LastContentView from "@/frontend/components/LastContent/lastcontent.view"
 import { getStoreAction } from "./getstore.action";
 import AddProductModalView from "@/frontend/components/AddProductModal/addproductmodal.view";
 import { quantityProductAction } from "./quantityproduct.action";
+import { salesDataAction } from "./salesdata.action";
+import SalesCardsView from "@/frontend/components/SalesCards/salescards.view";
 
 export default async function DashboardHomePage() {
     const quantityResult = await quantityAction();
@@ -14,13 +16,16 @@ export default async function DashboardHomePage() {
     const lastResult = await lastAction();
     const storeResult = await getStoreAction();
     const quantityProductResult = await quantityProductAction();
+    const salesDataResult = await salesDataAction();
 
     const quantity = quantityResult.success ? quantityResult.data.quantity : 0;
     const contents = listResult.success ? listResult.data.contents : [];
     const lastContent = lastResult.success ? lastResult.data.lastContent : [];
     const quantityProduct = quantityProductResult.success ? quantityProductResult.data.quantity : 0;
+    const orderCount = salesDataResult.success ? salesDataResult.data.orderCount : 0;
+    const totalRevenue = salesDataResult.success ? salesDataResult.data.totalRevenue : 0;
 
-    const hasError = !quantityResult.success || !listResult.success || !lastResult.success;
+    const hasError = !quantityResult.success || !listResult.success || !lastResult.success || !salesDataResult.success;
 
     return (
         <div className="flex flex-col h-[calc(100vh-80px)] animate-in fade-in duration-700">
@@ -64,6 +69,7 @@ export default async function DashboardHomePage() {
                     <h3 className="text-gray-400 text-sm font-medium mb-1">Produtos Cadastrados</h3>
                     <p className="text-2xl font-bold text-white">{quantityProduct}</p>
                 </div>
+                <SalesCardsView orderCount={orderCount} totalRevenue={totalRevenue} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 items-start">

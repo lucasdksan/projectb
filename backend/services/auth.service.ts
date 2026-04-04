@@ -65,13 +65,13 @@ export const AuthService = {
         const user = await AuthRepository.findUserByEmail(dto.email);
 
         if (!user) {
-            throw Errors.unauthorized("User not found");
+            throw Errors.unauthorized("E-mail ou senha incorretos.");
         }
 
         const isPasswordValid = await crypt.comparePassword(dto.password, user.password);
 
         if (!isPasswordValid) {
-            throw Errors.unauthorized("Invalid password");
+            throw Errors.unauthorized("E-mail ou senha incorretos.");
         }
 
         const accessToken = jwt.signAccessToken({
@@ -138,8 +138,8 @@ export const AuthService = {
     async forgot(email: string) {
         const user = await AuthRepository.findUserByEmail(email);
 
-        if(!user) {
-            throw Errors.unauthorized("User not found");
+        if (!user) {
+            return { status: true };
         }
 
         const { now, token } = forget.generateDateAndToken();
@@ -167,8 +167,8 @@ export const AuthService = {
     async reset(dto: ResetUserDTO) {
         const user = await AuthRepository.findUserByEmail(dto.email);
 
-        if(!user) {
-            throw Errors.unauthorized("User not found");
+        if (!user) {
+            throw Errors.unauthorized("Não foi possível redefinir a senha.");
         }
 
         const { passwordResetToken, passwordResetExpires } = user;

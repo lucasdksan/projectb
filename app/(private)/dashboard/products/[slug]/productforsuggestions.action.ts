@@ -1,6 +1,7 @@
 "use server";
 
-import { ProductForSuggestionsController } from "@/backend/controllers/productforsuggestions.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { ProductForSuggestionsService } from "@/backend/services/productforsuggestions.service";
 import {
     productForSuggestionsSchema,
     type ProductForSuggestionsResponse,
@@ -31,7 +32,8 @@ export async function productForSuggestionsAction(data: {
             };
         }
 
-        const result = await ProductForSuggestionsController.generateSuggestion(parsed.data);
+        const result =
+            await ProductForSuggestionsService.generateSuggestion(parsed.data);
 
         return {
             success: true,
@@ -39,7 +41,10 @@ export async function productForSuggestionsAction(data: {
         };
     } catch (error) {
         console.error("Erro ao gerar sugestão:", error);
-        const msg = error instanceof Error ? error.message : String(error);
+        const msg = getActionErrorMessage(
+            error,
+            "Falha ao gerar sugestão. Tente novamente.",
+        );
         const isQuotaError = msg.includes("429") || msg.includes("quota") || msg.includes("Too Many Requests");
         return {
             success: false,

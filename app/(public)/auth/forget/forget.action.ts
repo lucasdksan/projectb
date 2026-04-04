@@ -34,7 +34,8 @@ export async function forgetAction(data: unknown): Promise<ForgetActionResult> {
 
         return {
             success: true,
-            message: "Email enviado com sucesso",
+            message:
+                "Se existir uma conta com este e-mail, receberá instruções para redefinir a senha.",
         }
     } catch (error) {
         return {

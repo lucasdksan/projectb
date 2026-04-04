@@ -1,6 +1,7 @@
 "use server";
 
-import { AIContentController } from "@/backend/controllers/aicontent.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AIContentService } from "@/backend/services/aicontent.service";
 import { getCurrentUser } from "@/libs/auth";
 
 export type ListActionResult = 
@@ -21,7 +22,7 @@ export async function listAction(): Promise<ListActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const contents = await AIContentController.list(userId);
+        const contents = await AIContentService.list(userId);
 
         return { 
             success: true, 
@@ -32,7 +33,9 @@ export async function listAction(): Promise<ListActionResult> {
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao carregar conteúdos."] 
+                global: [
+                    getActionErrorMessage(error, "Falha ao carregar conteúdos."),
+                ]
             } 
         };
     }

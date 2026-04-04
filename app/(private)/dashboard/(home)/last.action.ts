@@ -1,6 +1,7 @@
 "use server";
 
-import { AIContentController } from "@/backend/controllers/aicontent.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AIContentService } from "@/backend/services/aicontent.service";
 import { getCurrentUser } from "@/libs/auth";
 
 export type LastActionResult = 
@@ -21,7 +22,7 @@ export async function lastAction(): Promise<LastActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const contents = await AIContentController.lastContent(userId);
+        const contents = await AIContentService.lastContent(userId);
 
         return { 
             success: true, 
@@ -32,7 +33,12 @@ export async function lastAction(): Promise<LastActionResult> {
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao obter último conteúdo."] 
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao obter último conteúdo.",
+                    ),
+                ]
             } 
         };
     }

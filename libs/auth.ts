@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import jwt from "./jwt";
 import tokenIntoCookies from "./token";
-import { AuthController } from "@/backend/controllers/auth.controller";
+import { AuthService } from "@/backend/services/auth.service";
 import { env } from "./env";
 
 export async function getCurrentUser() {
@@ -13,7 +13,7 @@ export async function getCurrentUser() {
         try {
             return jwt.verifyJwt(token);
         } catch {
-            const refreshed = await AuthController.refreshSession(refreshToken!);
+            const refreshed = await AuthService.refreshSession(refreshToken!);
             
             if (refreshed) {
                 await tokenIntoCookies.set(refreshed.token, refreshed.refreshToken, env.NODE_ENV === "production");
@@ -23,7 +23,7 @@ export async function getCurrentUser() {
     }
 
     if (refreshToken) {
-        const refreshed = await AuthController.refreshSession(refreshToken);
+        const refreshed = await AuthService.refreshSession(refreshToken);
         if (refreshed) {
             await tokenIntoCookies.set(refreshed.token, refreshed.refreshToken, env.NODE_ENV === "production");
             return jwt.verifyJwt(refreshed.token);

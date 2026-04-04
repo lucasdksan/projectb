@@ -2,8 +2,9 @@
 
 import { z } from "zod";
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
+import { ProductsService } from "@/backend/services/products.service";
 import { updateProductSchema } from "@/backend/schemas/products.schema";
 import { vercelIntegration } from "@/backend/intagrations/vercel";
 
@@ -90,7 +91,7 @@ export async function updateProductAction(
 
         const userId =
             typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store) {
             return {
@@ -102,7 +103,7 @@ export async function updateProductAction(
             };
         }
 
-        const product = await ProductsController.getProduct(parsed.data.productId);
+        const product = await ProductsService.getProduct(parsed.data.productId);
 
         if (!product || product.storeId !== store.id) {
             return {
@@ -123,7 +124,7 @@ export async function updateProductAction(
             imageUrls = product.images.map((img) => img.url);
         }
 
-        await ProductsController.updateProduct(
+        await ProductsService.updateProduct(
             parsed.data.productId,
             store.id,
             {
@@ -147,9 +148,7 @@ export async function updateProductAction(
             data: null,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Erro ao atualizar produto",
+                    getActionErrorMessage(error, "Erro ao atualizar produto"),
                 ],
             },
         };

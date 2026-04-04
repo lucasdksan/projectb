@@ -1,6 +1,7 @@
 "use server";
 
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { ProductsService } from "@/backend/services/products.service";
 
 export interface ProductDetailResult {
     id: number;
@@ -34,7 +35,7 @@ export async function getProductByStoreSlugAndProductSlugAction(
         }
 
         const product =
-            await ProductsController.getProductByStoreSlugAndProductSlug(
+            await ProductsService.getProductByStoreSlugAndProductSlug(
                 trimmedStoreSlug,
                 trimmedProductSlug
             );
@@ -70,9 +71,7 @@ export async function getProductByStoreSlugAndProductSlugAction(
             data: null,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Erro ao buscar produto",
+                    getActionErrorMessage(error, "Erro ao buscar produto"),
                 ],
             },
         };

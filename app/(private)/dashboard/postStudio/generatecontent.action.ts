@@ -1,5 +1,6 @@
 "use server";
 
+import { getCurrentUser } from "@/libs/auth";
 import { getActionErrorMessage } from "@/libs/action-error";
 import { PostStudioService } from "@/backend/services/poststudio.service";
 import { postStudioSchema } from "@/backend/schemas/poststudio.schema";
@@ -28,6 +29,14 @@ export async function generateContentAction(
     }
 
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const result = await PostStudioService.generateContent(parsed.data);
         
         return {

@@ -1,6 +1,7 @@
 "use server";
 
-import { OrderController } from "@/backend/controllers/order.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { OrderService } from "@/backend/services/order.service";
 import { createOrderSchema } from "@/backend/schemas/order.schema";
 
 export type CreateOrderActionResult =
@@ -42,7 +43,7 @@ export async function createOrderAction(
             };
         }
 
-        const result = await OrderController.createOrder(parsed.data);
+        const result = await OrderService.createOrder(parsed.data);
 
         if (!result.success) {
             return {
@@ -66,9 +67,7 @@ export async function createOrderAction(
             data: null,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Erro ao criar pedido",
+                    getActionErrorMessage(error, "Erro ao criar pedido"),
                 ],
             },
         };

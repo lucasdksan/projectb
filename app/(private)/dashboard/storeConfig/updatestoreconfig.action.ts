@@ -1,7 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
 import { updateConfigStoreSchema } from "@/backend/schemas/store.schema";
 import { vercelIntegration } from "@/backend/intagrations/vercel";
 
@@ -87,7 +88,7 @@ export async function updateStoreConfigAction(
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store) {
             return {
@@ -134,7 +135,7 @@ export async function updateStoreConfigAction(
             bannerTertiaryURL = await vercelIntegration.blob.upload(bannerTertiaryValidation.file);
         }
 
-        await StoreController.updateConfigStore(userId, {
+        await StoreService.updateConfigStore(userId, {
             primaryColor: validatedPrimaryColor,
             secondaryColor: validatedSecondaryColor,
             logoUrl,
@@ -146,11 +147,12 @@ export async function updateStoreConfigAction(
 
         return { success: true, data: null, errors: null };
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
         return {
             success: false,
             data: null,
-            errors: { global: [errorMessage] },
+            errors: {
+                global: [getActionErrorMessage(error, "Erro desconhecido")],
+            },
         };
     }
 }

@@ -1,4 +1,5 @@
 import { aiIntegration } from "../intagrations/ai";
+import { fetchTrustedProductImageBlob } from "../utils/trusted-product-image-url";
 import { GenerateAddsDTO, type GenerateAddsResponse } from "../schemas/generateadds.schema";
 
 const JSON_RESPONSE_RULES = `
@@ -43,14 +44,13 @@ ${productContext}`;
         }
 
         if (data.imageUrl) {
-            let response: Response;
+            let blob: Blob;
             try {
-                response = await fetch(data.imageUrl);
-            } catch {
-                throw new Error("Não foi possível acessar a imagem. Tente fazer upload manualmente.");
+                blob = await fetchTrustedProductImageBlob(data.imageUrl);
+            } catch (e) {
+                const msg = e instanceof Error ? e.message : "Não foi possível carregar a imagem.";
+                throw new Error(msg);
             }
-            if (!response.ok) throw new Error("Não foi possível carregar a imagem do produto.");
-            const blob = await response.blob();
             const prompt = `Você é um especialista em marketing de e-commerce e Instagram.
 ${JSON_RESPONSE_RULES}
 

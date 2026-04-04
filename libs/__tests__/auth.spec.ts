@@ -5,8 +5,8 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
 
-vi.mock("@/backend/controllers/auth.controller", () => ({
-  AuthController: {
+vi.mock("@/backend/services/auth.service", () => ({
+  AuthService: {
     refreshSession: vi.fn().mockResolvedValue(null),
   },
 }));

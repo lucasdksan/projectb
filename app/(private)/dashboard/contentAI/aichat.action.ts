@@ -1,5 +1,6 @@
 "use server";
 
+import { getCurrentUser } from "@/libs/auth";
 import { getActionErrorMessage } from "@/libs/action-error";
 import { AIChatService } from "@/backend/services/aichat.service";
 import {
@@ -21,6 +22,14 @@ export async function sendMessageWithImageAction(
     formData: FormData
 ): Promise<SendMessageActionResult> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const raw = {
             prompt: formData.get("prompt"),
             image: formData.get("image"),
@@ -65,6 +74,14 @@ export async function sendMessageWithoutImageAction(
     formData: FormData
 ): Promise<SendMessageActionResult> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const raw = {
             prompt: formData.get("prompt"),
         };
@@ -107,6 +124,14 @@ export async function sendMessageWithContextAction(
     formData: FormData
 ): Promise<SendMessageActionResult> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const historyRaw = formData.get("history");
         let history: ChatHistoryItem[] = [];
 

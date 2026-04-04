@@ -1,6 +1,7 @@
 "use server";
 
-import { GenerateAddsController } from "@/backend/controllers/generateadds.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { GenerateAddsService } from "@/backend/services/generateadds.service";
 import { generateAddsFormSchema } from "@/backend/schemas/generateadds.schema";
 import type { GenerateAddsResult } from "@/backend/schemas/generateadds.schema";
 
@@ -31,7 +32,7 @@ export async function generateAddsAction(
             };
         }
 
-        const result = await GenerateAddsController.generateAdds(parsed.data);
+        const result = await GenerateAddsService.generateAdds(parsed.data);
 
         return {
             success: true,
@@ -42,7 +43,12 @@ export async function generateAddsAction(
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Falha ao gerar anúncio. Tente novamente."],
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao gerar anúncio. Tente novamente.",
+                    ),
+                ],
             },
         };
     }

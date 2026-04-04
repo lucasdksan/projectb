@@ -1,6 +1,7 @@
 "use server";
 
-import { PostStudioController } from "@/backend/controllers/poststudio.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { PostStudioService } from "@/backend/services/poststudio.service";
 import { postStudioSchema } from "@/backend/schemas/poststudio.schema";
 
 export type GenerateContentActionResult =
@@ -27,7 +28,7 @@ export async function generateContentAction(
     }
 
     try {
-        const result = await PostStudioController.generateContent(parsed.data);
+        const result = await PostStudioService.generateContent(parsed.data);
         
         return {
             success: true,
@@ -35,6 +36,16 @@ export async function generateContentAction(
         }
     } catch (error) {
         console.error("Erro ao gerar conteúdo:", error);
-        return { success: false, errors: { global: [error instanceof Error ? error.message : "Falha ao gerar conteúdo. Tente novamente."] } };
+        return {
+            success: false,
+            errors: {
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao gerar conteúdo. Tente novamente.",
+                    ),
+                ],
+            },
+        };
     }
 }

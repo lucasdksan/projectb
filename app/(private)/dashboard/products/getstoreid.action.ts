@@ -1,7 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
 
 export type GetStoreIdActionResult = 
     | { success: true; data: { storeId: number }; errors: null }
@@ -22,7 +23,7 @@ export async function getStoreIdAction(): Promise<GetStoreIdActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const storeId = await StoreController.getStoreId(userId);
+        const storeId = await StoreService.getStoreId(userId);
 
         if (!storeId) {
             return {
@@ -47,7 +48,12 @@ export async function getStoreIdAction(): Promise<GetStoreIdActionResult> {
             success: false,
             data: null,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao atualizar usuário"],
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Erro ao obter identificador da loja",
+                    ),
+                ],
             },
         }
     }

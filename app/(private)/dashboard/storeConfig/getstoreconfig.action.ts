@@ -1,7 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
 
 export interface StoreConfigData {
     primaryColor: string;
@@ -30,7 +31,7 @@ export async function getStoreConfigAction(): Promise<GetStoreConfigActionResult
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store || !store.config) {
             return {
@@ -60,7 +61,12 @@ export async function getStoreConfigAction(): Promise<GetStoreConfigActionResult
             success: false,
             data: null,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao buscar configurações da loja"],
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Erro ao buscar configurações da loja",
+                    ),
+                ],
             },
         };
     }

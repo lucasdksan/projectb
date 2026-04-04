@@ -5,12 +5,6 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
 
-vi.mock("@/backend/services/auth.service", () => ({
-  AuthService: {
-    refreshSession: vi.fn().mockResolvedValue(null),
-  },
-}));
-
 vi.mock("../jwt", () => ({
   default: {
     verifyJwt: vi.fn(),
@@ -26,7 +20,7 @@ describe("getCurrentUser", () => {
     const mockCookies = {
       get: vi.fn().mockReturnValue(undefined),
     };
-    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+    vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const { getCurrentUser } = await import("../auth");
     const result = await getCurrentUser();
@@ -43,9 +37,12 @@ describe("getCurrentUser", () => {
     };
 
     const mockCookies = {
-      get: vi.fn().mockReturnValue({ value: "valid-token" }),
+      get: vi.fn((name: string) => {
+        if (name === "token") return { value: "valid-token" };
+        return undefined;
+      }),
     };
-    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+    vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const jwt = await import("../jwt");
     vi.mocked(jwt.default.verifyJwt).mockReturnValue(mockUser);
@@ -59,9 +56,12 @@ describe("getCurrentUser", () => {
 
   it("deve retornar null quando o token for inválido", async () => {
     const mockCookies = {
-      get: vi.fn().mockReturnValue({ value: "invalid-token" }),
+      get: vi.fn((name: string) => {
+        if (name === "token") return { value: "invalid-token" };
+        return undefined;
+      }),
     };
-    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+    vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const jwt = await import("../jwt");
     vi.mocked(jwt.default.verifyJwt).mockImplementation(() => {
@@ -76,9 +76,12 @@ describe("getCurrentUser", () => {
 
   it("deve retornar null quando o token estiver expirado", async () => {
     const mockCookies = {
-      get: vi.fn().mockReturnValue({ value: "expired-token" }),
+      get: vi.fn((name: string) => {
+        if (name === "token") return { value: "expired-token" };
+        return undefined;
+      }),
     };
-    vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+    vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const jwt = await import("../jwt");
     vi.mocked(jwt.default.verifyJwt).mockImplementation(() => {

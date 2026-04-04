@@ -1,5 +1,5 @@
 import { prisma } from "../database/prisma";
-import { ContentAIResponse, SaveContentDTO } from "../schemas/aicontent.schema";
+import { ContentAIResponse, ListContentAIDTO, SaveContentDTO } from "../schemas/aicontent.schema";
 
 export const AIContentRepository = {
     async create(data: SaveContentDTO, userId: number): Promise<ContentAIResponse> {
@@ -21,6 +21,36 @@ export const AIContentRepository = {
             orderBy: { createdAt: "desc" },
             take: limit,
         });
+    },
+
+    async listPaginated(userId: number, dto: ListContentAIDTO) {
+        const { page, limit, platform } = dto;
+        const skip = (page - 1) * limit;
+
+        const where = {
+            userId,
+            ...(platform ? { platform } : {}),
+        };
+
+        const [data, total] = await Promise.all([
+            prisma.contentAI.findMany({
+                where,
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: limit,
+            }),
+            prisma.contentAI.count({ where }),
+        ]);
+
+        return {
+            data,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit) || 0,
+            },
+        };
     },
 
     async findById(id: number, userId: number): Promise<ContentAIResponse | null> {

@@ -2,8 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
+import { ProductsService } from "@/backend/services/products.service";
 import { vercelIntegration } from "@/backend/intagrations/vercel";
 
 export type DeleteProductActionResult =
@@ -27,7 +28,7 @@ export async function deleteProductAction(
 
         const userId =
             typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store) {
             return {
@@ -38,7 +39,7 @@ export async function deleteProductAction(
             };
         }
 
-        const product = await ProductsController.getProduct(productId);
+        const product = await ProductsService.getProduct(productId);
 
         if (!product || product.storeId !== store.id) {
             return {
@@ -55,7 +56,7 @@ export async function deleteProductAction(
             );
         }
 
-        await ProductsController.deleteProduct(productId, store.id);
+        await ProductsService.deleteProduct(productId, store.id);
 
         return { success: true };
     } catch (error) {
@@ -63,9 +64,7 @@ export async function deleteProductAction(
             success: false,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Erro ao deletar produto",
+                    getActionErrorMessage(error, "Erro ao deletar produto"),
                 ],
             },
         };

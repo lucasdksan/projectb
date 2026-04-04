@@ -2,8 +2,9 @@
 
 import { z } from "zod";
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
+import { ProductsService } from "@/backend/services/products.service";
 import { createProductSchema } from "@/backend/schemas/products.schema";
 import { vercelIntegration } from "@/backend/intagrations/vercel";
 
@@ -89,7 +90,7 @@ export async function createProductAction(
 
         const userId =
             typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store) {
             return {
@@ -108,7 +109,7 @@ export async function createProductAction(
             imageUrls = [url];
         }
 
-        await ProductsController.createProduct(
+        await ProductsService.createProduct(
             {
                 ...parsed.data,
                 storeId: store.id,
@@ -128,9 +129,7 @@ export async function createProductAction(
             data: null,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Erro ao cadastrar produto",
+                    getActionErrorMessage(error, "Erro ao cadastrar produto"),
                 ],
             },
         };

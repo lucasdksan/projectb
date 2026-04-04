@@ -1,7 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/libs/auth";
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
 import { GetStoreDTO } from "@/backend/schemas/store.schema";
 
 export type GetStoreActionResult = 
@@ -23,7 +24,7 @@ export async function getStoreAction(): Promise<GetStoreActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
         
         return {
             success: true,
@@ -38,7 +39,9 @@ export async function getStoreAction(): Promise<GetStoreActionResult> {
             success: false,
             data: null,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao atualizar usuário"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao buscar loja"),
+                ],
             },
         }
     }

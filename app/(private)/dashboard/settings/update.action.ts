@@ -1,6 +1,7 @@
 "use server";
 
-import { UserController } from "@/backend/controllers/user.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { UserService } from "@/backend/services/user.service";
 import { updateUserSchema } from "@/backend/schemas/user.schema";
 import { getCurrentUser } from "@/libs/auth";
 import { env } from "@/libs/env";
@@ -33,7 +34,10 @@ export async function updateUserAction(data: unknown): Promise<UpdateUserActionR
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const { token, name } = await UserController.updateUser(parsed.data, userId);
+        const { token, name } = await UserService.updateUser(
+            parsed.data,
+            userId,
+        );
 
         await tokenIntoCookies.setAccessOnly(token, env.NODE_ENV === "production");
 
@@ -46,7 +50,9 @@ export async function updateUserAction(data: unknown): Promise<UpdateUserActionR
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao atualizar usuário"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao atualizar usuário"),
+                ],
             },
         }
     }

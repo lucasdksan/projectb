@@ -65,4 +65,12 @@ export const OrderService = {
     async totalRevenue(storeId: number) {
         return await OrderRepository.totalRevenueByStoreId(storeId);
     },
+
+    async getSalesData(storeId: number) {
+        const [orderCount, totalRevenue] = await Promise.all([
+            OrderRepository.countByStoreId(storeId),
+            OrderRepository.totalRevenueByStoreId(storeId),
+        ]);
+        return { orderCount, totalRevenue };
+    },
 };

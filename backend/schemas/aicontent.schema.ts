@@ -22,3 +22,11 @@ export type ContentAIResponse = {
     updatedAt: Date;
     userId: number;
 };
+
+export const listContentAISchema = z.object({
+    page: z.number().int().min(1).default(1),
+    limit: z.number().int().min(1).max(50).default(8),
+    platform: z.enum(SUPPORTED_PLATFORMS).optional(),
+});
+
+export type ListContentAIDTO = z.infer<typeof listContentAISchema>;

@@ -1,4 +1,5 @@
 import z from "zod";
+import { assertTrustedProductImageUrl } from "../utils/trusted-product-image-url";
 import { SUPPORTED_PLATFORMS } from "./aichat.schema";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -22,10 +23,23 @@ export const generateAddsSchema = z.object({
     imageUrl: z.string().url().optional(),
 });
 
-export const generateAddsFormSchema = generateAddsSchema.extend({
-    price: z.coerce.number().min(0.01, "Preço deve ser maior que zero"),
-    stock: z.coerce.number().int().min(0, "Estoque deve ser zero ou maior"),
-});
+export const generateAddsFormSchema = generateAddsSchema
+    .extend({
+        price: z.coerce.number().min(0.01, "Preço deve ser maior que zero"),
+        stock: z.coerce.number().int().min(0, "Estoque deve ser zero ou maior"),
+    })
+    .superRefine((data, ctx) => {
+        if (!data.imageUrl) return;
+        try {
+            assertTrustedProductImageUrl(data.imageUrl);
+        } catch (e) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: e instanceof Error ? e.message : "URL inválida",
+                path: ["imageUrl"],
+            });
+        }
+    });
 
 export type GenerateAddsDTO = z.infer<typeof generateAddsSchema>;
 

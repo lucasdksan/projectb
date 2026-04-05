@@ -6,10 +6,6 @@ import {
     type ContentMode,
     SUPPORTED_PLATFORMS,
 } from "../schemas/aichat.schema";
-import {
-    captureFirstValidScreenshot,
-    getValidSocialUrls,
-} from "./screenshot.service";
 
 const JSON_RESPONSE_RULES = `
 IMPORTANTE: Você DEVE responder SEMPRE em formato JSON válido com a seguinte estrutura:
@@ -35,11 +31,18 @@ Regras:
 - Respostas curtas e objetivas. Use quebras de linha e listas quando fizer sentido.
 - Não use frases como "confira nosso post" ou "analisamos para você".`;
 
-const COMPETITOR_ANALYSIS_SYSTEM = `Você é um estrategista de conteúdo e análise competitiva. Responda em texto livre, direto ao ponto — estilo ChatGPT: sem JSON, sem formulários.
+const SCHEDULE_AGENT_SYSTEM = `Você é um estrategista de mídias sociais e planejamento de conteúdo. Responda em texto livre, direto ao ponto — estilo ChatGPT: sem JSON, sem formulários.
 
-O usuário pode informar @ de perfil, link ou nome do concorrente. Quando uma imagem for enviada, ela é um screenshot da página do concorrente — use-a para analisar visualmente: layout, estética, tipos de post, paleta de cores e elementos visuais.
-Faça uma análise objetiva: o que o concorrente faz bem (tom, formatos, temas) e sugira conteúdos e ângulos para o usuário se diferenciar e superá-los.
-Respostas curtas e objetivas. Use listas e tópicos quando ajudar.`;
+O usuário descreve a campanha (objetivo, público, tom, duração, restrições) e pode enviar uma imagem como referência de temática, estética ou produto — use a imagem apenas como norte visual e temático para alinhar o cronograma ao que foi mostrado.
+
+Sua função é gerar um cronograma de postagens para UMA SEMANA (segunda a domingo). Para cada dia inclua:
+- dia da semana;
+- plataforma sugerida (ex.: Instagram feed, Stories, Reels, TikTok, YouTube live, etc.);
+- tipo de conteúdo (post, live, carrossel, vídeo curto, etc.);
+- tema ou ângulo do post em 1 linha;
+- quando fizer sentido, horário ou faixa sugerida (opcional).
+
+Seja específico e acionável. Use listas, títulos curtos e quebras de linha. Se faltar informação, assuma premissas razoáveis e mencione brevemente o que você assumiu.`;
 
 function parseAIResponse(response: string): AIContentResponse | null {
     try {
@@ -105,31 +108,19 @@ export const AIChatService = {
         const systemPrompt =
             mode === "viral"
                 ? VIRAL_TRENDS_SYSTEM
-                : mode === "competitor"
-                  ? COMPETITOR_ANALYSIS_SYSTEM
+                : mode === "schedule"
+                  ? SCHEDULE_AGENT_SYSTEM
                   : MARKETING_AGENT_SYSTEM;
 
         const enhancedPrompt = platform
             ? `[Plataforma: ${platform}] ${prompt}`
             : prompt;
 
-        let imageToSend = image;
-
-        if (mode === "competitor") {
-            const validUrls = getValidSocialUrls(prompt);
-            if (validUrls.length > 0) {
-                const screenshot = await captureFirstValidScreenshot(prompt);
-                if (screenshot) {
-                    imageToSend = screenshot;
-                }
-            }
-        }
-
         const { data } = await aiIntegration.chatWithContext(
             systemPrompt,
             history,
             enhancedPrompt,
-            imageToSend,
+            image,
         );
 
         if (mode === "standard") {

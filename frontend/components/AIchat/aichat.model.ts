@@ -12,7 +12,7 @@ export interface AichatViewProps {
     userName?: string | null;
 };
 
-export type ContentMode = "standard" | "viral" | "competitor";
+export type ContentMode = "standard" | "viral" | "schedule";
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
     instagram: "Instagram",

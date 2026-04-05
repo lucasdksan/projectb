@@ -7,7 +7,7 @@ import type { Components } from "react-markdown";
 import { AichatViewProps, ContentMode, PLATFORM_LABELS } from "./aichat.model";
 import { useAichatViewModel } from "./aichat.viewmodel";
 import { SUPPORTED_PLATFORMS, type Platform } from "@/backend/schemas/aichat.schema";
-import { Sparkles, Loader2, Save, CheckCircle, X, Paperclip, Send, ShieldUser } from "lucide-react";
+import { Sparkles, Loader2, Save, CheckCircle, X, Paperclip, Send, Calendar } from "lucide-react";
 
 const markdownComponents: Components = {
     h1: ({ children }) => <h1 className="text-lg font-bold text-white mt-4 mb-2 first:mt-0">{children}</h1>,
@@ -57,16 +57,16 @@ const ViewContentMode = ({ mode }: { mode: ContentMode; }) => {
                 </p>
             </div>
         ),
-        competitor: () => (
+        schedule: () => (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                 <div className={`w-24 h-24 rounded-[2rem] flex items-center justify-center text-4xl mb-8 transition-all duration-700 bg-indigo-500/20 text-indigo-400 shadow-[0_0_60px_rgba(99,102,241,0.15)]`}>
-                    <ShieldUser className="w-6 h-6" />
+                    <Calendar className="w-6 h-6" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-3">
-                    Radar de Concorrência
+                    Cronograma semanal
                 </h3>
                 <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">
-                    Cole o @ do Instagram, link do perfil ou site do concorrente. Vou analisar e sugerir conteúdos para você se destacar. Imagem opcional.
+                    Envie uma imagem como referência de temática e descreva a campanha (objetivo, público, tom). Vou montar um cronograma de postagens para a semana (dias, plataformas e tipos de conteúdo).
                 </p>
             </div>
         ),
@@ -270,10 +270,10 @@ export default function AichatView({ userName }: AichatViewProps) {
                             </button>
                             <button
                                 type="button"
-                                onClick={() => handleModeChange("competitor")}
-                                className={`px-4 py-2 cursor-pointer rounded-xl text-[10px] font-black uppercase transition-all ${mode === "competitor" ? "bg-indigo-400/10 text-indigo-400" : "text-gray-500"}`}
+                                onClick={() => handleModeChange("schedule")}
+                                className={`px-4 py-2 cursor-pointer rounded-xl text-[10px] font-black uppercase transition-all ${mode === "schedule" ? "bg-indigo-400/10 text-indigo-400" : "text-gray-500"}`}
                             >
-                                Analisar Concorrente
+                                Gerar Cronograma
                             </button>
                         </div>
                     </div>
@@ -305,7 +305,7 @@ export default function AichatView({ userName }: AichatViewProps) {
                                         ? (selectedImage ? "O que deseja gerar para este produto?" : "Selecione uma imagem primeiro...")
                                         : mode === "viral"
                                             ? "Pergunte sobre tendências ou peça ideias virais..."
-                                            : "Cole o @ ou link do concorrente e peça a análise..."
+                                            : "Descreva a campanha ou temática para o cronograma (imagem opcional como referência)..."
                                     : "Refaça, altere o tom ou peça outra variação..."
                             }
                             className="flex-1 min-w-0 bg-transparent py-4 px-4 text-white focus:outline-none placeholder-gray-500 disabled:opacity-50"
@@ -320,7 +320,7 @@ export default function AichatView({ userName }: AichatViewProps) {
                         </button>
                     </div>
                     <p className="text-[10px] text-gray-500 text-center uppercase tracking-widest font-medium">
-                        Gemini AI • {imageRequired ? "No modo padrão a imagem é obrigatória na primeira mensagem" : "Imagem opcional (tendências e concorrente)"}
+                        Gemini AI • {imageRequired ? "No modo padrão a imagem é obrigatória na primeira mensagem" : "Imagem opcional (tendências e cronograma)"}
                     </p>
                 </div>
             </form>

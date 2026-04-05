@@ -66,7 +66,7 @@ export const chatHistoryItemSchema = z.object({
     content: z.string(),
 });
 
-export const CONTENT_MODES = ["standard", "viral", "competitor"] as const;
+export const CONTENT_MODES = ["standard", "viral", "schedule"] as const;
 export type ContentMode = (typeof CONTENT_MODES)[number];
 
 export const sendMessageWithContextSchema = z

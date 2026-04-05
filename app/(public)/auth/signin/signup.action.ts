@@ -1,6 +1,7 @@
 "use server";
 
-import { AuthController } from "@/backend/controllers/auth.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AuthService } from "@/backend/services/auth.service";
 import { signInSchema } from "@/backend/schemas/auth.schema";
 import { env } from "@/libs/env";
 import tokenIntoCookies from "@/libs/token";
@@ -20,7 +21,8 @@ export async function signinAction(data: unknown) {
     }
 
     try {
-        const { token, refreshToken, name, email } = await AuthController.signIn(parsed.data);
+        const { token, refreshToken, name, email } =
+            await AuthService.signIn(parsed.data);
         await tokenIntoCookies.set(token, refreshToken, env.NODE_ENV === "production");
         return {
             success: true,
@@ -30,7 +32,9 @@ export async function signinAction(data: unknown) {
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao fazer login"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao fazer login"),
+                ],
             },
         }
     }

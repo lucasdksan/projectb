@@ -1,6 +1,7 @@
 "use server";
 
-import { AuthController } from "@/backend/controllers/auth.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AuthService } from "@/backend/services/auth.service";
 import { resetUserSchema } from "@/backend/schemas/auth.schema";
 import tokenIntoCookies from "@/libs/token";
 
@@ -21,7 +22,11 @@ export async function resetAction(data: unknown): Promise<ResetActionResult> {
     try {
         const { email, token, password } = parsed.data;
 
-        const result = await AuthController.reset({ email: email!, token: token!, password: password! });
+        const result = await AuthService.reset({
+            email: email!,
+            token: token!,
+            password: password!,
+        });
 
         if (!result.status) {
             return {
@@ -42,7 +47,9 @@ export async function resetAction(data: unknown): Promise<ResetActionResult> {
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao resetar senha"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao resetar senha"),
+                ],
             },
         }
     }

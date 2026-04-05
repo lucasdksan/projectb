@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import ProductsView from "@/frontend/components/ProductsView/productsview.view";
 import DeleteSuccessToastView from "@/frontend/components/DeleteSuccessToast/deletesuccesstoast.view";
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { ProductsService } from "@/backend/services/products.service";
 import { getStoreIdAction } from "./getstoreid.action";
 
 const INITIAL_PAGE = 1;
@@ -13,10 +13,11 @@ export default async function ProductsPage() {
 
     if (!success || !data) redirect("/dashboard");
 
-    const listResult = await ProductsController.listProducts({
+    const listResult = await ProductsService.listProducts({
         storeId: data.storeId,
         page: INITIAL_PAGE,
         limit: INITIAL_LIMIT,
+        activeOnly: false,
     });
 
     return (

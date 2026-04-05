@@ -1,6 +1,7 @@
 "use server";
 
-import { AuthController } from "@/backend/controllers/auth.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AuthService } from "@/backend/services/auth.service";
 import { forgetSchema } from "@/backend/schemas/auth.schema";
 
 export type ForgetActionResult = 
@@ -20,7 +21,7 @@ export async function forgetAction(data: unknown): Promise<ForgetActionResult> {
     try {
         const { email } = parsed.data;
 
-        const user = await AuthController.forget({ email: email! });
+        const user = await AuthService.forgot(email!);
         
         if (!user.status) {
             return {
@@ -33,13 +34,16 @@ export async function forgetAction(data: unknown): Promise<ForgetActionResult> {
 
         return {
             success: true,
-            message: "Email enviado com sucesso",
+            message:
+                "Se existir uma conta com este e-mail, receberá instruções para redefinir a senha.",
         }
     } catch (error) {
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao esquecer a senha"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao esquecer a senha"),
+                ],
             },
         }
     }

@@ -112,7 +112,7 @@ export async function captureSocialScreenshot(url: string): Promise<ScreenshotRe
 
         await browser.close();
 
-        const blob = new Blob([buffer], { type: "image/png" });
+        const blob = new Blob([new Uint8Array(buffer)], { type: "image/png" });
         return { success: true, blob };
     } catch (error) {
         if (browser) await browser.close().catch(() => {});

@@ -1,6 +1,8 @@
 "use server";
 
-import { AIChatController } from "@/backend/controllers/aichat.controller";
+import { getCurrentUser } from "@/libs/auth";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AIChatService } from "@/backend/services/aichat.service";
 import {
     sendMessageWithImageSchema,
     sendMessageWithoutImageSchema,
@@ -20,6 +22,14 @@ export async function sendMessageWithImageAction(
     formData: FormData
 ): Promise<SendMessageActionResult> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const raw = {
             prompt: formData.get("prompt"),
             image: formData.get("image"),
@@ -34,7 +44,10 @@ export async function sendMessageWithImageAction(
             };
         }
 
-        const result = await AIChatController.sendMessageWithImage(parsed.data);
+        const result = await AIChatService.sendMessageWithImage(
+            parsed.data.prompt,
+            parsed.data.image as Blob,
+        );
         
         return { 
             success: true, 
@@ -45,7 +58,12 @@ export async function sendMessageWithImageAction(
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Falha ao gerar conteúdo. Tente novamente."]
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao gerar conteúdo. Tente novamente.",
+                    ),
+                ]
             }
         };
     }
@@ -56,6 +74,14 @@ export async function sendMessageWithoutImageAction(
     formData: FormData
 ): Promise<SendMessageActionResult> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const raw = {
             prompt: formData.get("prompt"),
         };
@@ -69,7 +95,9 @@ export async function sendMessageWithoutImageAction(
             };
         }
 
-        const result = await AIChatController.sendMessageWithoutImage(parsed.data);
+        const result = await AIChatService.sendMessageWithoutImage(
+            parsed.data.prompt,
+        );
         
         return { 
             success: true, 
@@ -80,7 +108,12 @@ export async function sendMessageWithoutImageAction(
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Falha ao gerar conteúdo. Tente novamente."]
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao gerar conteúdo. Tente novamente.",
+                    ),
+                ]
             }
         };
     }
@@ -91,6 +124,14 @@ export async function sendMessageWithContextAction(
     formData: FormData
 ): Promise<SendMessageActionResult> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return {
+                success: false,
+                errors: { global: ["Usuário não autenticado"] },
+            };
+        }
+
         const historyRaw = formData.get("history");
         let history: ChatHistoryItem[] = [];
 
@@ -134,7 +175,13 @@ export async function sendMessageWithContextAction(
             };
         }
 
-        const result = await AIChatController.sendMessageWithContext(parsed.data);
+        const result = await AIChatService.sendMessageWithContext(
+            parsed.data.prompt,
+            parsed.data.history,
+            parsed.data.image as Blob | undefined,
+            parsed.data.platform,
+            parsed.data.mode,
+        );
         
         return {
             success: true,
@@ -148,7 +195,12 @@ export async function sendMessageWithContextAction(
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Falha ao gerar conteúdo. Tente novamente."]
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao gerar conteúdo. Tente novamente.",
+                    ),
+                ]
             }
         };
     }

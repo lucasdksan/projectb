@@ -2,32 +2,38 @@
 
 import { ListContentProps } from "./listcontent.model";
 import useListContentViewModel from "./listcontent.viewmodel";
-import { Check, Copy, Trash2, PackageOpen } from "lucide-react";
+import { Check, Copy, Trash2, PackageOpen, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function ListContentView(props: ListContentProps) {
     const {
         filter,
-        setFilter,
+        selectFilter,
+        goToPage,
         copiedId,
         deletingId,
         platforms,
-        filteredData,
+        contents,
+        pagination,
         handleCopy,
         handleDelete,
         getPlatformLabel,
     } = useListContentViewModel(props);
 
+    const hasPrevious = pagination.page > 1;
+    const hasNext = pagination.page < pagination.totalPages;
+
     return (
         <div className="space-y-6">
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {platforms.map(p => (
+                {platforms.map((p) => (
                     <button
                         key={p}
-                        onClick={() => setFilter(p)}
+                        type="button"
+                        onClick={() => selectFilter(p)}
                         className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border ${
-                            filter === p 
-                                ? 'bg-[#00ff41] text-black border-[#00ff41]' 
-                                : 'bg-white/5 text-gray-400 border-white/10 hover:border-[#00ff41]/50'
+                            filter === p
+                                ? "bg-[#00ff41] text-black border-[#00ff41]"
+                                : "bg-white/5 text-gray-400 border-white/10 hover:border-[#00ff41]/50"
                         }`}
                     >
                         {p === "Todos" ? p : getPlatformLabel(p)}
@@ -36,21 +42,24 @@ export default function ListContentView(props: ListContentProps) {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {filteredData.map((item) => (
-                    <div key={item.id} className="bg-[#161616] border border-white/5 rounded-3xl p-8 flex flex-col hover:border-[#00ff41]/30 transition-all group relative">
+                {contents.map((item) => (
+                    <div
+                        key={item.id}
+                        className="bg-[#161616] border border-white/5 rounded-3xl p-8 flex flex-col hover:border-[#00ff41]/30 transition-all group relative"
+                    >
                         <div className="flex justify-between items-start mb-6">
                             <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-gray-400 uppercase tracking-widest">
                                 {getPlatformLabel(item.platform)}
                             </span>
                             <span className="text-[10px] text-gray-600 font-mono">
-                                {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                                {new Date(item.createdAt).toLocaleDateString("pt-BR")}
                             </span>
                         </div>
 
                         <h3 className="text-xl font-bold text-white mb-4 group-hover:text-[#00ff41] transition-colors line-clamp-2">
                             {item.headline}
                         </h3>
-                        
+
                         <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
                             {item.description}
                         </p>
@@ -62,7 +71,7 @@ export default function ListContentView(props: ListContentProps) {
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                                {item.hashtags.split(' ').map((h, i) => (
+                                {item.hashtags.split(" ").map((h, i) => (
                                     <span key={i} className="text-[11px] text-emerald-400/60 font-medium">
                                         {h}
                                     </span>
@@ -71,32 +80,74 @@ export default function ListContentView(props: ListContentProps) {
                         </div>
 
                         <div className="mt-8 flex gap-3">
-                            <button 
-                                onClick={() => handleCopy(item.id, `${item.headline}\n\n${item.description}\n\n${item.cta}\n\n${item.hashtags}`)}
+                            <button
+                                onClick={() =>
+                                    handleCopy(
+                                        item.id,
+                                        `${item.headline}\n\n${item.description}\n\n${item.cta}\n\n${item.hashtags}`
+                                    )
+                                }
                                 className="flex-1 bg-white/5 hover:bg-[#00ff41]/10 text-white hover:text-[#00ff41] border border-white/10 hover:border-[#00ff41]/30 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
                             >
                                 {copiedId === item.id ? <Check size={16} /> : <Copy size={16} />}
-                                {copiedId === item.id ? 'Copiado!' : 'Copiar Tudo'}
+                                {copiedId === item.id ? "Copiado!" : "Copiar Tudo"}
                             </button>
-                            <button 
+                            <button
                                 onClick={() => handleDelete(item.id)}
                                 disabled={deletingId === item.id}
                                 className="w-12 h-12 bg-white/5 hover:bg-red-500/10 text-gray-400 hover:text-red-500 border border-white/10 hover:border-red-500/30 rounded-xl transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <Trash2 size={16} className={deletingId === item.id ? 'animate-pulse' : ''} />
+                                <Trash2 size={16} className={deletingId === item.id ? "animate-pulse" : ""} />
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {filteredData.length === 0 && (
+            {contents.length === 0 && (
                 <div className="bg-[#161616] border border-dashed border-white/10 rounded-3xl p-20 text-center">
                     <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 text-gray-600">
                         <PackageOpen size={32} />
                     </div>
                     <h3 className="text-white font-bold text-lg">Nenhum conteúdo encontrado</h3>
-                    <p className="text-gray-500 max-w-xs mx-auto mt-2">Você ainda não tem conteúdos salvos para esta plataforma.</p>
+                    <p className="text-gray-500 max-w-xs mx-auto mt-2">
+                        Você ainda não tem conteúdos salvos para esta plataforma.
+                    </p>
+                </div>
+            )}
+
+            {pagination.totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-white/5">
+                    <span className="text-sm text-gray-400">
+                        Mostrando {(pagination.page - 1) * pagination.limit + 1} a{" "}
+                        {Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}{" "}
+                        conteúdos
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => goToPage(pagination.page - 1)}
+                            disabled={!hasPrevious}
+                            className="p-2 rounded-lg bg-white/5 border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#00ff41]/30 hover:text-[#00ff41] transition-colors"
+                            aria-label="Página anterior"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+
+                        <span className="text-sm text-gray-300 px-2">
+                            Página {pagination.page} de {pagination.totalPages}
+                        </span>
+
+                        <button
+                            type="button"
+                            onClick={() => goToPage(pagination.page + 1)}
+                            disabled={!hasNext}
+                            className="p-2 rounded-lg bg-white/5 border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#00ff41]/30 hover:text-[#00ff41] transition-colors"
+                            aria-label="Próxima página"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

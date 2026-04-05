@@ -1,6 +1,6 @@
 import { Errors } from "../errors/errors";
 import { AIContentRepository } from "../repositories/aicontent.repository";
-import { SaveContentDTO, ContentAIResponse } from "../schemas/aicontent.schema";
+import { SaveContentDTO, ContentAIResponse, ListContentAIDTO } from "../schemas/aicontent.schema";
 
 export const AIContentService = {
     async save(data: SaveContentDTO, userId: number): Promise<ContentAIResponse> {
@@ -9,6 +9,10 @@ export const AIContentService = {
 
     async list(userId: number): Promise<ContentAIResponse[]> {
         return await AIContentRepository.findByUserId(userId);
+    },
+
+    async listPaginated(userId: number, dto: ListContentAIDTO) {
+        return await AIContentRepository.listPaginated(userId, dto);
     },
 
     async getById(id: number, userId: number): Promise<ContentAIResponse> {

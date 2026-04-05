@@ -1,7 +1,10 @@
 import { cookies } from "next/headers";
 
-const ACCESS_MAX_AGE = 60 * 15;
-const REFRESH_MAX_AGE = 60 * 60 * 24 * 7;
+export const ACCESS_TOKEN_MAX_AGE_SEC = 60 * 15;
+export const REFRESH_TOKEN_MAX_AGE_SEC = 60 * 60 * 24 * 7;
+
+const ACCESS_MAX_AGE = ACCESS_TOKEN_MAX_AGE_SEC;
+const REFRESH_MAX_AGE = REFRESH_TOKEN_MAX_AGE_SEC;
 
 const tokenIntoCookies = {
     async cookiesStoreFn() {

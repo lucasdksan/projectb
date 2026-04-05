@@ -1,6 +1,7 @@
 "use server";
 
-import { AIContentController } from "@/backend/controllers/aicontent.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AIContentService } from "@/backend/services/aicontent.service";
 import { getCurrentUser } from "@/libs/auth";
 
 export type QuantityActionResult = 
@@ -21,7 +22,7 @@ export async function quantityAction(): Promise<QuantityActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const quantity = await AIContentController.quantity(userId);
+        const quantity = await AIContentService.quantity(userId);
  
         return { 
             success: true, 
@@ -32,7 +33,12 @@ export async function quantityAction(): Promise<QuantityActionResult> {
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao obter quantidade de conteúdos."] 
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao obter quantidade de conteúdos.",
+                    ),
+                ]
             } 
         };
     }

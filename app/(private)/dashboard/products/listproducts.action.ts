@@ -1,6 +1,6 @@
 "use server";
 
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { ProductsService } from "@/backend/services/products.service";
 import { listProductsSchema } from "@/backend/schemas/products.schema";
 
 export interface PaginationInfo {
@@ -35,7 +35,7 @@ export async function listProductsAction(
         };
     }
 
-    const result = await ProductsController.listProducts(parsed.data);
+    const result = await ProductsService.listProducts(parsed.data);
 
     return {
         success: true,

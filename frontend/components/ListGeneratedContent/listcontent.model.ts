@@ -1,5 +1,8 @@
 import { Platform } from "@/backend/schemas/aichat.schema";
 import { ContentAI } from "@prisma/client";
+import type { PaginationInfo } from "@/app/(private)/dashboard/products/listproducts.action";
+
+export const GENERATED_CONTENT_PAGE_SIZE = 2;
 
 export const LIST_PLATFORMS: Record<Platform, string> = {
     instagram: "Instagram",
@@ -12,6 +15,8 @@ export const LIST_PLATFORMS: Record<Platform, string> = {
 };
 
 export type FilterPlatform = "Todos" | Platform;
+
 export interface ListContentProps {
-    contents: ContentAI[];
+    initialContents: ContentAI[];
+    initialPagination: PaginationInfo;
 }

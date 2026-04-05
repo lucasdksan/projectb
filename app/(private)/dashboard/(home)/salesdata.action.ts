@@ -1,8 +1,9 @@
 "use server";
 
 import { getCurrentUser } from "@/libs/auth";
-import { OrderController } from "@/backend/controllers/order.controller";
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { OrderService } from "@/backend/services/order.service";
+import { StoreService } from "@/backend/services/store.service";
 
 export type SalesDataActionResult =
     | { success: true; data: { orderCount: number; totalRevenue: number } }
@@ -22,7 +23,7 @@ export async function salesDataAction(): Promise<SalesDataActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store) {
             return {
@@ -33,7 +34,7 @@ export async function salesDataAction(): Promise<SalesDataActionResult> {
             };
         }
 
-        const salesData = await OrderController.getSalesData(store.id);
+        const salesData = await OrderService.getSalesData(store.id);
 
         return {
             success: true,
@@ -48,9 +49,10 @@ export async function salesDataAction(): Promise<SalesDataActionResult> {
             success: false,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Falha ao obter dados de vendas.",
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao obter dados de vendas.",
+                    ),
                 ],
             },
         };

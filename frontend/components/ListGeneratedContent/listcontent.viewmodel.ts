@@ -1,20 +1,90 @@
-import { useState, useMemo } from "react";
-import { FilterPlatform, LIST_PLATFORMS, ListContentProps } from "./listcontent.model";
+import { useActionState, useState, startTransition } from "react";
+import {
+    FilterPlatform,
+    LIST_PLATFORMS,
+    ListContentProps,
+    GENERATED_CONTENT_PAGE_SIZE,
+} from "./listcontent.model";
 import { deleteGeneratedContentAction } from "@/app/(private)/dashboard/generatedContent/deletegeneratedcontent.action";
+import {
+    listGeneratedContentAction,
+    ListGeneratedContentActionResult,
+} from "@/app/(private)/dashboard/generatedContent/listgeneratedcontent.action";
 import { useRouter } from "next/navigation";
+import type { PaginationInfo } from "@/app/(private)/dashboard/products/listproducts.action";
 
-export default function useListContentViewModel({ contents }: ListContentProps) {
+const DEFAULT_PAGINATION: PaginationInfo = {
+    page: 1,
+    limit: GENERATED_CONTENT_PAGE_SIZE,
+    total: 0,
+    totalPages: 0,
+};
+
+function buildInitialState(
+    initialContents: ListContentProps["initialContents"],
+    initialPagination: PaginationInfo
+): ListGeneratedContentActionResult {
+    return {
+        success: true,
+        data: {
+            contents: initialContents,
+            pagination: initialPagination,
+            filterPlatform: "Todos",
+        },
+    };
+}
+
+export default function useListContentViewModel({
+    initialContents,
+    initialPagination,
+}: ListContentProps) {
     const router = useRouter();
-    const [filter, setFilter] = useState<FilterPlatform>("Todos");
+    const [state, formAction] = useActionState(
+        listGeneratedContentAction,
+        buildInitialState(initialContents, initialPagination)
+    );
+
     const [copiedId, setCopiedId] = useState<number | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
-    
-    const platforms: FilterPlatform[] = ["Todos", ...Object.keys(LIST_PLATFORMS) as FilterPlatform[]];
 
-    const filteredData = useMemo(() => {
-        if (filter === "Todos") return contents;
-        return contents.filter(item => item.platform === filter);
-    }, [contents, filter]);
+    const platforms: FilterPlatform[] = ["Todos", ...(Object.keys(LIST_PLATFORMS) as FilterPlatform[])];
+
+    const filter: FilterPlatform =
+        state.success && state.data?.filterPlatform !== undefined
+            ? state.data.filterPlatform
+            : "Todos";
+
+    const contents =
+        state.success && state.data?.contents ? state.data.contents : [];
+
+    const pagination =
+        state.success && state.data?.pagination
+            ? state.data.pagination
+            : DEFAULT_PAGINATION;
+
+    const selectFilter = (next: FilterPlatform) => {
+        const fd = new FormData();
+        fd.set("page", "1");
+        fd.set("limit", String(pagination.limit));
+        if (next !== "Todos") {
+            fd.set("platform", next);
+        }
+        startTransition(() => {
+            formAction(fd);
+        });
+    };
+
+    const goToPage = (page: number) => {
+        const fd = new FormData();
+        fd.set("page", String(page));
+        fd.set("limit", String(pagination.limit));
+        if (filter !== "Todos") {
+            fd.set("platform", filter);
+        }
+        startTransition(() => {
+            formAction(fd);
+        });
+    };
 
     const handleCopy = async (id: number, text: string) => {
         try {
@@ -52,15 +122,16 @@ export default function useListContentViewModel({ contents }: ListContentProps) 
     const getPlatformLabel = (platform: string): string => {
         return LIST_PLATFORMS[platform as keyof typeof LIST_PLATFORMS] || platform;
     };
-    
 
     return {
         filter,
-        setFilter,
+        selectFilter,
+        goToPage,
         copiedId,
         deletingId,
         platforms,
-        filteredData,
+        contents,
+        pagination,
         handleCopy,
         handleDelete,
         getPlatformLabel,

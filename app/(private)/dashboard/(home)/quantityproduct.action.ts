@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/libs/auth";
-import { ProductsController } from "@/backend/controllers/products.controller";
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { ProductsService } from "@/backend/services/products.service";
+import { StoreService } from "@/backend/services/store.service";
 
 export type QuantityActionResult = 
     | { success: true; data: { quantity: number } }
@@ -20,7 +21,7 @@ export async function quantityProductAction(): Promise<QuantityActionResult> {
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const store = await StoreController.getStore(userId);
+        const store = await StoreService.getStore(userId);
 
         if (!store) {
             return {
@@ -31,7 +32,7 @@ export async function quantityProductAction(): Promise<QuantityActionResult> {
             };
         }
 
-        const quantity = await ProductsController.quantityProducts(store.id);
+        const quantity = await ProductsService.quantityProducts(store.id);
 
         return {
             success: true,
@@ -43,7 +44,12 @@ export async function quantityProductAction(): Promise<QuantityActionResult> {
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Falha ao obter quantidade de produtos."]
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao obter quantidade de produtos.",
+                    ),
+                ]
             }
         };
     }

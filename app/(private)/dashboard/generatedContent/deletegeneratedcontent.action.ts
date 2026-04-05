@@ -1,6 +1,7 @@
 "use server";
 
-import { AIContentController } from "@/backend/controllers/aicontent.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AIContentService } from "@/backend/services/aicontent.service";
 import { getCurrentUser } from "@/libs/auth";
 
 export type DeleteGeneratedContentActionResult = 
@@ -21,7 +22,7 @@ export async function deleteGeneratedContentAction(id: number): Promise<DeleteGe
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        await AIContentController.delete(id, userId);
+        await AIContentService.delete(id, userId);
         
         return { success: true };
     } catch (error) {
@@ -29,7 +30,9 @@ export async function deleteGeneratedContentAction(id: number): Promise<DeleteGe
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao deletar conteúdo."] 
+                global: [
+                    getActionErrorMessage(error, "Falha ao deletar conteúdo."),
+                ]
             } 
         };
     }

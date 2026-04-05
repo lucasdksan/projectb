@@ -1,6 +1,7 @@
 "use server";
 
-import { AIContentController } from "@/backend/controllers/aicontent.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AIContentService } from "@/backend/services/aicontent.service";
 import { saveContentSchema, type SaveContentDTO } from "@/backend/schemas/aicontent.schema";
 import { getCurrentUser } from "@/libs/auth";
 
@@ -9,7 +10,12 @@ export type SaveContentActionResult =
     | { success: false; errors: Record<string, string[] | undefined> };
 
 export type ListContentActionResult =
-    | { success: true; data: { contents: Awaited<ReturnType<typeof AIContentController.list>> } }
+    | {
+          success: true;
+          data: {
+              contents: Awaited<ReturnType<typeof AIContentService.list>>;
+          };
+      }
     | { success: false; errors: Record<string, string[] | undefined> };
 
 export type DeleteContentActionResult = 
@@ -41,7 +47,7 @@ export async function saveContentAction(
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const saved = await AIContentController.save(validated.data, userId);
+        const saved = await AIContentService.save(validated.data, userId);
         
         return { 
             success: true, 
@@ -52,7 +58,12 @@ export async function saveContentAction(
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao salvar conteúdo. Tente novamente."] 
+                global: [
+                    getActionErrorMessage(
+                        error,
+                        "Falha ao salvar conteúdo. Tente novamente.",
+                    ),
+                ]
             } 
         };
     }
@@ -72,7 +83,7 @@ export async function listSavedContentsAction(): Promise<ListContentActionResult
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        const contents = await AIContentController.list(userId);
+        const contents = await AIContentService.list(userId);
         
         return { 
             success: true, 
@@ -83,7 +94,9 @@ export async function listSavedContentsAction(): Promise<ListContentActionResult
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao carregar conteúdos."] 
+                global: [
+                    getActionErrorMessage(error, "Falha ao carregar conteúdos."),
+                ]
             } 
         };
     }
@@ -103,7 +116,7 @@ export async function deleteContentAction(id: number): Promise<DeleteContentActi
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        await AIContentController.delete(id, userId);
+        await AIContentService.delete(id, userId);
         
         return { success: true };
     } catch (error) {
@@ -111,7 +124,9 @@ export async function deleteContentAction(id: number): Promise<DeleteContentActi
         return { 
             success: false, 
             errors: { 
-                global: [error instanceof Error ? error.message : "Falha ao deletar conteúdo."] 
+                global: [
+                    getActionErrorMessage(error, "Falha ao deletar conteúdo."),
+                ]
             } 
         };
     }

@@ -1,6 +1,7 @@
 "use server";
 
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
 import type { GetStoreDTO } from "@/backend/schemas/store.schema";
 
 export type GetStoreBySlugActionResult =
@@ -23,7 +24,7 @@ export async function getStoreBySlugAction(
             };
         }
 
-        const store = await StoreController.getStoreBySlug(trimmedSlug);
+        const store = await StoreService.getStoreBySlug(trimmedSlug);
 
         if (!store) {
             return {
@@ -67,7 +68,7 @@ export async function getStoreBySlugAction(
             data: null,
             errors: {
                 global: [
-                    error instanceof Error ? error.message : "Erro ao buscar loja",
+                    getActionErrorMessage(error, "Erro ao buscar loja"),
                 ],
             },
         };

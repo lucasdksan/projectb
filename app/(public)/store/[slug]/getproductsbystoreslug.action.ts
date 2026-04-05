@@ -1,6 +1,7 @@
 "use server";
 
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { ProductsService } from "@/backend/services/products.service";
 import { listProductsByStoreSlugSchema } from "@/backend/schemas/products.schema";
 
 export interface PaginationInfo {
@@ -44,7 +45,7 @@ export async function getProductsByStoreSlugAction(
             };
         }
 
-        const result = await ProductsController.listProductsByStoreSlug(parsed.data);
+        const result = await ProductsService.listProductsByStoreSlug(parsed.data);
 
         if (!result) {
             return {
@@ -79,9 +80,7 @@ export async function getProductsByStoreSlugAction(
             data: null,
             errors: {
                 global: [
-                    error instanceof Error
-                        ? error.message
-                        : "Erro ao buscar produtos",
+                    getActionErrorMessage(error, "Erro ao buscar produtos"),
                 ],
             },
         };

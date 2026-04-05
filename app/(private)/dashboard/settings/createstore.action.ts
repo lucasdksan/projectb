@@ -1,6 +1,7 @@
 "use server";
 
-import { StoreController } from "@/backend/controllers/store.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { StoreService } from "@/backend/services/store.service";
 import { updateStoreSchema } from "@/backend/schemas/store.schema";
 import { getCurrentUser } from "@/libs/auth";
 
@@ -33,7 +34,7 @@ export async function createStoreAction(data: unknown): Promise<CreateStoreActio
         }
 
         const userId = typeof user.sub === "string" ? parseInt(user.sub, 10) : user.sub;
-        await StoreController.createStore(userId, parsed.data);
+        await StoreService.createStore(userId, parsed.data);
 
         return {
             success: true,
@@ -45,7 +46,9 @@ export async function createStoreAction(data: unknown): Promise<CreateStoreActio
             success: false,
             data: null,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao cadastrar loja"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao cadastrar loja"),
+                ],
             },
         };
     }

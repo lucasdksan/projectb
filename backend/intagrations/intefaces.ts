@@ -13,6 +13,8 @@ export interface AIIntegration {
         image?: Blob
     ) => Promise<{ data: string }>;
     generateReadyPost: (headline: string, style: string, image: Blob, customContext?: string) => Promise<{ data: string }>;
+    generatePostStudioChatPrompt: (context: string, image: Blob) => Promise<{ data: string }>;
+    generatePostStudioChatImage: (image: Blob, context: string) => Promise<{ data: string }>;
 };
 
 export interface VercelIntegration {

@@ -1,6 +1,7 @@
 "use server";
 
-import { AuthController } from "@/backend/controllers/auth.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { AuthService } from "@/backend/services/auth.service";
 import { createUserSchema } from "@/backend/schemas/auth.schema";
 import { env } from "@/libs/env";
 import tokenIntoCookies from "@/libs/token";
@@ -20,7 +21,8 @@ export async function signupAction(data: unknown): Promise<SignupActionResult> {
     }
 
     try {
-        const { email, name, token, refreshToken } = await AuthController.createUser(parsed.data);
+        const { email, name, token, refreshToken } =
+            await AuthService.createUser(parsed.data);
         await tokenIntoCookies.set(token, refreshToken, env.NODE_ENV === "production");
 
         return {
@@ -31,7 +33,9 @@ export async function signupAction(data: unknown): Promise<SignupActionResult> {
         return {
             success: false,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao criar usuário"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao criar usuário"),
+                ],
             },
         }
     }

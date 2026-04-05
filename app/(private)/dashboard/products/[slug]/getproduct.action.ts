@@ -1,14 +1,21 @@
 "use server";
 
-import { ProductsController } from "@/backend/controllers/products.controller";
+import { getActionErrorMessage } from "@/libs/action-error";
+import { ProductsService } from "@/backend/services/products.service";
 
 export type GetProductActionResult =
-    | { success: true; data: NonNullable<Awaited<ReturnType<typeof ProductsController.getProduct>>>; errors: null }
+    | {
+          success: true;
+          data: NonNullable<
+              Awaited<ReturnType<typeof ProductsService.getProduct>>
+          >;
+          errors: null;
+      }
     | { success: false; data: null; errors: Record<string, string[] | undefined> };
 
 export async function getProductAction(slug: number): Promise<GetProductActionResult> {
     try {
-        const product = await ProductsController.getProduct(slug);
+        const product = await ProductsService.getProduct(slug);
 
         if (!product) {
             return {
@@ -31,7 +38,9 @@ export async function getProductAction(slug: number): Promise<GetProductActionRe
             success: false,
             data: null,
             errors: {
-                global: [error instanceof Error ? error.message : "Erro ao obter produto"],
+                global: [
+                    getActionErrorMessage(error, "Erro ao obter produto"),
+                ],
             },
         };
     }

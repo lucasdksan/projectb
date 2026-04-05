@@ -174,5 +174,88 @@ export const aiIntegration: AIIntegration = {
             console.error("generateReadyPost error:", error);
             throw error;
         }
-    }
+    },
+
+    generatePostStudioChatPrompt: async (context: string, image: Blob) => {
+        return withRetry(async () => {
+            const imageBytes = await image.arrayBuffer();
+            const imgBase64 = Buffer.from(imageBytes).toString("base64");
+
+            const instruction = `You are an expert prompt engineer for image generation (Midjourney, DALL·E, Gemini, etc.).
+
+The user attached a product/source image and answered questions in Portuguese. Your task:
+1. Analyze the image briefly (subject, framing) only to enrich the text prompt.
+2. Produce ONE detailed, professional prompt in English that reflects ALL context below.
+3. If the user asks to replace mannequins with real people, or to show models with specific looks or origins, the English prompt MUST explicitly require full human models in a full scene wearing the garments — not flat lays, not clothing-only shots, unless they asked for that.
+
+CONTEXT (Portuguese):
+${context}
+
+Output format (Markdown):
+- Use a short title in Portuguese: "## Prompt sugerido"
+- Then a single fenced code block containing the full English prompt for image generation (no extra commentary inside the block).
+- Optionally add one short paragraph in Portuguese after the block with tips for the user.`;
+
+            const result = await model.generateContent([
+                { text: instruction },
+                {
+                    inlineData: {
+                        mimeType: image.type,
+                        data: imgBase64,
+                    },
+                },
+            ]);
+
+            return { data: result.response.text() };
+        });
+    },
+
+    generatePostStudioChatImage: async (image: Blob, context: string) => {
+        try {
+            const imageArrayBuffer = await image.arrayBuffer();
+            const imageBuffer = Buffer.from(imageArrayBuffer);
+
+            const prompt = `Act as a world-class commercial photographer and graphic designer.
+
+REFERENCE IMAGE: The attached image is a reference only (e.g. mannequins, flat lay, or styled shot). Do not default to "clothing only" or isolated garments unless the user explicitly asked for that.
+
+USER CREATIVE DIRECTION (Portuguese — this overrides generic rules; follow it literally):
+${context}
+
+PRIORITY RULES:
+1. **Transformations first:** If the user asks to replace mannequins with real people, or to show people instead of dummies, you MUST render **photorealistic full human models** in an appropriate environment (boutique, street, studio, etc.), wearing the same type of garments as in the reference. **Do not** output only the clothes on a hanger, flat lay, or ghost mannequin unless the user asked for product-only.
+2. **Demographics / casting:** If the user names types of people (e.g. regional or ethnic descriptors), depict **respectful, natural-looking** diverse models matching that brief in a normal fashion/editorial context. Show **faces and bodies** as in a real campaign — not faceless crops unless the brief implies it.
+3. **Garments:** Reproduce the outfit style, colors, and fit from the reference on the models; the clothing must be clearly worn by people, not floating alone.
+4. **Composition:** Apply cinematic lighting and high-end commercial retouching. Respect aspect ratio, mood, and style from the context.
+5. Output **one** polished image suitable for social media — a full scene with people when the brief asks for people.`;
+
+            const result = await imageModel.generateContent([
+                {
+                    inlineData: {
+                        mimeType: image.type,
+                        data: imageBuffer.toString("base64"),
+                    },
+                },
+                {
+                    text: prompt,
+                },
+            ]);
+
+            const response = result.response;
+
+            for (const part of response.candidates?.[0]?.content?.parts ?? []) {
+                if (part.inlineData) {
+                    const mimeType = part.inlineData.mimeType || "image/png";
+                    return {
+                        data: `data:${mimeType};base64,${part.inlineData.data}`,
+                    };
+                }
+            }
+
+            throw new Error("No image returned from Gemini");
+        } catch (error) {
+            console.error("generatePostStudioChatImage error:", error);
+            throw error;
+        }
+    },
 }

@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Code Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Node.js Install
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "24"
 
@@ -27,6 +27,12 @@ jobs:
 
       - name: Prisma Generate
         run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
 
       - name: Tests Run
         run: npm run test

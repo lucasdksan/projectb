@@ -11,7 +11,6 @@ const publicRoutes = [
     { path: "/store/:slug/product/:productSlug", whenAuthenticated: "next" },
     { path: "/store/:slug/checkout", whenAuthenticated: "next" },
     { path: "/store/:slug/cart", whenAuthenticated: "next" },
-    { path: "/store/:slug/orderPlaced", whenAuthenticated: "next" },
     { path: "/store/:slug/orderConfirmed", whenAuthenticated: "next" },
     { path: "/", whenAuthenticated: "next" },
 ] as const;
@@ -83,7 +82,24 @@ export default async function proxy(req: NextRequest) {
 
     const secret = process.env.JWT_SECRET;
     if (!secret) {
-        return nextWithPathname(req);
+        if (process.env.NODE_ENV === "production") {
+            return new NextResponse(
+                "Configuração do servidor incompleta (JWT_SECRET).",
+                {
+                    status: 500,
+                    headers: { "Content-Type": "text/plain; charset=utf-8" },
+                },
+            );
+        }
+        console.warn(
+            "[proxy] JWT_SECRET não definido: sessão não é validada; apenas rotas públicas são permitidas sem login.",
+        );
+        if (publicRoute) {
+            return nextWithPathname(req);
+        }
+        const redirectURL = req.nextUrl.clone();
+        redirectURL.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED;
+        return NextResponse.redirect(redirectURL);
     }
 
     const key = new TextEncoder().encode(secret);

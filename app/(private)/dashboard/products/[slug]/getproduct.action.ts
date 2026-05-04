@@ -7,7 +7,7 @@ export type GetProductActionResult =
     | {
           success: true;
           data: NonNullable<
-              Awaited<ReturnType<typeof ProductsService.getProduct>>
+              Awaited<ReturnType<typeof ProductsService.getProductById>>
           >;
           errors: null;
       }
@@ -15,7 +15,7 @@ export type GetProductActionResult =
 
 export async function getProductAction(slug: number): Promise<GetProductActionResult> {
     try {
-        const product = await ProductsService.getProduct(slug);
+        const product = await ProductsService.getProductById(slug);
 
         if (!product) {
             return {

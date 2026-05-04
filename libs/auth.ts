@@ -7,7 +7,7 @@ export async function getCurrentUser() {
     const token = cookieStore.get("token")?.value;
     if (!token) return null;
     try {
-        return jwt.verifyJwt(token);
+        return await jwt.verifyJwt(token);
     } catch {
         return null;
     }

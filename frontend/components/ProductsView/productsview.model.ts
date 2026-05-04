@@ -1,3 +1,5 @@
+import { formatCurrencyFromCents } from "@/libs/format-currency";
+
 export interface ProductModel {
     id: number;
     name: string;
@@ -42,7 +44,7 @@ export function mapProductToViewData(
     return {
         id: product.id,
         name: product.name,
-        priceFormatted: `R$ ${Number(product.price).toFixed(2)}`,
+        priceFormatted: formatCurrencyFromCents(product.price),
         stockLabel: `${product.stock} un.`,
         stockPercentage: Math.min(product.stock, 100),
         createdAtFormatted: new Date(product.createdAt)

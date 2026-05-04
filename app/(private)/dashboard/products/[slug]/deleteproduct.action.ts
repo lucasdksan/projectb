@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/libs/auth";
 import { getActionErrorMessage } from "@/libs/action-error";
 import { StoreService } from "@/backend/services/store.service";
 import { ProductsService } from "@/backend/services/products.service";
-import { vercelIntegration } from "@/backend/intagrations/vercel";
+import { vercelIntegration } from "@/backend/integrations/vercel";
 
 export type DeleteProductActionResult =
     | { success: true }
@@ -39,7 +39,7 @@ export async function deleteProductAction(
             };
         }
 
-        const product = await ProductsService.getProduct(productId);
+        const product = await ProductsService.getProductById(productId);
 
         if (!product || product.storeId !== store.id) {
             return {

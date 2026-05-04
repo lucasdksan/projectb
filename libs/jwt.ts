@@ -1,29 +1,42 @@
-import jsonwebtoken from "jsonwebtoken"
+import { SignJWT, jwtVerify } from "jose";
 import { env } from "./env";
 
-export type JwtPayload =  {
+export type JwtPayload = {
     sub: string | number;
     name: string;
     email: string;
-}
+};
 
 const JWT_SECRET = env.JWT_SECRET as string;
 const ACCESS_TOKEN_EXPIRY = "15m";
 
+function getSecretKey() {
+    return new TextEncoder().encode(JWT_SECRET);
+}
+
 const jwt = {
-    signAccessToken(payload: JwtPayload): string {
-        return jsonwebtoken.sign(payload, JWT_SECRET, {
-            expiresIn: ACCESS_TOKEN_EXPIRY,
+    async signAccessToken(payload: JwtPayload): Promise<string> {
+        const key = getSecretKey();
+        return await new SignJWT({
+            name: payload.name,
+            email: payload.email,
+        })
+            .setProtectedHeader({ alg: "HS256" })
+            .setSubject(String(payload.sub))
+            .setExpirationTime(ACCESS_TOKEN_EXPIRY)
+            .sign(key);
+    },
+
+    async signJwt(payload: JwtPayload): Promise<string> {
+        return await this.signAccessToken(payload);
+    },
+
+    async verifyJwt<T = JwtPayload>(token: string): Promise<T> {
+        const { payload } = await jwtVerify(token, getSecretKey(), {
+            algorithms: ["HS256"],
         });
+        return payload as T;
     },
-
-    signJwt(payload: JwtPayload): string {
-        return this.signAccessToken(payload);
-    },
-
-    verifyJwt<T = JwtPayload>(token: string): T {
-        return jsonwebtoken.verify(token, JWT_SECRET) as T;
-    }
 };
 
 export default jwt;

@@ -45,7 +45,7 @@ describe("getCurrentUser", () => {
     vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const jwt = await import("../jwt");
-    vi.mocked(jwt.default.verifyJwt).mockReturnValue(mockUser);
+    vi.mocked(jwt.default.verifyJwt).mockResolvedValue(mockUser);
 
     const { getCurrentUser } = await import("../auth");
     const result = await getCurrentUser();
@@ -64,7 +64,7 @@ describe("getCurrentUser", () => {
     vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const jwt = await import("../jwt");
-    vi.mocked(jwt.default.verifyJwt).mockImplementation(() => {
+    vi.mocked(jwt.default.verifyJwt).mockImplementation(async () => {
       throw new Error("Invalid token");
     });
 
@@ -84,7 +84,7 @@ describe("getCurrentUser", () => {
     vi.mocked(cookies).mockResolvedValue(mockCookies as never);
 
     const jwt = await import("../jwt");
-    vi.mocked(jwt.default.verifyJwt).mockImplementation(() => {
+    vi.mocked(jwt.default.verifyJwt).mockImplementation(async () => {
       throw new Error("Token expired");
     });
 

@@ -2,6 +2,13 @@ import { prisma } from "../database/prisma";
 import { CreateProductDTO, ListProductsDTO, UpdateProductDTO } from "../schemas/products.schema";
 
 export const ProductsRepository = {
+    async slugExistsInStore(storeId: number, slug: string) {
+        const count = await prisma.products.count({
+            where: { storeId, slug },
+        });
+        return count > 0;
+    },
+
     async createProduct(dto: { slug: string } &CreateProductDTO, storeId: number) {
         const { imageUrls = [], ...productData } = dto;
         return await prisma.products.create({
@@ -81,10 +88,10 @@ export const ProductsRepository = {
         });
     },
 
-    async getProduct(slug: number) {
+    async getProductById(id: number) {
         return await prisma.products.findUnique({
             where: {
-                id: slug,
+                id: id,
             },
             include: {
                 images: true,

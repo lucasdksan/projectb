@@ -1,4 +1,4 @@
-import { aiIntegration } from "../intagrations/ai";
+import { aiIntegration } from "../integrations/ai";
 import { PostStudioChatGenerateDTO, PostStudioDTO } from "../schemas/poststudio.schema";
 
 function buildContextFromChat(dto: PostStudioChatGenerateDTO): string {

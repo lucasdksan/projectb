@@ -42,7 +42,7 @@ export const AuthService = {
             password: hashedPassword,
         });
 
-        const accessToken = jwt.signAccessToken({
+        const accessToken = await jwt.signAccessToken({
             sub: id,
             name: name,
             email: email,
@@ -74,7 +74,7 @@ export const AuthService = {
             throw Errors.unauthorized("E-mail ou senha incorretos.");
         }
 
-        const accessToken = jwt.signAccessToken({
+        const accessToken = await jwt.signAccessToken({
             sub: user.id,
             name: user.name,
             email: user.email,
@@ -111,7 +111,7 @@ export const AuthService = {
         const isValid = await crypt.verifyToken(user.refreshTokenHash, parsed.plainToken);
         if (!isValid) return null;
 
-        const accessToken = jwt.signAccessToken({
+        const accessToken = await jwt.signAccessToken({
             sub: user.id,
             name: user.name,
             email: user.email,
@@ -192,7 +192,7 @@ export const AuthService = {
             refreshTokenExpiresAt: refreshExpires,
         }, user.id);
 
-        const accessToken = jwt.signAccessToken({
+        const accessToken = await jwt.signAccessToken({
             sub: user.id,
             name: user.name,
             email: user.email,

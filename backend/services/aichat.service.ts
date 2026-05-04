@@ -1,4 +1,4 @@
-import { aiIntegration } from "../intagrations/ai";
+import { aiIntegration } from "../integrations/ai";
 import {
     aiContentResponseSchema,
     type ChatHistoryItem,

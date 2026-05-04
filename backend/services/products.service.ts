@@ -3,21 +3,30 @@ import { StoreService } from "./store.service";
 import { CreateProductDTO, ListProductsDTO, ListProductsByStoreSlugDTO, UpdateProductDTO } from "../schemas/products.schema";
 
 export const ProductsService = {
-    async createProduct(dto: CreateProductDTO, storeId: number){
-        const slug = dto.name
+    async createProduct(dto: CreateProductDTO, storeId: number) {
+        const baseSlug = dto.name
             .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9\s]/g, '')
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9\s]/g, "")
             .trim()
-            .replace(/\s+/g, '-');
+            .replace(/\s+/g, "-") || "produto";
 
-        return await ProductsRepository.createProduct({
-            slug,
-            ...dto
-        }, storeId);
+        let candidate = baseSlug;
+        let suffix = 2;
+        while (await ProductsRepository.slugExistsInStore(storeId, candidate)) {
+            candidate = `${baseSlug}-${suffix}`;
+            suffix += 1;
+        }
+
+        return await ProductsRepository.createProduct(
+            {
+                slug: candidate,
+                ...dto,
+            },
+            storeId,
+        );
     },
-
     async quantityProducts(storeId: number) {
         return await ProductsRepository.quantityProducts(storeId);
     },
@@ -39,8 +48,8 @@ export const ProductsService = {
         });
     },
 
-    async getProduct(slug: number) {
-        return await ProductsRepository.getProduct(slug);
+    async getProductById(productId: number) {
+        return await ProductsRepository.getProductById(productId);
     },
 
     async getProductByStoreSlugAndProductSlug(

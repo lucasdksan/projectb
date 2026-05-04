@@ -1,6 +1,7 @@
-import { aiIntegration } from "../intagrations/ai";
+import { aiIntegration } from "../integrations/ai";
 import { fetchTrustedProductImageBlob } from "../utils/trusted-product-image-url";
 import { GenerateAddsDTO, type GenerateAddsResponse } from "../schemas/generateadds.schema";
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 
 const JSON_RESPONSE_RULES = `
 IMPORTANTE: Você DEVE responder SEMPRE em formato JSON válido com a seguinte estrutura:
@@ -28,7 +29,7 @@ async function parseJsonResponse(text: string): Promise<GenerateAddsResponse | n
 
 export const GenerateAddsService = {
     async generateAdds(data: GenerateAddsDTO) {
-        const productContext = `Produto: ${data.name}. Descrição: ${data.description ?? "N/A"}. Preço: R$ ${data.price.toFixed(2)}. Estoque: ${data.stock}.`;
+        const productContext = `Produto: ${data.name}. Descrição: ${data.description ?? "N/A"}. Preço: ${formatCurrencyFromCents(data.price)}. Estoque: ${data.stock}.`;
 
         if (data.image) {
             const prompt = `Você é um especialista em marketing de e-commerce e Instagram.

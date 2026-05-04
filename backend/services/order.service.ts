@@ -2,7 +2,7 @@ import { StoreService } from "./store.service";
 import { ProductsRepository } from "../repositories/products.repository";
 import { CustomerRepository } from "../repositories/customer.repository";
 import { OrderRepository } from "../repositories/order.repository";
-import type { CreateOrderDTO, CreateOrderItemDTO } from "../schemas/order.schema";
+import type { CreateOrderDTO } from "../schemas/order.schema";
 
 export const OrderService = {
     async createOrder(dto: CreateOrderDTO) {

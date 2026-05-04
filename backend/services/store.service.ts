@@ -1,6 +1,6 @@
 import { StoreRepository } from "../repositories/store.repository";
 import { UpdateStoreDTO, UpdateConfigStoreDTO } from "../schemas/store.schema";
-import { vercelIntegration } from "../intagrations/vercel";
+import { vercelIntegration } from "../integrations/vercel";
 
 export const StoreService = {
     async getStore(userId: number) {

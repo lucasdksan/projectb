@@ -2,6 +2,7 @@
 
 import { ShoppingBag, X, Plus, Minus, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 import { useCartPageViewModel } from "./cartpage.viewmodel";
 import type { CartPageViewProps } from "./cartpage.model";
 
@@ -117,10 +118,8 @@ export default function CartPageView(props: CartPageViewProps) {
                                             className="font-bold"
                                             style={{ color: props.primaryColor }}
                                         >
-                                            R${" "}
-                                            {(item.price * item.quantity).toLocaleString(
-                                                "pt-BR",
-                                                { minimumFractionDigits: 2 }
+                                            {formatCurrencyFromCents(
+                                                item.price * item.quantity,
                                             )}
                                         </p>
                                     </div>
@@ -134,7 +133,7 @@ export default function CartPageView(props: CartPageViewProps) {
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-700">Subtotal</span>
                                 <span className="text-gray-700">
-                                    R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                    {formatCurrencyFromCents(subtotal)}
                                 </span>
                             </div>
                             <div className="flex justify-between text-sm">
@@ -149,7 +148,7 @@ export default function CartPageView(props: CartPageViewProps) {
                                     className="text-2xl font-black"
                                     style={{ color: props.secondaryColor }}
                                 >
-                                    R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                    {formatCurrencyFromCents(subtotal)}
                                 </span>
                             </div>
                         </div>

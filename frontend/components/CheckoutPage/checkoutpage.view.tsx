@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 import { useCheckoutPageViewModel } from "./checkoutpage.viewmodel";
 import type { CheckoutPageViewProps } from "./checkoutpage.model";
 
@@ -156,10 +157,8 @@ export default function CheckoutPageView(props: CheckoutPageViewProps) {
                                     </span>
                                 </div>
                                 <span className="font-bold text-gray-900">
-                                    R${" "}
-                                    {(item.price * item.quantity).toLocaleString(
-                                        "pt-BR",
-                                        { minimumFractionDigits: 2 }
+                                    {formatCurrencyFromCents(
+                                        item.price * item.quantity,
                                     )}
                                 </span>
                             </div>
@@ -169,10 +168,7 @@ export default function CheckoutPageView(props: CheckoutPageViewProps) {
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-700">Subtotal</span>
                             <span className="text-gray-900">
-                                R${" "}
-                                {subtotal.toLocaleString("pt-BR", {
-                                    minimumFractionDigits: 2,
-                                })}
+                                {formatCurrencyFromCents(subtotal)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm">
@@ -187,10 +183,7 @@ export default function CheckoutPageView(props: CheckoutPageViewProps) {
                                 className="text-2xl font-black"
                                 style={{ color: props.secondaryColor }}
                             >
-                                R${" "}
-                                {subtotal.toLocaleString("pt-BR", {
-                                    minimumFractionDigits: 2,
-                                })}
+                                {formatCurrencyFromCents(subtotal)}
                             </span>
                         </div>
                     </div>

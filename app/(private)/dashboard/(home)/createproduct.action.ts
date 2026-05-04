@@ -6,7 +6,8 @@ import { getActionErrorMessage } from "@/libs/action-error";
 import { StoreService } from "@/backend/services/store.service";
 import { ProductsService } from "@/backend/services/products.service";
 import { createProductSchema } from "@/backend/schemas/products.schema";
-import { vercelIntegration } from "@/backend/intagrations/vercel";
+import { vercelIntegration } from "@/backend/integrations/vercel";
+import { reaisToCents } from "@/libs/format-currency";
 
 const createProductActionSchema = createProductSchema
     .omit({ storeId: true, imageUrls: true })
@@ -112,6 +113,7 @@ export async function createProductAction(
         await ProductsService.createProduct(
             {
                 ...parsed.data,
+                price: reaisToCents(parsed.data.price),
                 storeId: store.id,
                 imageUrls,
             },

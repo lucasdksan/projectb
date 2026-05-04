@@ -1,10 +1,8 @@
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 import { SalesCardsProps } from "./salescards.model";
 
 export function useSalesCardsViewModel({ orderCount, totalRevenue }: SalesCardsProps) {
-    const formattedRevenue = new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-    }).format(totalRevenue);
+    const formattedRevenue = formatCurrencyFromCents(totalRevenue ?? 0);
 
     return {
         orderCount,

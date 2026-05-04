@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateProductAction } from "@/app/(private)/dashboard/products/[slug]/updateproduct.action";
 import { useToast } from "@/frontend/hooks/useToast";
 import type { EditProductModel, EditProductFormState } from "./editproduct.model";
+import { centsToReaisInputString } from "@/libs/format-currency";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ACCEPTED_IMAGE_EXT = ".jpg,.jpeg,.png,.webp";
@@ -18,7 +19,7 @@ function formStateFromModel(model: EditProductModel): EditProductFormState {
     return {
         name: model.name ?? "",
         description: model.description ?? "",
-        price: model.price?.toString() ?? "",
+        price: model.price != null ? centsToReaisInputString(model.price) : "",
         stock: model.stock?.toString() ?? "0",
         image: null,
         isActive: model.isActive ?? true,

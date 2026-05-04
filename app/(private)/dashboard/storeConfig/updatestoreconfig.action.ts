@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/libs/auth";
 import { getActionErrorMessage } from "@/libs/action-error";
 import { StoreService } from "@/backend/services/store.service";
 import { updateConfigStoreSchema } from "@/backend/schemas/store.schema";
-import { vercelIntegration } from "@/backend/intagrations/vercel";
+import { vercelIntegration } from "@/backend/integrations/vercel";
 
 export type UpdateStoreConfigActionResult =
     | { success: true; data: null; errors: null }

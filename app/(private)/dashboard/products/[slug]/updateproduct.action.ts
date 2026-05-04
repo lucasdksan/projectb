@@ -6,7 +6,8 @@ import { getActionErrorMessage } from "@/libs/action-error";
 import { StoreService } from "@/backend/services/store.service";
 import { ProductsService } from "@/backend/services/products.service";
 import { updateProductSchema } from "@/backend/schemas/products.schema";
-import { vercelIntegration } from "@/backend/intagrations/vercel";
+import { vercelIntegration } from "@/backend/integrations/vercel";
+import { reaisToCents } from "@/libs/format-currency";
 
 const updateProductActionSchema = updateProductSchema
     .omit({ imageUrls: true })
@@ -103,7 +104,7 @@ export async function updateProductAction(
             };
         }
 
-        const product = await ProductsService.getProduct(parsed.data.productId);
+        const product = await ProductsService.getProductById(parsed.data.productId);
 
         if (!product || product.storeId !== store.id) {
             return {
@@ -130,7 +131,7 @@ export async function updateProductAction(
             {
                 name: parsed.data.name,
                 description: parsed.data.description ?? "",
-                price: parsed.data.price,
+                price: reaisToCents(parsed.data.price),
                 stock: parsed.data.stock,
                 imageUrls,
                 isActive: parsed.data.isActive,

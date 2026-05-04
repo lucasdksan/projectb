@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useStoreCart } from "@/frontend/contexts/storeCart/storecart.viewmodel";
 import type { ProductDetailModel } from "./productdetail.model";
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 
 export function useProductDetailViewModel(model: ProductDetailModel) {
     const { addItem } = useStoreCart();
@@ -38,6 +39,6 @@ export function useProductDetailViewModel(model: ProductDetailModel) {
     return {
         handleAddToCart,
         handleAddAndStay,
-        priceFormatted: `R$ ${Number(model.price).toFixed(2).replace(".", ",")}`,
+        priceFormatted: formatCurrencyFromCents(model.price),
     };
 }

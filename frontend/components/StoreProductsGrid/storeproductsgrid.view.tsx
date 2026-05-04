@@ -5,7 +5,7 @@ import CardProductView from "@/frontend/components/CardProduct/cardproduct.view"
 import { useStoreProductsGridViewModel } from "./storeproductsgrid.viewmodel";
 import type { StoreProductsGridModel } from "./storeproductsgrid.model";
 
-interface StoreProductsGridViewProps extends StoreProductsGridModel {}
+type StoreProductsGridViewProps = StoreProductsGridModel;
 
 export default function StoreProductsGridView(props: StoreProductsGridViewProps) {
     const {

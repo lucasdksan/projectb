@@ -5,4 +5,4 @@ export interface CheckoutPageModel {
     secondaryColor: string;
 }
 
-export interface CheckoutPageViewProps extends CheckoutPageModel {};
+export type CheckoutPageViewProps = CheckoutPageModel;

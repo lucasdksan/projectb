@@ -184,6 +184,7 @@ export default function PostStudioChatView({ userName }: PostStudioChatViewProps
     const downloadResult = (dataUrl: string) => {
         const a = document.createElement("a");
         a.href = dataUrl;
+        // eslint-disable-next-line react-hooks/purity -- invoked only from click handlers; stable filename unnecessary at render time
         a.download = `post-studio-${Date.now()}.png`;
         a.click();
     };

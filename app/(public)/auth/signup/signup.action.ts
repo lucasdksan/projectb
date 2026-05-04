@@ -7,7 +7,7 @@ import { env } from "@/libs/env";
 import tokenIntoCookies from "@/libs/token";
 
 export type SignupActionResult = 
-    | { success: true; data: any }
+    | { success: true; data: { email: string; name: string } }
     | { success: false; errors: Record<string, string[] | undefined> };
 
 export async function signupAction(data: unknown): Promise<SignupActionResult> {

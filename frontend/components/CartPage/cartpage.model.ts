@@ -4,4 +4,4 @@ export interface CartPageModel {
     secondaryColor: string;
 }
 
-export interface CartPageViewProps extends CartPageModel {};
+export type CartPageViewProps = CartPageModel;

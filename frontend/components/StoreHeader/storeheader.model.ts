@@ -6,4 +6,4 @@ export interface StoreHeaderModel {
     secondaryColor: string;
 }
 
-export interface StoreHeaderViewProps extends StoreHeaderModel {};
+export type StoreHeaderViewProps = StoreHeaderModel;

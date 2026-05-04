@@ -3,15 +3,13 @@ import { forget } from "../forget";
 import crypt from "../crypt";
 
 describe("forget", () => {
-  let randomUUIDSpy: any;
-
   beforeEach(() => {
     vi.clearAllMocks();
-    randomUUIDSpy = vi.spyOn(crypto, "randomUUID").mockReturnValue("mocked-uuid-12345");
+    vi.spyOn(crypto, "randomUUID").mockReturnValue("mocked-uuid-12345");
   });
 
   afterEach(() => {
-    randomUUIDSpy.mockRestore();
+    vi.restoreAllMocks();
   });
 
   describe("generateDateAndToken", () => {

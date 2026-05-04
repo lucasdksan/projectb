@@ -3,6 +3,10 @@
 import { ProductsService } from "@/backend/services/products.service";
 import { listProductsSchema } from "@/backend/schemas/products.schema";
 
+export type ListProductsData = Awaited<
+    ReturnType<typeof ProductsService.listProducts>
+>["data"];
+
 export interface PaginationInfo {
     page: number;
     limit: number;
@@ -11,7 +15,7 @@ export interface PaginationInfo {
 }
 
 export type ListProductsActionResult =
-    | { success: true; data: { products: any[]; pagination: PaginationInfo } }
+    | { success: true; data: { products: ListProductsData; pagination: PaginationInfo } }
     | { success: false; errors: Record<string, string[] | undefined>; data: null };
 
 export async function listProductsAction(

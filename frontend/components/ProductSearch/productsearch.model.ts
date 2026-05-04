@@ -4,4 +4,4 @@ export interface ProductSearchModel {
     placeholder?: string;
 }
 
-export interface ProductSearchViewProps extends ProductSearchModel {};
+export type ProductSearchViewProps = ProductSearchModel;

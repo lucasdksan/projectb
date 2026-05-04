@@ -23,6 +23,7 @@ export function useGenerateAddsViewModel(model: GenerateAddsModel) {
     useEffect(() => {
         if (selectedFile) {
             const url = URL.createObjectURL(selectedFile);
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- object URL lifecycle; cleanup revokes URL
             setFilePreviewUrl(url);
             return () => URL.revokeObjectURL(url);
         }

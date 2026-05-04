@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { cookies } from "next/headers";
 
+type NextCookiesStore = Awaited<ReturnType<typeof cookies>>;
+
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
@@ -18,7 +20,7 @@ describe("tokenIntoCookies", () => {
         delete: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       const result = await tokenIntoCookies.cookiesStoreFn();
@@ -34,7 +36,7 @@ describe("tokenIntoCookies", () => {
         set: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.set("my-jwt-token", "my-refresh-token", true);
@@ -65,7 +67,7 @@ describe("tokenIntoCookies", () => {
         set: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.set("my-jwt-token", "my-refresh-token", false);
@@ -80,7 +82,7 @@ describe("tokenIntoCookies", () => {
         set: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.set("test-token", "test-refresh", true);
@@ -98,7 +100,7 @@ describe("tokenIntoCookies", () => {
         set: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.setAccessOnly("new-access-token", true);
@@ -122,7 +124,7 @@ describe("tokenIntoCookies", () => {
         delete: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.deleteAll();
@@ -139,7 +141,7 @@ describe("tokenIntoCookies", () => {
         delete: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.delete("token");
@@ -154,7 +156,7 @@ describe("tokenIntoCookies", () => {
         delete: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.delete("refresh_token");
@@ -169,7 +171,7 @@ describe("tokenIntoCookies", () => {
         delete: vi.fn(),
       };
 
-      vi.mocked(cookies).mockResolvedValue(mockCookieStore as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookieStore as unknown as NextCookiesStore);
 
       const tokenIntoCookies = (await import("../token")).default;
       await tokenIntoCookies.delete("test");

@@ -1,25 +1,20 @@
 "use client";
 
 import { generateContentAction } from "@/app/(private)/dashboard/postStudio/generatecontent.action";
-import { useActionState, useState, useCallback, useEffect } from "react";
+import { useActionState, useState, useCallback, useEffect, useMemo } from "react";
 import { initialState, type StudioAreaState } from "./studioarea.model";
 
 export function useStudioAreaViewModel() {
     const [state, formAction, isPending] = useActionState(generateContentAction, initialState);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [normalizedState, setNormalizedState] = useState<StudioAreaState>({
-        success: state.success,
-        errors: state.success ? {} : state.errors,
-        data: state.success ? state.data ?? "" : "",
-    });
-
-    useEffect(() => {
-        setNormalizedState({
+    const normalizedState = useMemo<StudioAreaState>(
+        () => ({
             success: state.success,
             errors: state.success ? {} : (state.errors ?? {}),
             data: state.success && "data" in state ? state.data : "",
-        });
-    }, [state]);
+        }),
+        [state],
+    );
 
     const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

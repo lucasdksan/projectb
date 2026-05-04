@@ -5,7 +5,7 @@ import { ChevronLeft, ShoppingBasket } from "lucide-react";
 import { useProductDetailViewModel } from "./productdetail.viewmodel";
 import type { ProductDetailModel } from "./productdetail.model";
 
-interface ProductDetailViewProps extends ProductDetailModel {}
+type ProductDetailViewProps = ProductDetailModel;
 
 export default function ProductDetailView(props: ProductDetailViewProps) {
     const { handleAddToCart, handleAddAndStay, priceFormatted } =

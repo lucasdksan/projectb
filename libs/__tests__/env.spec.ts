@@ -24,7 +24,10 @@ describe("envSchema", () => {
     process.env.MAIL_HOST = "smtp.mail.com";
     process.env.MAIL_PORT = "587";
     process.env.GEMINI_API_KEY = "gemini-api-key";
-    (process.env as any).NODE_ENV = "test";
+    Object.assign(process.env, { NODE_ENV: "test" } satisfies Pick<
+      NodeJS.ProcessEnv,
+      "NODE_ENV"
+    >);
     process.env.BLOB_READ_WRITE_TOKEN = "blob-read-write-token";
 
     const { env } = await import("../env");
@@ -54,7 +57,10 @@ describe("envSchema", () => {
     process.env.MAIL_PASS = "mailpass";
     process.env.MAIL_HOST = "smtp.mail.com";
     process.env.GEMINI_API_KEY = "gemini-api-key";
-    (process.env as any).NODE_ENV = "test";
+    Object.assign(process.env, { NODE_ENV: "test" } satisfies Pick<
+      NodeJS.ProcessEnv,
+      "NODE_ENV"
+    >);
   
   
     await expect(import("../env")).rejects.toThrow(z.ZodError);

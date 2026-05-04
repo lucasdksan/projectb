@@ -2,10 +2,11 @@
 
 import { getActionErrorMessage } from "@/libs/action-error";
 import { AIContentService } from "@/backend/services/aicontent.service";
+import type { ContentAIResponse } from "@/backend/schemas/aicontent.schema";
 import { getCurrentUser } from "@/libs/auth";
 
 export type LastActionResult = 
-    | { success: true; data: { lastContent: any[] } }
+    | { success: true; data: { lastContent: ContentAIResponse[] } }
     | { success: false; errors: Record<string, string[] | undefined> };
 
 export async function lastAction(): Promise<LastActionResult> {

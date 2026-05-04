@@ -1,5 +1,9 @@
 import { useActionState } from "react";
-import { listProductsAction, ListProductsActionResult } from "@/app/(private)/dashboard/products/listproducts.action";
+import {
+    listProductsAction,
+    ListProductsActionResult,
+    type ListProductsData,
+} from "@/app/(private)/dashboard/products/listproducts.action";
 import {
     ProductsState,
     mapProductToViewData,
@@ -21,7 +25,8 @@ function buildInitialState(
     return {
         success: true,
         data: {
-            products: initialProducts ?? [],
+            products: (initialProducts ??
+                []) as unknown as ListProductsData,
             pagination: initialPagination ?? DEFAULT_PAGINATION,
         },
     };

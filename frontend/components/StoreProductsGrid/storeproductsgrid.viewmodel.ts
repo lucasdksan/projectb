@@ -18,6 +18,7 @@ export function useStoreProductsGridViewModel(model: StoreProductsGridModel) {
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- reset client list when SSR model changes
         setProducts(model.initialProducts);
         setPagination(model.initialPagination);
     }, [

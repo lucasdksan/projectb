@@ -6,7 +6,7 @@ import { useStoreCart } from "@/frontend/contexts/storeCart/storecart.viewmodel"
 import type { CardProductModel } from "./cardproduct.model";
 import { formatCardProductDisplay } from "./cardproduct.viewmodel";
 
-interface CardProductViewProps extends CardProductModel {}
+type CardProductViewProps = CardProductModel;
 
 export default function CardProductView(props: CardProductViewProps) {
     const display = formatCardProductDisplay(props);

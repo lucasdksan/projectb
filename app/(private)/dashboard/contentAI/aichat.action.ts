@@ -11,6 +11,8 @@ import {
     type AIContentResponse,
     SUPPORTED_PLATFORMS,
     CONTENT_MODES,
+    type Platform,
+    type ContentMode,
 } from "@/backend/schemas/aichat.schema";
 
 export type SendMessageActionResult =
@@ -149,12 +151,12 @@ export async function sendMessageWithContextAction(
         }
 
         const platformRaw = formData.get("platform");
-        const platform = typeof platformRaw === "string" && SUPPORTED_PLATFORMS.includes(platformRaw as any)
+        const platform = typeof platformRaw === "string" && SUPPORTED_PLATFORMS.includes(platformRaw as Platform)
             ? platformRaw
             : undefined;
 
         const modeRaw = formData.get("mode");
-        const mode = typeof modeRaw === "string" && CONTENT_MODES.includes(modeRaw as any)
+        const mode = typeof modeRaw === "string" && CONTENT_MODES.includes(modeRaw as ContentMode)
             ? modeRaw
             : "standard";
 

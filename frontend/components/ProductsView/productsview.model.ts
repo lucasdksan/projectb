@@ -38,9 +38,15 @@ export interface ProductsState {
     isLoading: boolean;
 }
 
-export function mapProductToViewData(
-    product: ProductModel
-): ProductViewData {
+/** Accepts dashboard ProductModel or full Prisma-shaped rows from list products. */
+export function mapProductToViewData(product: {
+    id: number;
+    name: string;
+    price: number;
+    stock: number;
+    createdAt: string | Date;
+    images?: readonly { url: string }[] | null;
+}): ProductViewData {
     return {
         id: product.id,
         name: product.name,

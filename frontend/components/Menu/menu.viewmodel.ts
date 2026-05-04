@@ -8,31 +8,35 @@ export function useMenuViewModel() {
     const sidebar = useSidebar();
     const pathname = usePathname();
 
-    if (!sidebar) return null;
+    useEffect(() => {
+        if (!sidebar) return;
 
-    const { stateMenu, setStateMenu } = sidebar;
-    
-    useEffect(()=>{
+        const { setStateMenu } = sidebar;
         if (!isMobile) {
             setStateMenu(true);
         } else {
             setStateMenu(false);
         }
-    }, [isMobile, setStateMenu]);
+    }, [isMobile, sidebar]);
 
     useEffect(() => {
-        if (!isMobile) return;
+        if (!isMobile || !sidebar) return;
 
+        const { stateMenu } = sidebar;
         if (stateMenu) {
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = "hidden";
         } else {
-            document.body.style.overflow = '';
+            document.body.style.overflow = "";
         }
 
         return () => {
-            document.body.style.overflow = '';
+            document.body.style.overflow = "";
         };
-    }, [isMobile, stateMenu]);
+    }, [isMobile, sidebar]);
+
+    if (!sidebar) return null;
+
+    const { stateMenu, setStateMenu } = sidebar;
 
     function isActive(path: string) {
         return path === pathname;
@@ -43,5 +47,5 @@ export function useMenuViewModel() {
         stateMenu,
         setStateMenu,
         isActive,
-    }
+    };
 }

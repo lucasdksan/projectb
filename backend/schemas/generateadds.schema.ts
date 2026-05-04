@@ -17,7 +17,7 @@ const imageBlobSchema = z
 export const generateAddsSchema = z.object({
     name: z.string().min(1, "Nome é obrigatório"),
     description: z.string().optional(),
-    price: z.number().min(0.01, "Preço deve ser maior que zero"),
+    price: z.number().int().min(1, "Preço deve ser maior que zero"),
     stock: z.number().int().min(0, "Estoque deve ser zero ou maior"),
     image: imageBlobSchema.optional(),
     imageUrl: z.string().url().optional(),
@@ -25,7 +25,7 @@ export const generateAddsSchema = z.object({
 
 export const generateAddsFormSchema = generateAddsSchema
     .extend({
-        price: z.coerce.number().min(0.01, "Preço deve ser maior que zero"),
+        price: z.coerce.number().int().min(1, "Preço deve ser maior que zero"),
         stock: z.coerce.number().int().min(0, "Estoque deve ser zero ou maior"),
     })
     .superRefine((data, ctx) => {

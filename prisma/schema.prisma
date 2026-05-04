@@ -79,7 +79,7 @@ model Products {
   id          Int             @id @default(autoincrement())
   name        String
   description String?
-  price       Float
+  price       Int
   stock       Int             @default(0)
   storeId     Int
   slug        String
@@ -90,6 +90,7 @@ model Products {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
+  @@unique([storeId, slug])
   @@map("products")
 }
 
@@ -127,9 +128,9 @@ model Order {
   customerId Int
   customer   Customer    @relation(fields: [customerId], references: [id])
   status     String      @default("pending")
-  subtotal   Float
-  shipping   Float       @default(0)
-  total      Float
+  subtotal   Int
+  shipping   Int         @default(0)
+  total      Int
   items      OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -144,7 +145,7 @@ model OrderItem {
   productId Int
   product   Products @relation(fields: [productId], references: [id])
   quantity  Int
-  unitPrice Float
+  unitPrice Int
 
   @@map("orderItem")
 }

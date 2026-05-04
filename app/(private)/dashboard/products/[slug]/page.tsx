@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 import { ArrowLeftIcon } from "lucide-react";
 import { getProductAction } from "./getproduct.action";
 import GenerateAddsView from "@/frontend/components/GenerateAdds/generateadds.view";
@@ -94,7 +95,7 @@ export default async function ProductPage({
                             {data.name}
                         </h1>
                         <p className="text-2xl font-mono text-[#00ff41]">
-                            R$ {data.price.toFixed(2)}
+                            {formatCurrencyFromCents(data.price)}
                         </p>
                     </div>
 

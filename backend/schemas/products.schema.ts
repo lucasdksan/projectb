@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createProductSchema = z.object({
     name: z.string().min(1, "Nome é obrigatório"),
     description: z.string().optional(),
-    price: z.number().min(0.01, "Preço é obrigatório"),
+    price: z.number().int().min(1, "Preço é obrigatório"),
     stock: z.number().int().min(0, "Estoque é obrigatório"),
     storeId: z.number().min(1, "Loja é obrigatória"),
     imageUrls: z.array(z.string().url()).optional().default([]),
@@ -27,7 +27,7 @@ export const listProductsByStoreSlugSchema = z.object({
 export const updateProductSchema = z.object({
     name: z.string().min(1, "Nome é obrigatório"),
     description: z.string().optional(),
-    price: z.number().min(0.01, "Preço é obrigatório"),
+    price: z.number().int().min(1, "Preço é obrigatório"),
     stock: z.number().int().min(0, "Estoque é obrigatório"),
     imageUrls: z.array(z.string().url()).optional().default([]),
     isActive: z.boolean().optional().default(true),

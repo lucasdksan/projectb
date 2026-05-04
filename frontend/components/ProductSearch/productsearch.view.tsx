@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { formatCurrencyFromCents } from "@/libs/format-currency";
 import { useProductSearchViewModel } from "./productsearch.viewmodel";
 import type { ProductSearchViewProps } from "./productsearch.model";
 
@@ -93,14 +94,7 @@ export default function ProductSearchView(props: ProductSearchViewProps) {
                                                     color: props.primaryColor,
                                                 }}
                                             >
-                                                R${" "}
-                                                {product.price.toLocaleString(
-                                                    "pt-BR",
-                                                    {
-                                                        minimumFractionDigits:
-                                                            2,
-                                                    }
-                                                )}
+                                                {formatCurrencyFromCents(product.price)}
                                             </p>
                                         </div>
                                     </button>
